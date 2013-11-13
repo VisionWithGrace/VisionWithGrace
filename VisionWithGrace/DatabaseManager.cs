@@ -18,6 +18,7 @@ using System.Drawing;
 using System.IO;
 using System.Drawing.Imaging;
 using System.Text;
+using System.Diagnostics;
 
 /**
  * TODO:
@@ -59,15 +60,46 @@ namespace DatabaseModule
         private MongoServer server;
         private MongoDatabase objectsDatabase;
         private string collectionName;
+        private string mongodir = @"..\..\..\mongodb\bin";
+        private Process mongod;
         // private MongoCollection recognizedObjects;
         public DatabaseManager()
         {
             collectionName = "SelectedObjects";
+            startMongoProcess();
             Connect();
         }
 
+        ~DatabaseManager()
+        {
+            if (!mongod.HasExited)
+            {
+                mongod.Kill();
+            }
+        }
+        //launch the mongo process on the user's computer
+        //assuming the mongo directory has a data\db directory for mongo inside
+        private void startMongoProcess()
+        {
+            ProcessStartInfo start = new ProcessStartInfo();
+            start.UseShellExecute = false;
+            start.FileName = mongodir + @"\mongod.exe";
+            start.WindowStyle = ProcessWindowStyle.Hidden;
+            var directory = Directory.GetCurrentDirectory();
+            start.Arguments = "--dbpath " + mongodir + @"\data\db";
+            start.RedirectStandardOutput = true;
+            mongod = Process.Start(start);
+
+            var outputline = "";
+            do
+            {
+                outputline = mongod.StandardOutput.ReadLine();
+                System.Console.WriteLine(outputline);
+            } while (outputline == null || !outputline.Contains("waiting for connections"));
+        }
         private void Connect()
         {
+            
 
             const string remoteConnectionString = "mongodb://localhost";
             MongoClient client = new MongoClient(remoteConnectionString);
@@ -485,10 +517,10 @@ namespace DatabaseModule
 //            Image fivedollar = Image.FromFile("C:\\Users\\Ben\\Desktop\\New_five_dollar_bill.jpg");
 //            dbManager.InsertImage("test_collection", onedollar, "onedollar.jpg", "{'president': 'George Washington', 'value': '1'}");
 //            dbManager.InsertImage("test_collection", fivedollar, "fivedollar.jpg", "{'president': 'Abraham Lincoln', 'value': '5'}");
-            var output_img = dbManager.GetImage("test_collection", "filename", "onedollar.jpg");
+            var output_img = dbManager.GetImage("filename", "onedollar.jpg");
             // output_img.Save("C:\\Users\\Ben\\Desktop\\new_output.jpg");
             System.Console.Write(output_img);
-
+            //dbManager.CloseConnection();
             return 0;
         }
     }
