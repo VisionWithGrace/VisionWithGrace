@@ -15,18 +15,12 @@ namespace VisionWithGrace
     public partial class MainForm : Form
     {
         Bitmap plainView;
-        Bitmap boxedView;
+        Bitmap boxesView;
         Rectangle[] rectangles;
-        int selected;
-        int frame_count;
         ComputerVision cv;
         Database db;
-        Pen redPen = new Pen(Color.Red, 3);
-        Pen yellowPen = new Pen(Color.Yellow, 5);
 
-        // Scanning Interface
-        private bool isScanning;
-        private int framesPerScan = 50;
+        Scanner scanner = new Scanner();
 
         public MainForm()
         {
@@ -43,10 +37,6 @@ namespace VisionWithGrace
             // Start CV and set handler
             cv = new ComputerVision();
 
-            // Get first set of boxes
-            rectangles = cv.getBoxes();
-            this.objectDetectedLabel.Text = rectangles.Length.ToString() + " objects detected";
-
             // Set kinect handler
             if (cv.isUsingKinect)
             {
@@ -56,8 +46,8 @@ namespace VisionWithGrace
             {
                 cv.set_handler(new EventHandler(this.colorFrameReady));
             }
-            frame_count = 0;
-            isScanning = false;
+
+            scanner.OnChange = highlightNextBox;
         }
 
         public void colorFrameReady(object sender, EventArgs e)
@@ -67,11 +57,20 @@ namespace VisionWithGrace
         public void colorFrameReady(object sender, ColorImageFrameReadyEventArgs e)
         {
             ColorImageFrame colorFrame = e.OpenColorImageFrame();
-            if (colorFrame == null)
+            if (colorFrame != null)
             {
-                return;
+                processFrame(ColorImageFrameToBitmap(colorFrame));
             }
-            processFrame(ColorImageFrameToBitmap(colorFrame));
+        }
+
+        public void highlightNextBox(object sender, EventArgs e)
+        {
+            int nextHighlighted = scanner.CurObject;
+
+            if (boxesView == null)
+                return;
+
+            drawBoxes(nextHighlighted);
         }
 
         private void processFrame(Bitmap bitmap)
@@ -79,40 +78,21 @@ namespace VisionWithGrace
             // delete previous values
             if (plainView != null)
                 plainView.Dispose();
-            if (boxedView != null)
-                boxedView.Dispose();
-
-            // Track number of frames if currently scanning
-            if (isScanning)
-                frame_count++;
-            else
-                frame_count = 0;
-
             plainView = new Bitmap(bitmap);
-            boxedView = new Bitmap(plainView);
 
-            // Add boxes
-            using (var graphics = Graphics.FromImage(boxedView))
+            if (boxesView == null)
+                getNewBoxes();
+
+            // Redraw views on main display
+            if (mainDisplay.Image != null)
+                this.mainDisplay.Image.Dispose();
+            mainDisplay.Image = new Bitmap(plainView.Size.Width, plainView.Size.Height);
+            using (Graphics g = Graphics.FromImage(mainDisplay.Image))
             {
-                for (int i = 0; i < rectangles.Length; i++)
-                {
-                    if (i == selected)
-                        graphics.DrawRectangle(yellowPen, rectangles[i]);
-                    else
-                        graphics.DrawRectangle(redPen, rectangles[i]);
-                }
+                // overlay the boxedView on the plainView
+                g.DrawImage(plainView, new Rectangle(0, 0, plainView.Width, plainView.Height));
+                g.DrawImage(boxesView, new Rectangle(0, 0, boxesView.Width, boxesView.Height));
             }
-
-            if (frame_count > framesPerScan)
-            {
-                selected = (selected + 1) % rectangles.Length;
-                frame_count = 0;
-            }
-
-            if (isScanning)
-                this.labelTimeRemaining.Text = Convert.ToString(framesPerScan - frame_count);
-
-            this.mainDisplay.Image = boxedView;
         }
 
         // Don't touch this function, I didn't write it. It came from the interwebs.
@@ -135,21 +115,16 @@ namespace VisionWithGrace
             return bitmapFrame;
         }
 
-        private void selectButton_Click(object sender, EventArgs e)
-        {
-            show_selected_object();
-        }
-
         // Display selected object in closeUpDisplay
         private void show_selected_object()
         {
             try
             {
-                Bitmap zoomView = new Bitmap(rectangles[selected].Width, rectangles[selected].Height);
+                Bitmap zoomView = new Bitmap(rectangles[scanner.CurObject].Width, rectangles[scanner.CurObject].Height);
 
                 using (var graphics = Graphics.FromImage(zoomView))
                 {
-                    graphics.DrawImage(plainView, new Rectangle(0, 0, zoomView.Width, zoomView.Height), rectangles[selected], GraphicsUnit.Pixel);
+                    graphics.DrawImage(plainView, new Rectangle(0, 0, zoomView.Width, zoomView.Height), rectangles[scanner.CurObject], GraphicsUnit.Pixel);
                 }
 
                 this.closeUpDisplay.Image = zoomView;
@@ -160,51 +135,42 @@ namespace VisionWithGrace
             }
         }
 
-        // Rotate and highlight the rectangles, also display the cropped image in the closeupView
-        private void scanButton_Click_1(object sender, EventArgs e)
-        {
-            Bitmap tempBitmap = new Bitmap(boxedView);
-
-            // Highlight rectangle in yellow
-            using (var graphics = Graphics.FromImage(tempBitmap))
-            {
-                graphics.DrawRectangle(yellowPen, rectangles[selected]);
-            }
-
-            mainDisplay.Image = tempBitmap;
-
-            // Draw cropped image in closeupView
-            Bitmap zoomView = new Bitmap(rectangles[selected].Width, rectangles[selected].Height);
-            using (var graphics = Graphics.FromImage(zoomView))
-            {
-                graphics.DrawImage(plainView, new Rectangle(0, 0, zoomView.Width, zoomView.Height), rectangles[selected], GraphicsUnit.Pixel);
-            }
-            closeUpDisplay.Image = zoomView;
-
-            selected++;
-            if (selected >= cv.num_objects) selected = 0;
-        }
-
         // Re-generate rectangles
         private void refreshButton_Click(object sender, EventArgs e)
         {
-            rectangles = cv.getBoxes();
-            this.objectDetectedLabel.Text = rectangles.Length.ToString() + " objects detected";
-            boxedView = new Bitmap(plainView);
-            drawRectangles();
-            mainDisplay.Image = boxedView;
+            getNewBoxes();
         }
 
-        private void drawRectangles()
+        private void getNewBoxes()
         {
-            using (var graphics = Graphics.FromImage(boxedView))
+            rectangles = cv.getBoxes();
+
+            scanner.NumObjects = rectangles.Length;
+            this.objectDetectedLabel.Text = rectangles.Length.ToString() + " objects detected";
+
+            drawBoxes();
+        }
+
+        private void drawBoxes(int selected = -1)
+        {
+            if (boxesView != null)
+                boxesView.Dispose();
+            boxesView = new Bitmap(plainView.Size.Width, plainView.Size.Height);
+
+
+            Pen redPen = new Pen(Color.Red, 3);
+            Pen yellowPen = new Pen(Color.Yellow, 5);
+
+            using (var graphics = Graphics.FromImage(boxesView))
             {
-                for (int i = 0; i < cv.num_objects; i++)
+                for (int i = 0; i < rectangles.Length; i++)
                 {
-                    graphics.DrawRectangle(redPen, rectangles[i]);
+                    if (selected != -1 && i == selected)
+                        graphics.DrawRectangle(yellowPen, rectangles[i]);
+                    else
+                        graphics.DrawRectangle(redPen, rectangles[i]);
                 }
             }
-            selected = 0;
         }
 
         private void startScanning(object sender, KeyEventArgs e)
@@ -212,14 +178,14 @@ namespace VisionWithGrace
             if (e.KeyCode != Keys.Space)
                 return;
             e.SuppressKeyPress = true;
-            isScanning = true;
+            scanner.start();
         }
         private void stopScanning(object sender, KeyEventArgs e)
         {
             if (e.KeyCode != Keys.Space)
                 return;
             e.SuppressKeyPress = true;
-            isScanning = false;
+            scanner.stop();
             this.labelTimeRemaining.Text = "";
             show_selected_object();
         }

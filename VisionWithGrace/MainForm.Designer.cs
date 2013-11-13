@@ -39,12 +39,12 @@
             this.adminPanelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.objectDetectedLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.labelTimeRemaining = new System.Windows.Forms.ToolStripStatusLabel();
             this.leftButtonMenuLayout = new System.Windows.Forms.TableLayoutPanel();
             this.refreshButton = new System.Windows.Forms.Button();
             this.undoButton = new System.Windows.Forms.Button();
             this.scanButton = new System.Windows.Forms.Button();
             this.selectButton = new System.Windows.Forms.Button();
-            this.labelTimeRemaining = new System.Windows.Forms.ToolStripStatusLabel();
             this.mainDisplayLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mainDisplay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.closeUpDisplay)).BeginInit();
@@ -186,6 +186,11 @@
             this.objectDetectedLabel.Size = new System.Drawing.Size(260, 37);
             this.objectDetectedLabel.Text = "4 Objects Detected";
             // 
+            // labelTimeRemaining
+            // 
+            this.labelTimeRemaining.Name = "labelTimeRemaining";
+            this.labelTimeRemaining.Size = new System.Drawing.Size(0, 37);
+            // 
             // leftButtonMenuLayout
             // 
             this.leftButtonMenuLayout.ColumnCount = 1;
@@ -239,30 +244,25 @@
             // 
             this.scanButton.BackColor = System.Drawing.SystemColors.Control;
             this.scanButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.scanButton.Enabled = false;
             this.scanButton.Location = new System.Drawing.Point(13, 84);
             this.scanButton.Name = "scanButton";
             this.scanButton.Size = new System.Drawing.Size(142, 65);
             this.scanButton.TabIndex = 5;
             this.scanButton.Text = "Scan";
             this.scanButton.UseVisualStyleBackColor = false;
-            this.scanButton.Click += new System.EventHandler(this.scanButton_Click_1);
             // 
             // selectButton
             // 
             this.selectButton.BackColor = System.Drawing.SystemColors.Control;
             this.selectButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.selectButton.Enabled = false;
             this.selectButton.Location = new System.Drawing.Point(13, 13);
             this.selectButton.Name = "selectButton";
             this.selectButton.Size = new System.Drawing.Size(142, 65);
             this.selectButton.TabIndex = 6;
             this.selectButton.Text = "Select";
             this.selectButton.UseVisualStyleBackColor = false;
-            this.selectButton.Click += new System.EventHandler(this.selectButton_Click);
-            // 
-            // labelTimeRemaining
-            // 
-            this.labelTimeRemaining.Name = "labelTimeRemaining";
-            this.labelTimeRemaining.Size = new System.Drawing.Size(0, 37);
             // 
             // MainForm
             // 
