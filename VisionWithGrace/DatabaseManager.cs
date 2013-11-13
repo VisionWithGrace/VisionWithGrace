@@ -69,7 +69,7 @@ namespace DatabaseModule
         private void Connect()
         {
 
-            const string remoteConnectionString = "mongodb://67.194.7.120";
+            const string remoteConnectionString = "mongodb://localhost";
             MongoClient client = new MongoClient(remoteConnectionString);
             server = client.GetServer();
             objectsDatabase = server.GetDatabase("choices_db");
