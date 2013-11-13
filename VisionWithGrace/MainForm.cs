@@ -177,6 +177,7 @@ namespace VisionWithGrace
         {
             if (e.KeyCode != Keys.Space)
                 return;
+            
             e.SuppressKeyPress = true;
             scanner.start();
         }
@@ -185,7 +186,9 @@ namespace VisionWithGrace
             if (e.KeyCode != Keys.Space)
                 return;
             e.SuppressKeyPress = true;
+
             scanner.stop();
+
             this.labelTimeRemaining.Text = "";
             show_selected_object();
         }
