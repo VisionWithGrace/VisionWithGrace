@@ -16,7 +16,7 @@ namespace VisionWithGrace
         {
             // Initialize timer to simulate 50 Kinect frames
             // 50 frames/tick * 30 FPS != 1667 ms/tick
-            timer.Interval = 1667;
+            timer.Interval = 1300;
             timer.Tick += new EventHandler(on_tick);
             curObject = 0;
         }
