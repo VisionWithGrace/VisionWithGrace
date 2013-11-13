@@ -137,7 +137,7 @@ namespace DatabaseModule
 
         }
         
-        public Image GetImage(string collectionName, string key, string value)
+        public Image GetImage(string key, string value)
         {
             var cursor = this.Get(collectionName, key, value);
             foreach (BsonDocument document in cursor)
@@ -269,14 +269,14 @@ namespace DatabaseModule
             return foundTags;
         }
 
-        public MongoCursor retrieveRecentSelection()
+        private MongoCursor retrieveRecentSelection()
         {
             var collection = objectsDatabase.GetCollection(collectionName);
             return collection.FindAll();
         }
 
         //returns a cursor which points to the set of documents which match query
-        public MongoCursor Get(string collectionName, IMongoQuery query)
+        private MongoCursor Get(string collectionName, IMongoQuery query)
         {
             var objectsCollection = objectsDatabase.GetCollection(collectionName);
             return objectsCollection.Find(query);
@@ -284,7 +284,7 @@ namespace DatabaseModule
         //returns a cursor which points to the set of documents where key=value
         //TODO: process results/return something else?
         //      lt/gt/ne queries
-        public MongoCursor Get(string collectionName, string key, string value)
+        private MongoCursor Get(string collectionName, string key, string value)
         {
             return this.Get(collectionName, Query.EQ(key, value));
 
@@ -292,7 +292,7 @@ namespace DatabaseModule
         //queryDict: a Dictionary of key-value pairs
         //returns a cursor which points to the set of elements which match the AND of every key-value pair
         //in queryDict
-        public MongoCursor Get(string collectionName, Dictionary<string, string> queryDict)
+        private MongoCursor Get(string collectionName, Dictionary<string, string> queryDict)
         {
             var andList = new List<IMongoQuery>();
             foreach (KeyValuePair<string, string> entry in queryDict)
