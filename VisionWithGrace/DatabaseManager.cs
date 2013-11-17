@@ -107,17 +107,6 @@ namespace DatabaseModule
             objectsDatabase = server.GetDatabase("choices_db");
 
         }
-        private string tagsToString(List<string> tags)
-        {
-            string outputstr = "[";
-            foreach (var tag in tags)
-            {
-                outputstr += "'" + tag + "',";
-            }
-            outputstr.Remove(outputstr.LastIndexOf(','));
-            outputstr+="]";
-            return outputstr;
-        }
         private QueryDocument queryFromString(string queryString)
         {
             BsonDocument query = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(queryString);
@@ -366,7 +355,6 @@ namespace DatabaseModule
                     foreach (BsonDocument doc in priorSelections) //Should only be one.
                     {
                         int changedCount = (int)doc["count"] + 1;
-                        modifyObject("name", info["name"].ToString(), "timestamp", DateTime.Now);
                         modifyObject("name", info["name"].ToString(), "count", changedCount);
                     }
                 }
@@ -454,6 +442,7 @@ namespace DatabaseModule
             return (int)Math.Floor(0.5 * frequencyDiff + 0.5 * timeDiff);
 
 
+
         }
         //given a list of tags describing a current context, return a list of objects that are tagged
         //with these tags
@@ -462,7 +451,7 @@ namespace DatabaseModule
             List<Dictionary<string, object>> likelyObjects = new List<Dictionary<string, object>>();
 
             var collection = objectsDatabase.GetCollection(collectionName);
-            var query = queryFromString("{tags:{ $in: " + tagsToString(tags) + "}}");
+            var query = queryFromString("{tags:{ $in: " + tags.ToString() + "}}");
 
             MongoCursor docsFound = Get(collectionName, query);
             foreach(BsonDocument doc in docsFound)
@@ -470,7 +459,6 @@ namespace DatabaseModule
                 likelyObjects.Add(doc.ToDictionary());
             }
             likelyObjects.Sort(compareDocsTimestamp);
-            likelyObjects.Reverse();
             if(likelyObjects.Count > maxResults)
             {
                 likelyObjects.RemoveRange(maxResults, likelyObjects.Count - maxResults);
@@ -482,60 +470,57 @@ namespace DatabaseModule
         static int Main(string[] args)
         {
             DatabaseManager dbManager = new DatabaseManager();
-            dbManager.objectsDatabase.GetCollection(dbManager.collectionName).RemoveAll();
-            Dictionary<string, object> selection1 = new Dictionary<string, object>();
-            selection1.Add("name", "desk");
-            selection1.Add("tags",new string[]{"home", "school", "furniture"});
-            Image image = Image.FromFile(@"\\engin-labs.m.storage.umich.edu\zahuston\windat.v2\Desktop\2-dollar-bill.jpg");
 
-            Dictionary<string, object> selection2 = new Dictionary<string, object>();
-            selection2.Add("name", "desk");
+            var col = dbManager.objectsDatabase.GetCollection(dbManager.collectionName);
+            //col.RemoveAll(); //Clearing out for testing temporarily
 
+            dbManager.Insert(dbManager.collectionName, new BsonDocument{
+            {"test", "hello"},
+            {"author", "ben"}
+        });
+            dbManager.Insert(dbManager.collectionName, new BsonDocument{
+            {"test", "hello"},
+            {"author", "zach"}
+        });
+            dbManager.Insert(dbManager.collectionName, new BsonDocument{
+            {"test", "nm u"},
+            {"author", "ben"}
+        });
+            var queryDict = new Dictionary<string, string>()
+        {
+            {"test", "hello"},
+            {"author", "ben"}
+        };
 
-            Dictionary<string, object> selection3 = new Dictionary<string, object>();
-            selection3.Add("name", "backpack");
-            selection3.Add("tags", new string[] { "school" });
+            dbManager.Insert(dbManager.collectionName, new BsonDocument {
+                {"id", "1"},
+                {"time", "12"}
+            });
 
+            dbManager.Insert(dbManager.collectionName, new BsonDocument {
+                {"id", "2"},
+                {"time", "13"}
+            });
 
-            Dictionary<string, object> selection4 = new Dictionary<string, object>();
-            selection4.Add("name", "cup");
-            selection4.Add("tags", new string[] { "home", "food"});
+            System.Console.Write(dbManager.Get(dbManager.collectionName, queryDict).Count() + "\n");
+            queryDict.Add("nothing", "45");
+            System.Console.Write(dbManager.Get(dbManager.collectionName, queryDict).Count());
 
-            Dictionary<string, object> selection5 = new Dictionary<string, object>();
-            selection5.Add("name", "cup");
-            Dictionary<string, object> selection6 = new Dictionary<string, object>();
-            selection6.Add("name", "cup");
-            Dictionary<string, object> selection7 = new Dictionary<string, object>();
-            selection7.Add("name", "cup");
-            Dictionary<string, object> selection8 = new Dictionary<string, object>();
-            selection8.Add("name", "cup");
-
-            Dictionary<string, object> selection9 = new Dictionary<string, object>();
-            selection9.Add("name", "pencil");
-            selection9.Add("tags", new string[] { "school","art" });
-
-            dbManager.saveSelection(image, selection1);
-            dbManager.saveSelection(image, selection2);
-            dbManager.saveSelection(image, selection3);
-            dbManager.saveSelection(image, selection4);
-            dbManager.saveSelection(image, selection5);
-            dbManager.saveSelection(image, selection6);
-            dbManager.saveSelection(image, selection7);
-            dbManager.saveSelection(image, selection8);
-            dbManager.saveSelection(image, selection9);
-
-
-            dbManager.modifyObject("name", "cup", "timestamp", DateTime.Today.AddDays(-1));
-            
-            
-            var likelyObjects = dbManager.getLikelyObjects(new List<string>(new string[]{"home", "school"}));
-
-            foreach (var result in likelyObjects)
-            {
-                System.Console.WriteLine(result["name"]);
-            }
-
-            var cup = dbManager.getSelection("name", "cup");
+            dbManager.modifyObject("id", "1", "time", "17");
+            dbManager.modifyObject("id", "2", "time", "19");
+           
+           
+            Image twodollar = Image.FromFile("\\\\engin-labs.m.storage.umich.edu\\zahuston\\windat.v2\\Desktop\\2-dollar-bill.jpg");
+            Dictionary<string, object> dollarDictionary = new Dictionary<string, object>();
+            dollarDictionary.Add("name", "twodollar");
+            dbManager.saveSelection(twodollar, dollarDictionary);
+//            Image fivedollar = Image.FromFile("C:\\Users\\Ben\\Desktop\\New_five_dollar_bill.jpg");
+//            dbManager.InsertImage("test_collection", onedollar, "onedollar.jpg", "{'president': 'George Washington', 'value': '1'}");
+//            dbManager.InsertImage("test_collection", fivedollar, "fivedollar.jpg", "{'president': 'Abraham Lincoln', 'value': '5'}");
+            var output_img = dbManager.GetImage("filename", "onedollar.jpg");
+            // output_img.Save("C:\\Users\\Ben\\Desktop\\new_output.jpg");
+            System.Console.Write(output_img);
+            //dbManager.CloseConnection();
             return 0;
         }
     }

@@ -16,7 +16,7 @@ namespace VisionWithGrace
     {
         Bitmap plainView;
         Bitmap boxesView;
-        Rectangle[] rectangles;
+        List<Rectangle> rectangles;
         ComputerVision cv;
         Database db;
 
@@ -96,7 +96,7 @@ namespace VisionWithGrace
         }
 
         // Don't touch this function, I didn't write it. It came from the interwebs.
-        private static Bitmap ColorImageFrameToBitmap(ColorImageFrame colorFrame)
+        public static Bitmap ColorImageFrameToBitmap(ColorImageFrame colorFrame)
         {
             byte[] pixelBuffer = new byte[colorFrame.PixelDataLength];
             colorFrame.CopyPixelDataTo(pixelBuffer);
@@ -145,8 +145,8 @@ namespace VisionWithGrace
         {
             rectangles = cv.getBoxes();
 
-            scanner.NumObjects = rectangles.Length;
-            this.objectDetectedLabel.Text = rectangles.Length.ToString() + " objects detected";
+            scanner.NumObjects = rectangles.Count;
+            this.objectDetectedLabel.Text = rectangles.Count.ToString() + " objects detected";
 
             drawBoxes();
         }
@@ -163,7 +163,7 @@ namespace VisionWithGrace
 
             using (var graphics = Graphics.FromImage(boxesView))
             {
-                for (int i = 0; i < rectangles.Length; i++)
+                for (int i = 0; i < rectangles.Count; i++)
                 {
                     if (selected != -1 && i == selected)
                         graphics.DrawRectangle(yellowPen, rectangles[i]);
