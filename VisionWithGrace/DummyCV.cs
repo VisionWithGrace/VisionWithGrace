@@ -196,6 +196,7 @@ namespace VisionWithGrace
                         }
                     }
                 }
+
                 this.debugWindow.emguDepthImageBox.Image = this.emguOverlayedDepth;
                 //*********************************************************//
 
