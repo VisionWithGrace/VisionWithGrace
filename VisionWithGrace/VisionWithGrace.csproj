@@ -98,7 +98,9 @@
     <Compile Include="AdminPanel.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AdminPanel.Designer.cs" />
+    <Compile Include="AdminPanel.designer.cs">
+      <DependentUpon>AdminPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="DatabaseManager.cs" />
     <Compile Include="DummyCV.cs" />
     <Compile Include="DummyDB.cs" />
@@ -117,7 +119,10 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scanner.cs" />
-    <EmbeddedResource Include="AdminPanel.resx" />
+    <Compile Include="VObject.cs" />
+    <EmbeddedResource Include="AdminPanel.resx">
+      <DependentUpon>AdminPanel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="cvDebug.resx">
       <DependentUpon>cvDebug.cs</DependentUpon>
     </EmbeddedResource>
