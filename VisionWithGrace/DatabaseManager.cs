@@ -73,10 +73,28 @@ namespace DatabaseModule
         {
             killMongoProcess();
         }
+        private bool mongoIsRunning()
+        {
+            Process[] processlist = Process.GetProcesses();
+            foreach (Process process in processlist)
+            {
+                if (process.ProcessName == "mongod")
+                {
+                    return true;
+                }
+                
+            }
+            return false;
+        }
         //launch the mongo process on the user's computer
         //assuming the mongo directory has a data\db directory for mongo inside
         public void startMongoProcess()
         {
+            if (mongoIsRunning())
+            {
+                return;
+            }
+
             ProcessStartInfo start = new ProcessStartInfo();
             start.UseShellExecute = false;
             start.FileName = mongodir + @"\mongod.exe";
@@ -90,7 +108,7 @@ namespace DatabaseModule
             start.Arguments = "--dbpath " + mongoDataDir;
             start.RedirectStandardOutput = true;
             mongod = Process.Start(start);
-
+            
             var outputline = "";
             do
             {

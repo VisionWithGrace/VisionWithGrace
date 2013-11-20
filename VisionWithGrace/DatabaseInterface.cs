@@ -260,6 +260,10 @@ namespace DatabaseModule
             return this.Get(Query.EQ(key, value));
 
         }
+        public Dictionary<string, object> GetOne(string key, string value)
+        {
+            return objectsDatabase.GetCollection(collectionName).FindOne(Query.EQ(key, value)).ToDictionary();
+        }
         //queryDict: a Dictionary of key-value pairs
         //returns a cursor which points to the set of elements which match the AND of every key-value pair
         //in queryDict
