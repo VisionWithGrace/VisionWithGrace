@@ -20,7 +20,7 @@ namespace VisionWithGrace
         public void save()
         {
             // get a database interface
-            DatabaseModule.DatabaseManager db = new DatabaseModule.DatabaseManager();
+            DatabaseModule.DatabaseInterface db = new DatabaseModule.DatabaseInterface("SelectedObjects");
 
             // structure data for database
             Dictionary<string, object> data = new Dictionary<string,object>();

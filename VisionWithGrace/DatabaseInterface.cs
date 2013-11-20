@@ -108,19 +108,19 @@ namespace DatabaseModule
 
         }
 
-        public Image GetImage(string key, string value)
+        public List<Image> GetImages(string key, string value)
         {
+            List<Image> toReturn = new List<Image>();
             var cursor = this.Get(key, value);
             foreach (BsonDocument document in cursor)
             {
                 Image image = GetImage(document);
                 if (image != null)
                 {
-                    return image;
+                    toReturn.Add(image);
                 }
-
             }
-            return null;
+            return toReturn;
 
         }
         //get image associated with document
