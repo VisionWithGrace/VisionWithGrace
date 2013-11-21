@@ -9,6 +9,9 @@ using System.Windows.Forms;
 using Microsoft.Kinect;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using System.Media;
+
+using DatabaseModule;
 
 namespace VisionWithGrace
 {
@@ -18,7 +21,6 @@ namespace VisionWithGrace
         Bitmap boxesView;
         List<Rectangle> rectangles;
         ComputerVision cv;
-        Database db;
 
         Scanner scanner = new Scanner();
 
@@ -116,23 +118,19 @@ namespace VisionWithGrace
         }
 
         // Display selected object in closeUpDisplay
-        private void show_selected_object()
+        private void showSelectedObject()
         {
-            try
-            {
-                Bitmap zoomView = new Bitmap(rectangles[scanner.CurObject].Width, rectangles[scanner.CurObject].Height);
+            Bitmap zoomView = new Bitmap(rectangles[scanner.CurObject].Width, rectangles[scanner.CurObject].Height);
 
-                using (var graphics = Graphics.FromImage(zoomView))
-                {
-                    graphics.DrawImage(plainView, new Rectangle(0, 0, zoomView.Width, zoomView.Height), rectangles[scanner.CurObject], GraphicsUnit.Pixel);
-                }
-
-                this.closeUpDisplay.Image = zoomView;
-            }
-            catch (Exception e)
+            using (var graphics = Graphics.FromImage(zoomView))
             {
-                // Do something
+                graphics.DrawImage(plainView, new Rectangle(0, 0, zoomView.Width, zoomView.Height), rectangles[scanner.CurObject], GraphicsUnit.Pixel);
             }
+
+            SoundPlayer player = new SoundPlayer(@"C:\WINDOWS\Media\notify.wav");
+            player.Play();
+
+            this.closeUpDisplay.Image = zoomView;
         }
 
         // Re-generate rectangles
@@ -175,9 +173,12 @@ namespace VisionWithGrace
 
         private void startScanning(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode != Keys.Space)
+            if (this.objectNameText.Focused)
                 return;
-            
+
+             if (e.KeyCode != Keys.Space)
+                return;
+
             e.SuppressKeyPress = true;
             scanner.start();
         }
@@ -190,7 +191,7 @@ namespace VisionWithGrace
             scanner.stop();
 
             this.labelTimeRemaining.Text = "";
-            show_selected_object();
+            showSelectedObject();
         }
 
         private void objectNameText_Enter(object sender, EventArgs e)
