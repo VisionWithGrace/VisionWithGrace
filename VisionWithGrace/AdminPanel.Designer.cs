@@ -64,6 +64,7 @@
             this.recentObjectsButton.TabIndex = 1;
             this.recentObjectsButton.Text = "Get Recent Objects";
             this.recentObjectsButton.UseVisualStyleBackColor = true;
+            this.recentObjectsButton.Click += new System.EventHandler(this.recentObjectsButton_Click);
             // 
             // allObjectsButton
             // 
@@ -73,6 +74,7 @@
             this.allObjectsButton.TabIndex = 2;
             this.allObjectsButton.Text = "Get All Objects";
             this.allObjectsButton.UseVisualStyleBackColor = true;
+            this.allObjectsButton.Click += new System.EventHandler(this.allObjectsButton_Click);
             // 
             // textBoxName
             // 
@@ -158,6 +160,7 @@
             this.Controls.Add(this.listBoxObjects);
             this.Name = "AdminPanel";
             this.Text = "Form2";
+            this.Load += new System.EventHandler(this.AdminPanel_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

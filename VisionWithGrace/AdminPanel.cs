@@ -7,12 +7,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using DatabaseModule;
 
 namespace VisionWithGrace
 {
     public partial class AdminPanel : Form
     {
+        DatabaseInterface dbInterface = new DatabaseInterface("VObjects");
         Database db = new Database();
+
+        List<VObject> objects;
 
         public AdminPanel()
         {
@@ -69,6 +73,45 @@ namespace VisionWithGrace
         {
             if (this.listBoxTags.SelectedIndex != -1)
                 this.listBoxTags.Items.RemoveAt(this.listBoxTags.SelectedIndex);
+        }
+
+        private void refreshObjectsInView()
+        {
+            listBoxObjects.Items.Clear();
+            foreach (VObject item in objects)
+            {
+                this.listBoxObjects.Items.Add(item.name);
+            }
+        }
+
+        private List<VObject> wrapDbCall(List<Dictionary<string, object>> objects)
+        {
+            List<VObject> vObjects = new List<VObject>();
+            foreach (Dictionary<string, object> item in objects)
+            {
+                VObject obj = new VObject();
+                obj.name = item["name"] as string;
+                obj.tags = item["tags"] as List<string>;
+                obj.image = item["image"] as Bitmap;
+                vObjects.Add(obj);
+            }
+            return vObjects;
+        }
+
+        private void AdminPanel_Load(object sender, EventArgs e)
+        {
+            objects = wrapDbCall(dbInterface.getUnnamedObjects());
+            refreshObjectsInView();
+        }
+
+        private void recentObjectsButton_Click(object sender, EventArgs e)
+        {
+            //objects = dbInterface.getRecentObjects();
+            refreshObjectsInView();
+        }
+
+        private void allObjectsButton_Click(object sender, EventArgs e)
+        {
         }
     }
 }
