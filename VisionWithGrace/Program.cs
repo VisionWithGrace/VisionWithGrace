@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using DatabaseModule;
 
 namespace VisionWithGrace
 {
@@ -14,10 +15,14 @@ namespace VisionWithGrace
         [STAThread]
         static void Main()
         {
+            DatabaseManager dbManager = new DatabaseManager();
+            dbManager.startMongoProcess();
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());
 
+            dbManager.killMongoProcess();
         }
     }
 }
