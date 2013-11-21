@@ -1,6 +1,10 @@
 # Build Folders (you can keep bin if you'd like, to store dlls and pdbs)
 !mongodb/bin
 [Oo]bj/
+VisionWithGrace.exe
+VisionWithGrace.vshost.exe.manifest
+mongodb/bin/data/
+VisionWithGrace/bin/Debug/*.xml
 
 # Large binary files
 VisionWithGrace/bin/Debug/opencv_gpufilters290.dll
