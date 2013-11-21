@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 
+/**
+ * Represents an object which will be written to the database
+ * */
 namespace VisionWithGrace
 {
     class VObject
