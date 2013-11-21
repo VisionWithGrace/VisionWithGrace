@@ -101,6 +101,7 @@
     <Compile Include="AdminPanel.designer.cs">
       <DependentUpon>AdminPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="DatabaseInterface.cs" />
     <Compile Include="DatabaseManager.cs" />
     <Compile Include="DummyCV.cs" />
     <Compile Include="DummyDB.cs" />
