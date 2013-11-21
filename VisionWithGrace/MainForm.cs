@@ -134,6 +134,9 @@ namespace VisionWithGrace
             player.Play();
 
             this.closeUpDisplay.Image = zoomView;
+
+            SelectedObjectForm selectedObjectForm = new SelectedObjectForm(zoomView);
+            selectedObjectForm.ShowDialog();
         }
 
         // Re-generate rectangles
