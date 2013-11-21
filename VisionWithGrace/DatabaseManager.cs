@@ -80,6 +80,7 @@ namespace DatabaseModule
             {
                 if (process.ProcessName == "mongod")
                 {
+                    mongod = process;
                     return true;
                 }
                 
