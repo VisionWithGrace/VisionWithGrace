@@ -120,6 +120,12 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scanner.cs" />
+    <Compile Include="SelectedObjectForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SelectedObjectForm.Designer.cs">
+      <DependentUpon>SelectedObjectForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="VObject.cs" />
     <EmbeddedResource Include="AdminPanel.resx">
       <DependentUpon>AdminPanel.cs</DependentUpon>
@@ -140,6 +146,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="SelectedObjectForm.resx">
+      <DependentUpon>SelectedObjectForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
