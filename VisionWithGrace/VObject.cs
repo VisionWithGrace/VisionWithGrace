@@ -11,7 +11,7 @@ namespace VisionWithGrace
     {
         public string name = "Unnamed Object";
         public List<string> tags = new List<string>();
-        public List<Bitmap> images = new List<Bitmap>();
+        public Bitmap image;
 
         public VObject()
         {
@@ -20,7 +20,7 @@ namespace VisionWithGrace
         public void save()
         {
             // get a database interface
-            DatabaseModule.DatabaseInterface db = new DatabaseModule.DatabaseInterface("SelectedObjects");
+            DatabaseModule.DatabaseInterface db = new DatabaseModule.DatabaseInterface("VObjects");
 
             // structure data for database
             Dictionary<string, object> data = new Dictionary<string,object>();
@@ -28,7 +28,7 @@ namespace VisionWithGrace
             data["tags"] = tags;
             
             // save item
-            db.saveSelection(images[0], data);
+            db.saveSelection(image, data);
         }
     }
 }
