@@ -64,7 +64,8 @@ namespace VisionWithGrace
 
             // query DB for cur_word
             var source = new AutoCompleteStringCollection();
-            source.AddRange(db.getSimilarTags(cur_word));
+            List<string> similarTags = dbInterface.getAllTags();
+            source.AddRange(similarTags.ToArray());
             tb.AutoCompleteCustomSource = source;
         }
 
