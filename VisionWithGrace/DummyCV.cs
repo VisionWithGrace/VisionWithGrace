@@ -12,7 +12,6 @@ using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Emgu.CV.UI;
 
-//[System.Runtime.InteropServices.DllImport("opencv_core290.dll")]
 
 /**
  * Handles the Kinect feed and recognizing objects from it
@@ -42,12 +41,19 @@ namespace VisionWithGrace
         private Image<Bgra, byte> emguRawColor;
         private Image<Bgra, byte> emguProcessedColor;
 
+        //Rectangles 
         public int num_objects;
-        List<Rectangle> objects;
+        List<Tuple<Rectangle,int>> objects;
+        
+        //Object Recognition
+        //public DrawMatches matcher;
+        List<Image<Bgra, byte>> subimages;
+        Image<Bgr, byte> matchResult;
 
         //Debug window 
         private cvDebug debugWindow;
 
+        //Simulation (for when Kinect is not present)
         private Bitmap simulationImage;
         Timer timer = new Timer();
         
@@ -71,7 +77,7 @@ namespace VisionWithGrace
                 //Set handler to read image when depth rolls in
                 sensor.AllFramesReady += this.GetFrames;
                 this.frameCounter = 0;
-                this.frameLimit = 15;
+                this.frameLimit = 30;
 
                 //Attempt to start Kinect
                 try
@@ -82,6 +88,8 @@ namespace VisionWithGrace
                 {
                     this.sensor = null;
                 }
+
+                this.subimages = new List<Image<Bgra,byte>>();
 
                 this.debugWindow = new cvDebug();
                 this.debugWindow.Show();
@@ -107,7 +115,7 @@ namespace VisionWithGrace
                 timer.Interval = 33;
             }
 
-            this.objects = new List<Rectangle>();
+            this.objects = new List<Tuple<Rectangle,int>>();
         }
 
         public void set_handler(EventHandler handler)
@@ -139,7 +147,7 @@ namespace VisionWithGrace
 
             using (DepthImageFrame depthFrame = e.OpenDepthImageFrame())
             {
-                if (null != depthFrame && (this.frameCounter++ >= this.frameLimit) )
+                if (null != depthFrame && (this.frameCounter++ >= this.frameLimit))
                 {
                     // Copy the pixel data from the image to a temporary array
                     depthFrame.CopyDepthImagePixelDataTo(this.depthPixels);
@@ -307,13 +315,11 @@ namespace VisionWithGrace
                         if ((temp.Height < 0.6 * this.emguProcessedGrayDepth.Height)
                             && (temp.Width < 0.6 * this.emguProcessedGrayDepth.Width))
                         {
+                            //Draw rectangle around object
                             this.emguDepthWithBoxes.Draw(temp, new Gray(127), 2);
 
-                            temp.X *= 2;
-                            temp.Y *= 2;
-                            temp.Width *= 2;
-                            temp.Height *= 2;
-                            this.objects.Add(temp);
+                            //Add to rectangle list
+                            this.objects.Add(new Tuple<Rectangle, int>(temp,i));
                             this.num_objects++;
                         }
 
@@ -327,7 +333,7 @@ namespace VisionWithGrace
                 this.debugWindow.emguDepthProcessedImageBox.Image = this.emguDepthWithBoxes;
                 //***************************************************************//
 
-                //Assign raw color
+                //Resize color images to match depth resolution
                 this.emguRawColor = this.emguRawColor.Resize(.5, INTER.CV_INTER_NN).Copy();
                 this.emguProcessedColor = this.emguProcessedColor.Resize(0.5, INTER.CV_INTER_NN);
 
@@ -339,23 +345,50 @@ namespace VisionWithGrace
                     {
                         seedPoint = new Point(fillX, fillY);
                         if (!GoodColors.Contains((int)this.emguProcessedGrayDepth[seedPoint].Intensity))
-                        {
+                        {              
+                            /*
                             double b = this.emguProcessedColor[seedPoint].Blue;
                             double g = this.emguProcessedColor[seedPoint].Green;
                             double r = this.emguProcessedColor[seedPoint].Red;
                             double a = this.emguProcessedColor[seedPoint].Alpha;
-
                             this.emguProcessedColor[seedPoint] = new Bgra(b, g, r, a / 8);
+                             */
+                            this.emguProcessedColor[seedPoint] = new Bgra(0, 0, 0, 255);
                         }
-                        /*else
+                    }
+                }
+
+                //Get sub-images
+                this.subimages = new List<Image<Bgra,byte>>();
+                foreach(Tuple<Rectangle,int> tuple in this.objects)
+                {
+                    int exceptionsThrown = 0;
+                    try
+                    {
+                        Image<Bgra, byte> subimage = this.emguRawColor.GetSubRect(tuple.Item1).Copy();
+
+                        for (int fillY = tuple.Item1.Top; fillY < tuple.Item1.Bottom; fillY++)
                         {
-                            this.emguProcessedColor[seedPoint] = new Bgra(0, 255, 0, 255);
-                        }*/
+                            for (int fillX = tuple.Item1.Left; fillX < tuple.Item1.Right; fillX++)
+                            {
+                                seedPoint = new Point(fillX, fillY);
+                                if ((int)this.emguProcessedGrayDepth[seedPoint].Intensity != tuple.Item2)
+                                {
+                                    Point subPoint = new Point(fillX - tuple.Item1.Left, fillY - tuple.Item1.Top);
+                                    subimage[subPoint] = new Bgra(0, 0, 0, 255);
+                                }
+                            }
+                        }
+                        this.subimages.Add(subimage);
+                    }
+                    catch
+                    {
+                        exceptionsThrown++;
                     }
                 }
 
                 //Assign processed color
-                this.debugWindow.emguColorImageBox.Image = this.emguRawColor;
+                //this.debugWindow.emguColorImageBox.Image = this.emguRawColor;
                 this.debugWindow.emguColorProcessedImageBox.Image = this.emguProcessedColor;
             }
         }
@@ -377,14 +410,26 @@ namespace VisionWithGrace
                 return (byte)255;
         }
 
-        // Draw Rectangles at random locations
-        // Need to receive x,y coordinates from Kinect
+        // Return boxes scaled to color resolution
         public List<Rectangle> getBoxes()
         {
             //If Kinect sensor is being used
             if (isUsingKinect)
             {
-                return this.objects;
+                List<Rectangle> scaled = new List<Rectangle>();
+                foreach (Tuple<Rectangle,int> tuple in this.objects)
+                {
+                    scaled.Add(new Rectangle(tuple.Item1.X * 2, tuple.Item1.Y * 2, tuple.Item1.Width * 2, tuple.Item1.Height * 2)); 
+                }
+
+                if (this.subimages.Count > 0)
+                {
+                    long matchTime = new long();
+                    this.matchResult = DrawMatches.Draw(this.subimages[0].Convert<Gray, byte>().Resize(5.0, INTER.CV_INTER_NN), this.emguProcessedColor.Convert<Gray, byte>().Resize(5.0,INTER.CV_INTER_NN), out matchTime);
+                    this.debugWindow.emguColorImageBox.Image = this.matchResult;
+                }
+
+                return scaled;
             }
 
             else
@@ -392,7 +437,7 @@ namespace VisionWithGrace
 
                 Random rand = new Random();
                 this.num_objects = (rand.Next() % 4) + 2;
-                objects = new List<Rectangle>();
+                List<Rectangle> rand_objects = new List<Rectangle>();
                 int x, y, z, w;
                 int max_width;
                 int max_height;
@@ -416,11 +461,11 @@ namespace VisionWithGrace
                     y = rand.Next() % (max_height - 160);
                     z = (rand.Next() % 120) + 40;
                     w = (rand.Next() % 120) + 40;
-                    objects.Add(new Rectangle(x, y, z, w));                   
+                    rand_objects.Add(new Rectangle(x, y, z, w));                   
                 }
-
+                return rand_objects;
             }
-            return objects;
+            
         }
 
         public Bitmap getSimulationImage()

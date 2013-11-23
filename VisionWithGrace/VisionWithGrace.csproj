@@ -103,6 +103,7 @@
     </Compile>
     <Compile Include="DatabaseInterface.cs" />
     <Compile Include="DatabaseManager.cs" />
+    <Compile Include="DrawMatches.cs" />
     <Compile Include="DummyCV.cs" />
     <Compile Include="DummyDB.cs" />
     <Compile Include="cvDebug.cs">
@@ -161,6 +162,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="SampleImages\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
