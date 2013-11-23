@@ -17,6 +17,24 @@ namespace VisionWithGrace
         {
         }
 
+        public VObject(Dictionary<string, object> fromDictionary)
+        {
+            if (fromDictionary.Keys.Contains("name"))
+                name = fromDictionary["name"] as string;
+
+            if (fromDictionary.Keys.Contains("tags"))
+            {
+                object[] tagObjects = fromDictionary["tags"] as object[];
+                for (int i = 0; i < tagObjects.Length; i++)
+                {
+                    tags.Add(tagObjects[i] as string);
+                }
+            }
+
+            if (fromDictionary.Keys.Contains("image"))
+                image = fromDictionary["image"] as Bitmap;
+        }
+
         public void save()
         {
             // get a database interface
@@ -24,7 +42,10 @@ namespace VisionWithGrace
 
             // structure data for database
             Dictionary<string, object> data = new Dictionary<string,object>();
-            data["name"] = name;
+
+            if (name != "Unnamed Object")
+                data["name"] = name;
+            
             data["tags"] = tags;
             
             // save item
