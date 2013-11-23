@@ -377,6 +377,22 @@ namespace DatabaseModule
 
         }
 
+        public List<Dictionary<string, object>> getAllObjects()
+        {
+            var collection = objectsDatabase.GetCollection(collectionName);
+            MongoCursor cursor = collection.FindAll();
+
+            List<Dictionary<string, object>> list = new List<Dictionary<string, object>>();
+            foreach (BsonDocument document in cursor)
+            {
+                Dictionary<string, object> listItem = document.ToDictionary();
+                Image image = GetImage(document);
+                listItem.Add("image", image);
+                list.Add(listItem);
+            }
+            return list;
+        }
+
         private int compareDocsTimestamp(Dictionary<string, object> dict1, Dictionary<string, object> dict2)
         {
             int frequencyDiff = (int)(dict1["count"]) - (int)(dict2["count"]);
