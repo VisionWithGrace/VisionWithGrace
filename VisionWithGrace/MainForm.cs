@@ -26,10 +26,14 @@ namespace VisionWithGrace
         ComputerVision cv;
 
         Scanner scanner = new Scanner();
+        Timer refreshTimer = new Timer();
 
         public MainForm()
         {
             InitializeComponent();
+
+            refreshTimer.Interval = 5000;
+            refreshTimer.Tick += refreshView;
         }
 
 
@@ -53,6 +57,12 @@ namespace VisionWithGrace
             }
 
             scanner.OnChange = highlightNextBox;
+            refreshTimer.Start();
+        }
+
+        private void refreshView(object sender, EventArgs e)
+        {
+            getNewBoxes();
         }
 
         public void colorFrameReady(object sender, EventArgs e)
@@ -181,6 +191,7 @@ namespace VisionWithGrace
                 return;
 
             e.SuppressKeyPress = true;
+            refreshTimer.Stop();
             scanner.start();
         }
         private void stopScanning(object sender, KeyEventArgs e)
@@ -190,6 +201,7 @@ namespace VisionWithGrace
             e.SuppressKeyPress = true;
 
             scanner.stop();
+            refreshTimer.Start();
 
             this.labelTimeRemaining.Text = "";
             showSelectedObject();
