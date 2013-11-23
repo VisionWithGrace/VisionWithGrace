@@ -133,8 +133,6 @@ namespace VisionWithGrace
             SoundPlayer player = new SoundPlayer(@"C:\WINDOWS\Media\notify.wav");
             player.Play();
 
-            this.closeUpDisplay.Image = zoomView;
-
             SelectedObjectForm selectedObjectForm = new SelectedObjectForm(zoomView);
             selectedObjectForm.ShowDialog();
         }
@@ -179,9 +177,6 @@ namespace VisionWithGrace
 
         private void startScanning(object sender, KeyEventArgs e)
         {
-            if (this.objectNameText.Focused)
-                return;
-
              if (e.KeyCode != Keys.Space)
                 return;
 
@@ -198,22 +193,6 @@ namespace VisionWithGrace
 
             this.labelTimeRemaining.Text = "";
             showSelectedObject();
-        }
-
-        private void objectNameText_Enter(object sender, EventArgs e)
-        {
-            this.objectNameText.Text = "";
-        }
-
-        private void objectNameText_Leave(object sender, EventArgs e)
-        {
-            this.objectNameText.Text = "Enter object name...";
-        }
-
-        private void objectNameText_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-                this.objectNameText.Text = "";
         }
 
         // Opens the admin panel for editing tags
