@@ -26,11 +26,23 @@ namespace VisionWithGrace
         // Do something upon click on object list
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            int selectedIndex = this.listBoxObjects.SelectedIndex;
+            VObject selectedVObject = objects[selectedIndex];
 
+            this.textBoxName.Text = selectedVObject.name;
+
+            this.listBoxTags.Items.Clear();
+            if (selectedVObject.tags != null)
+            {
+                this.listBoxTags.Items.AddRange(selectedVObject.tags.ToArray());
+            }
         }
 
         private void textBoxTags_TextChanged(object sender, EventArgs e)
         {
+            if (!textBoxTag.Focused)
+                return;
+
             // Check if what the user is typing is already in the set of used tags
 
             // get last word
@@ -89,11 +101,7 @@ namespace VisionWithGrace
             List<VObject> vObjects = new List<VObject>();
             foreach (Dictionary<string, object> item in objects)
             {
-                VObject obj = new VObject();
-                obj.name = item["name"] as string;
-                obj.tags = item["tags"] as List<string>;
-                obj.image = item["image"] as Bitmap;
-                vObjects.Add(obj);
+                vObjects.Add(new VObject(item));
             }
             return vObjects;
         }
