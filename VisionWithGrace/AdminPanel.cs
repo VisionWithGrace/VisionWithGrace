@@ -69,7 +69,7 @@ namespace VisionWithGrace
         {
             if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Tab)
             {
-                this.listBoxTags.Items.Add(this.textBoxTag.Text);
+                addTag(this.textBoxTag.Text);
                 this.textBoxTag.Text = "";
                 e.SuppressKeyPress = true;
             }
@@ -77,8 +77,16 @@ namespace VisionWithGrace
 
         private void buttonAddTag_Click(object sender, EventArgs e)
         {
-            this.listBoxTags.Items.Add(this.textBoxTag.Text);
+            addTag(this.textBoxTag.Text);
             this.textBoxTag.Text = "";
+        }
+
+        private void addTag(string tag)
+        {
+            if (tag.Trim().Length == 0)
+                return;
+
+            this.listBoxTags.Items.Add(tag);
         }
 
         private void buttonRemoveTag_Click(object sender, EventArgs e)
@@ -120,6 +128,18 @@ namespace VisionWithGrace
 
         private void allObjectsButton_Click(object sender, EventArgs e)
         {
+            objects = convertDictionariesToVObjects(dbInterface.getAllObjects());
+            refreshObjectsInView();
+        }
+
+        private void buttonSave_Click(object sender, EventArgs e)
+        {
+            // get currently selected object
+            int index = this.listBoxTags.SelectedIndex;
+            VObject current = objects[index];
+            current.name = this.textBoxName.Text;
+            current.tags.Clear();
+            current.tags.AddRange(this.listBoxTags.Items as IEnumerable<string>);
         }
     }
 }

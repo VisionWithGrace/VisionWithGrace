@@ -38,6 +38,7 @@
             this.listBoxTags = new System.Windows.Forms.ListBox();
             this.buttonAddTag = new System.Windows.Forms.Button();
             this.buttonRemoveTag = new System.Windows.Forms.Button();
+            this.buttonSave = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // listBoxObjects
@@ -143,11 +144,22 @@
             this.buttonRemoveTag.UseVisualStyleBackColor = true;
             this.buttonRemoveTag.Click += new System.EventHandler(this.buttonRemoveTag_Click);
             // 
+            // buttonSave
+            // 
+            this.buttonSave.Location = new System.Drawing.Point(502, 179);
+            this.buttonSave.Name = "buttonSave";
+            this.buttonSave.Size = new System.Drawing.Size(75, 23);
+            this.buttonSave.TabIndex = 10;
+            this.buttonSave.Text = "Save";
+            this.buttonSave.UseVisualStyleBackColor = true;
+            this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
+            // 
             // AdminPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(589, 378);
+            this.Controls.Add(this.buttonSave);
             this.Controls.Add(this.buttonRemoveTag);
             this.Controls.Add(this.buttonAddTag);
             this.Controls.Add(this.listBoxTags);
@@ -178,6 +190,7 @@
         private System.Windows.Forms.ListBox listBoxTags;
         private System.Windows.Forms.Button buttonAddTag;
         private System.Windows.Forms.Button buttonRemoveTag;
+        private System.Windows.Forms.Button buttonSave;
 
 
     }
