@@ -365,7 +365,7 @@ namespace DatabaseModule
 
             var collection = objectsDatabase.GetCollection(collectionName);
 
-            MongoCursor cursor = collection.Find(queryFromString("{\"name\" : {\"$exists\": false}}"));
+            MongoCursor cursor = collection.Find(Query.EQ("name", ""));
             foreach (BsonDocument document in cursor)
             {
                 Image image = GetImage(document);
