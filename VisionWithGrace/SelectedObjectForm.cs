@@ -19,7 +19,7 @@ namespace VisionWithGrace
             this.pictureBox1.Image = image;
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void buttonSave_Click(object sender, EventArgs e)
         {
             VObject obj = new VObject();
 
