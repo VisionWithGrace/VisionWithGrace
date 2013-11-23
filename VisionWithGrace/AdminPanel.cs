@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using DatabaseModule;
 
+/**
+ * Admin Panel form from which database entries can be read or written
+ * */
 namespace VisionWithGrace
 {
     public partial class AdminPanel : Form

@@ -13,6 +13,9 @@ using System.Media;
 
 using DatabaseModule;
 
+/**
+ * Main GUI from which everything is displayed and controlled
+ * */
 namespace VisionWithGrace
 {
     public partial class MainForm : Form

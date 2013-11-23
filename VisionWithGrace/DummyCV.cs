@@ -14,6 +14,9 @@ using Emgu.CV.UI;
 
 //[System.Runtime.InteropServices.DllImport("opencv_core290.dll")]
 
+/**
+ * Handles the Kinect feed and recognizing objects from it
+ * */
 namespace VisionWithGrace
 {
     class ComputerVision

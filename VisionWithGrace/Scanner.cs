@@ -5,12 +5,19 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+/**
+ * This class does the automated image scanning from which Grace can select
+ * objects by releasing the button
+ * */
 namespace VisionWithGrace
 {
     class Scanner
     {
         Timer timer = new Timer();
         bool isHandlerSet = false;
+        private int numObjects;
+        private EventHandler onChange;
+        private int curObject;
 
         public Scanner()
         {
@@ -32,7 +39,6 @@ namespace VisionWithGrace
                 onChange.Invoke(sender, e);
         }
 
-        private EventHandler onChange;
         public EventHandler OnChange
         {
             set
@@ -43,7 +49,6 @@ namespace VisionWithGrace
             }
         }
 
-        private int numObjects;
         public int NumObjects
         {
             get
@@ -57,7 +62,6 @@ namespace VisionWithGrace
             }
         }
 
-        private int curObject;
         public int CurObject
         {
             get
