@@ -27,6 +27,12 @@ namespace VisionWithGrace
             timer.Tick += new EventHandler(on_tick);
             curObject = 0;
         }
+        public Scanner(int interval)
+        {
+            timer.Interval = interval;
+            timer.Tick += new EventHandler(on_tick);
+            curObject = 0;
+        }
 
         public void on_tick(object sender, EventArgs e)
         {
