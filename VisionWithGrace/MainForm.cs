@@ -331,19 +331,31 @@ namespace VisionWithGrace
 
         private void manualScanToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            isManual = true;
-            scanner = new Scanner(13);
-            Mstep = 0;
-            y0 = 0;
-            y1 = plainView.Size.Height;
-            x0 = 0;
-            x1 = plainView.Size.Width;
-            diff = 10;
-            x = x0;
-            this.objectDetectedLabel.Text = "Manually Scanning View";
-            scale = (plainView.Size.Width - 1) / 600 + 1;
-            scanner.NumObjects = 2;
-            scanner.OnChange = manualScanNextBox;
+            if (!isManual)
+            {
+                isManual = true;
+                scanner = new Scanner(13);
+                Mstep = 0;
+                y0 = 0;
+                y1 = plainView.Size.Height;
+                x0 = 0;
+                x1 = plainView.Size.Width;
+                diff = 10;
+                x = x0;
+                this.objectDetectedLabel.Text = "Manually Scanning View";
+                scale = (plainView.Size.Width - 1) / 600 + 1;
+                scanner.NumObjects = 2;
+                scanner.OnChange = manualScanNextBox;
+            }
+            else
+            {
+                scanner = new Scanner();
+                scanner.OnChange = highlightNextBox;
+                scanner.NumObjects = rectangles.Count;
+                this.objectDetectedLabel.Text = rectangles.Count.ToString() + " objects detected";
+                refreshTimer.Start();
+                isManual = false;
+            }
         }
     }
 }
