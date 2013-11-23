@@ -19,6 +19,7 @@ using System.IO;
 using System.Drawing.Imaging;
 using System.Text;
 using System.Diagnostics;
+using System.Linq;
 using DatabaseModule;
 
 
@@ -425,6 +426,26 @@ namespace DatabaseModule
 
 
             return likelyObjects;
+        }
+
+
+        public List<string> getAllTags()
+        {
+            var collection = objectsDatabase.GetCollection(collectionName);
+            MongoCursor cursor = collection.Find(queryFromString("{\"tags\" : {\"$exists\": true}}"));
+
+            HashSet<string> tags = new HashSet<string>();
+            foreach (BsonDocument document in cursor)
+            {
+                Dictionary<string, object> listItem = document.ToDictionary();
+                object[] itemTags = listItem["tags"] as object[];
+                foreach (object itemTag in itemTags)
+                {
+                    tags.Add(itemTag as string);
+                }
+                
+            }
+            return tags.ToList<string>();
         }
         
     }
