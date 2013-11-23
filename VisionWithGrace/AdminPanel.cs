@@ -84,7 +84,7 @@ namespace VisionWithGrace
             }
         }
 
-        private List<VObject> wrapDbCall(List<Dictionary<string, object>> objects)
+        private List<VObject> convertDictionariesToVObjects(List<Dictionary<string, object>> objects)
         {
             List<VObject> vObjects = new List<VObject>();
             foreach (Dictionary<string, object> item in objects)
@@ -100,7 +100,7 @@ namespace VisionWithGrace
 
         private void AdminPanel_Load(object sender, EventArgs e)
         {
-            objects = wrapDbCall(dbInterface.getUnnamedObjects());
+            objects = convertDictionariesToVObjects(dbInterface.getUnnamedObjects());
             refreshObjectsInView();
         }
 
