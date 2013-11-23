@@ -34,9 +34,11 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.adminToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.adminPanelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainDisplay = new System.Windows.Forms.PictureBox();
             this.mainDisplayLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.manualToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.manualScanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mainDisplay)).BeginInit();
@@ -75,7 +77,8 @@
             this.mainDisplayLayout.SetColumnSpan(this.menuStrip1, 2);
             this.menuStrip1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.adminToolStripMenuItem});
+            this.adminToolStripMenuItem,
+            this.manualToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.MaximumSize = new System.Drawing.Size(0, 24);
             this.menuStrip1.MinimumSize = new System.Drawing.Size(0, 24);
@@ -100,6 +103,12 @@
             this.adminPanelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.adminPanelToolStripMenuItem.Text = "Admin Panel";
             this.adminPanelToolStripMenuItem.Click += new System.EventHandler(this.adminPanelToolStripMenuItem_Click);
+            // 
+            // settingsToolStripMenuItem
+            // 
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.settingsToolStripMenuItem.Text = "Settings";
             // 
             // mainDisplay
             // 
@@ -140,11 +149,20 @@
             this.mainDisplayLayout.Size = new System.Drawing.Size(1062, 576);
             this.mainDisplayLayout.TabIndex = 0;
             // 
-            // settingsToolStripMenuItem
+            // manualToolStripMenuItem
             // 
-            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.settingsToolStripMenuItem.Text = "Settings";
+            this.manualToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.manualScanToolStripMenuItem});
+            this.manualToolStripMenuItem.Name = "manualToolStripMenuItem";
+            this.manualToolStripMenuItem.Size = new System.Drawing.Size(59, 20);
+            this.manualToolStripMenuItem.Text = "Manual";
+            // 
+            // manualScanToolStripMenuItem
+            // 
+            this.manualScanToolStripMenuItem.Name = "manualScanToolStripMenuItem";
+            this.manualScanToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.manualScanToolStripMenuItem.Text = "Manual Scan";
+            this.manualScanToolStripMenuItem.Click += new System.EventHandler(this.manualScanToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -184,6 +202,8 @@
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel objectDetectedLabel;
         private System.Windows.Forms.ToolStripStatusLabel labelTimeRemaining;
+        private System.Windows.Forms.ToolStripMenuItem manualToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem manualScanToolStripMenuItem;
 
     }
 }

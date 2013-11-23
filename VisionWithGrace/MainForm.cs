@@ -28,6 +28,9 @@ namespace VisionWithGrace
         Scanner scanner = new Scanner();
         Timer refreshTimer = new Timer();
 
+        int x, x0, x1, y, y0, y1, Mstep, diff, scale;
+        bool isManual = false;
+
         public MainForm()
         {
             InitializeComponent();
@@ -131,13 +134,13 @@ namespace VisionWithGrace
         }
 
         // Display selected object in closeUpDisplay
-        private void showSelectedObject()
+        private void showSelectedObject(Rectangle rect)
         {
-            Bitmap zoomView = new Bitmap(rectangles[scanner.CurObject].Width, rectangles[scanner.CurObject].Height);
+            Bitmap zoomView = new Bitmap(rect.Width, rect.Height);
 
             using (var graphics = Graphics.FromImage(zoomView))
             {
-                graphics.DrawImage(plainView, new Rectangle(0, 0, zoomView.Width, zoomView.Height), rectangles[scanner.CurObject], GraphicsUnit.Pixel);
+                graphics.DrawImage(plainView, new Rectangle(0, 0, zoomView.Width, zoomView.Height), rect, GraphicsUnit.Pixel);
             }
 
             SoundPlayer player = new SoundPlayer(@"C:\WINDOWS\Media\notify.wav");
@@ -201,10 +204,14 @@ namespace VisionWithGrace
             e.SuppressKeyPress = true;
 
             scanner.stop();
-            refreshTimer.Start();
 
             this.labelTimeRemaining.Text = "";
-            showSelectedObject();
+            if (isManual) manualStep();
+            else
+            {
+                showSelectedObject(rectangles[scanner.CurObject]);
+                refreshTimer.Start();
+            }
         }
 
         // Opens the admin panel for editing tags
@@ -212,6 +219,131 @@ namespace VisionWithGrace
         {
             AdminPanel adminPanel = new AdminPanel();
             adminPanel.Show();
+        }
+
+        private void manualStep()
+        {
+            if (Mstep == 0)
+            {
+                x0 = x;
+                x1 = x;
+                diff = 6;
+            }
+            else if (Mstep == 1)
+            {
+                y = y0;
+                diff = 10;
+            }
+            else if (Mstep == 2)
+            {
+                y0 = y;
+                y1 = y;
+                diff = 6;
+            }
+            else if (Mstep == 3)
+            {
+                showSelectedObject(new Rectangle(x0, y0, x1 - x0, y1 - y0));
+                y0 = 0;
+                y1 = plainView.Size.Height;
+                x0 = 0;
+                x1 = plainView.Size.Width;
+                x = x0;
+                diff = 10;
+                Mstep = -1;
+            }
+            Mstep++;
+        }
+        public void manualScanNextBox(object sender, EventArgs e)
+        {
+            if (boxesView == null)
+                return;
+
+            manualScan();
+        }
+        private void manualScan()
+        {
+            if (boxesView != null)
+                boxesView.Dispose();
+            boxesView = new Bitmap(plainView.Size.Width, plainView.Size.Height);
+
+
+            Pen redPen = new Pen(Color.Red, 5);
+            //Pen yellowPen = new Pen(Color.Yellow, 5);
+            if (Mstep == 0)
+            {
+                using (var graphics = Graphics.FromImage(boxesView))
+                {
+                    graphics.DrawLine(redPen, new Point(x, y0), new Point(x, y1));
+                }
+                x = x + diff;
+                if (x < x0 || x > x1)
+                {
+                    diff = diff * -1;
+                    x = x + diff + diff;
+                }
+            }
+            else if (Mstep == 1)
+            {
+                using (var graphics = Graphics.FromImage(boxesView))
+                {
+                    graphics.DrawRectangle(redPen, new Rectangle(x0, y0, x1 - x0, y1 - y0));
+                }
+                x0 = x0 - diff;
+                x1 = x1 + diff;
+                if (x0 < 0 || x1 > plainView.Size.Width || x0 > x1)
+                {
+                    diff = diff * -1;
+                    x0 = x0 - diff - diff;
+                    x1 = x1 + diff + diff;
+                }
+            }
+            else if (Mstep == 2)
+            {
+                using (var graphics = Graphics.FromImage(boxesView))
+                {
+                    graphics.DrawLine(redPen, new Point(x0, y), new Point(x1, y));
+                    graphics.DrawLine(redPen, new Point(x0, y0), new Point(x0, y1));
+                    graphics.DrawLine(redPen, new Point(x1, y0), new Point(x1, y1));
+                }
+                y = y + diff;
+                if (y < y0 || y > y1)
+                {
+                    diff = diff * -1;
+                    y = y + diff + diff;
+                }
+            }
+            else if (Mstep == 3)
+            {
+                using (var graphics = Graphics.FromImage(boxesView))
+                {
+                    graphics.DrawRectangle(redPen, new Rectangle(x0, y0, x1 - x0, y1 - y0));
+                }
+                y0 = y0 - diff;
+                y1 = y1 + diff;
+                if (y0 < 0 || y1 > plainView.Size.Height || y0 > y1)
+                {
+                    diff = diff * -1;
+                    y0 = y0 - diff - diff;
+                    y1 = y1 + diff + diff;
+                }
+            }
+        }
+
+        private void manualScanToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            isManual = true;
+            scanner = new Scanner(13);
+            Mstep = 0;
+            y0 = 0;
+            y1 = plainView.Size.Height;
+            x0 = 0;
+            x1 = plainView.Size.Width;
+            diff = 10;
+            x = x0;
+            this.objectDetectedLabel.Text = "Manually Scanning View";
+            scale = (plainView.Size.Width - 1) / 600 + 1;
+            scanner.NumObjects = 2;
+            scanner.OnChange = manualScanNextBox;
         }
     }
 }
