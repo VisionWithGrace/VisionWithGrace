@@ -44,13 +44,6 @@
             // listBoxObjects
             // 
             this.listBoxObjects.FormattingEnabled = true;
-            this.listBoxObjects.Items.AddRange(new object[] {
-            "Book",
-            "Table",
-            "Backpack",
-            "Ball",
-            "Dinosaur",
-            "Mom"});
             this.listBoxObjects.Location = new System.Drawing.Point(12, 12);
             this.listBoxObjects.Name = "listBoxObjects";
             this.listBoxObjects.Size = new System.Drawing.Size(316, 290);
