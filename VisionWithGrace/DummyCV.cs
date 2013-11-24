@@ -98,17 +98,7 @@ namespace VisionWithGrace
             catch
             {
                 isUsingKinect = false;
-
-                OpenFileDialog ofd = new OpenFileDialog();
-                ofd.Title = "Select a picture file";
-                if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    simulationImage = new Bitmap(ofd.FileName);
-                }
-                else
-                {
-                    simulationImage = new Bitmap(400, 400);
-                }
+                simulationImage = new Bitmap("../../SampleImages/room.jpeg");
 
                 // Initialize timer to simulate Kinect frames
                 // 33 ms ~= 1/30 sec ~= 30 FPS
