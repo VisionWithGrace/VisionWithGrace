@@ -123,7 +123,7 @@ namespace VisionWithGrace
       /// <param name="observedImage">The observed image</param>
       /// <param name="matchTime">The output total time for computing the homography matrix.</param>
       /// <returns>The model image and observed image, the matched features and homography projection.</returns>
-      public static Image<Bgr, Byte> Draw(Image<Gray, Byte> modelImage, Image<Gray, byte> observedImage, out long matchTime)
+      public static Image<Bgr, Byte> Draw(Image<Gray, Byte> modelImage, Image<Gray, byte> observedImage, out long matchTime, out int numMatches)
       {
          HomographyMatrix homography;
          VectorOfKeyPoint modelKeyPoints;
@@ -132,6 +132,8 @@ namespace VisionWithGrace
          Matrix<byte> mask;
 
          FindMatch(modelImage, observedImage, out matchTime, out modelKeyPoints, out observedKeyPoints, out indices, out mask, out homography);
+
+         numMatches = GpuInvoke.CountNonZero(mask);
 
          //Draw the matched keypoints
          Image<Bgr, Byte> result = Features2DToolbox.DrawMatches(modelImage, modelKeyPoints, observedImage, observedKeyPoints,
