@@ -12,13 +12,17 @@ namespace VisionWithGrace
 {
     public class VObject
     {
-        private string id = null;
-        public string name = "Unnamed Object";
-        public List<string> tags = new List<string>();
+        private string id;
+        public string name;
+        public List<string> tags;
         public Bitmap image;
 
         public VObject()
         {
+            id    = null;
+            name  = "";
+            tags  = new List<string>();
+            image = null;
         }
 
         public VObject(Dictionary<string, object> fromDictionary)
@@ -49,9 +53,7 @@ namespace VisionWithGrace
             // structure data for database
             Dictionary<string, object> data = new Dictionary<string,object>();
 
-            if (name != "Unnamed Object")
-                data["name"] = name;
-            
+            data["name"] = name;
             data["tags"] = tags;
 
             if (id != null)
