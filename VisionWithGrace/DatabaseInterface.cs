@@ -30,7 +30,7 @@ namespace DatabaseModule
     {
         private MongoServer server;
         private MongoDatabase objectsDatabase;
-        private const string collectionName = "VObject";
+        private const string collectionName = "VObjects";
         private MongoCollection objectsCollection;
         public DatabaseInterface()
         {
