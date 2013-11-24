@@ -16,7 +16,7 @@ namespace VisionWithGrace
 {
     public partial class AdminPanel : Form
     {
-        DatabaseInterface dbInterface = new DatabaseInterface("VObjects");
+        DatabaseInterface dbInterface = new DatabaseInterface();
         Database db = new Database();
 
         List<VObject> objects;

@@ -41,7 +41,7 @@ namespace VisionWithGrace
         public void save()
         {
             // get a database interface
-            DatabaseModule.DatabaseInterface db = new DatabaseModule.DatabaseInterface("VObjects");
+            DatabaseModule.DatabaseInterface db = new DatabaseModule.DatabaseInterface();
 
             // structure data for database
             Dictionary<string, object> data = new Dictionary<string,object>();

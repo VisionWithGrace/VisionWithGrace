@@ -500,7 +500,7 @@ namespace VisionWithGrace
             Image<Gray,byte> target = this.subimages[index].Convert<Gray, byte>().Resize(5.0, INTER.CV_INTER_NN);
 
             //Begin to iterate through objects in the database, matching each in scene
-            DatabaseInterface DbInterface = new DatabaseInterface("VObjects");
+            DatabaseInterface DbInterface = new DatabaseInterface();
             List<Dictionary<string,object>> entries = DbInterface.getAllObjects();
 
             int maxMatches = 0;

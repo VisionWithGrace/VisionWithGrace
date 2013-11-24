@@ -30,10 +30,10 @@ namespace DatabaseModule
     {
         private MongoServer server;
         private MongoDatabase objectsDatabase;
-        private string collectionName;
-        public DatabaseInterface(string cName)
+        private const string collectionName = "VObject";
+        private MongoCollection objectsCollection;
+        public DatabaseInterface()
         {
-            collectionName = cName;
             Connect();
         }
         private void Connect()
@@ -44,6 +44,7 @@ namespace DatabaseModule
             MongoClient client = new MongoClient(remoteConnectionString);
             server = client.GetServer();
             objectsDatabase = server.GetDatabase("choices_db");
+            objectsCollection = objectsDatabase.GetCollection(collectionName);
 
         }
         private QueryDocument queryFromString(string queryString)
@@ -69,8 +70,6 @@ namespace DatabaseModule
         //BSON is a key-value dicitonary similar to JSON
         private void Insert(BsonDocument documentToAdd)
         {
-
-            var objectsCollection = objectsDatabase.GetCollection(collectionName);
             objectsCollection.Insert(documentToAdd);
 
         }
@@ -91,8 +90,6 @@ namespace DatabaseModule
                 fs.Position = 0;
                 var gridFsInfo = objectsDatabase.GridFS.Upload(fs, filename);
                 var fileId = gridFsInfo.Id;
-
-                var collection = objectsDatabase.GetCollection(collectionName);
                 BsonDocument bson;
                 try
                 {
@@ -135,8 +132,6 @@ namespace DatabaseModule
             {
                 return null;
             }
-            System.Console.Write("Found file:");
-            System.Console.Write(file);
 
             using (var stream = file.OpenRead())
             {
@@ -157,7 +152,7 @@ namespace DatabaseModule
             foreach (BsonDocument doc in objectsToEdit)
             {
                 doc.Set(fieldName, changedValue);
-                objectsDatabase.GetCollection(collectionName).Save(doc); //Save document back into the collection
+                objectsCollection.Save(doc); //Save document back into the collection
             }
         }
 
@@ -184,7 +179,7 @@ namespace DatabaseModule
                 {
                     tagArray.Add(tagToAdd);
                 }
-                objectsDatabase.GetCollection(collectionName).Save(doc);
+               objectsCollection.Save(doc);
             }
         }
 
@@ -243,15 +238,14 @@ namespace DatabaseModule
 
         private MongoCursor retrieveRecentSelection()
         {
-            var collection = objectsDatabase.GetCollection(collectionName);
-            return collection.FindAll();
+
+            return objectsCollection.FindAllAs<BsonDocument>();
         }
 
         //returns a cursor which points to the set of documents which match query
         private MongoCursor Get(IMongoQuery query)
         {
-            var objectsCollection = objectsDatabase.GetCollection(collectionName);
-            return objectsCollection.Find(query);
+            return objectsCollection.FindAs<BsonDocument>(query);
         }
         //returns a cursor which points to the set of documents where key=value
         //TODO: process results/return something else?
@@ -320,8 +314,8 @@ namespace DatabaseModule
         //if no result found, returns null
         public Dictionary<string, object> getSelection(string key, string value)
         {
-            var collection = objectsDatabase.GetCollection(collectionName);
-            BsonDocument matchedDoc = collection.FindOne(Query.EQ(key, value));
+
+            BsonDocument matchedDoc = objectsCollection.FindOneAs<BsonDocument>(Query.EQ(key, value));
             if (matchedDoc != null)
             {
                 Image image = GetImage(matchedDoc);
@@ -336,26 +330,25 @@ namespace DatabaseModule
         //Updates a selection with the given id, to have the given key/value pair in its info
         //If the selection already has a value for the given key, it will be replaced by the new
         //value, otherwise the new key will be added to the selection's info
-        public void updateSelectionInfo(string id, string key, string value)
+        public void updateSelectionInfo(string id, string key, object value)
         {
-            var collection = objectsDatabase.GetCollection(collectionName);
-            BsonDocument matchedDoc = collection.FindOneById(new ObjectId(id));
+            BsonDocument matchedDoc = objectsCollection.FindOneByIdAs<BsonDocument>(new ObjectId(id));
             if (matchedDoc == null)
             {
                 return;
             }
-            matchedDoc.Set(key, value);
-            collection.Save(matchedDoc);
+            matchedDoc.Set(key, (BsonValue)value);
+            objectsCollection.Save(matchedDoc);
 
         }
         //Updates a selection with the given id to have newInfo as it's info
         //Will completely overwrite old info for the selection
-        public void updateSelectionInfo(string id, string newInfo)
+        public void updateSelectionInfo(string id, Dictionary<string, object> newInfo)
         {
-            var collection = objectsDatabase.GetCollection(collectionName);
-            BsonDocument document = BsonDocument.Parse(newInfo);
+            
+            BsonDocument document = new BsonDocument(newInfo);
             document.Set("_id", new ObjectId(id));
-            collection.Save(document);
+            objectsCollection.Save(document);
         }
         //Retrieves all objects that do not have a 'name' attribute
         //Returns a List containting Dictionaries of key/value pairs representing a selection
@@ -364,9 +357,9 @@ namespace DatabaseModule
         {
             List<Dictionary<string, object>> list = new List<Dictionary<string, object>>();
 
-            var collection = objectsDatabase.GetCollection(collectionName);
+         
 
-            MongoCursor cursor = collection.Find(Query.EQ("name", ""));
+            MongoCursor cursor = Get(Query.EQ("name", ""));
             foreach (BsonDocument document in cursor)
             {
                 Image image = GetImage(document);
@@ -380,8 +373,8 @@ namespace DatabaseModule
 
         public List<Dictionary<string, object>> getAllObjects()
         {
-            var collection = objectsDatabase.GetCollection(collectionName);
-            MongoCursor cursor = collection.FindAll();
+            
+            MongoCursor cursor = objectsCollection.FindAllAs<BsonDocument>();
 
             List<Dictionary<string, object>> list = new List<Dictionary<string, object>>();
             foreach (BsonDocument document in cursor)
@@ -410,7 +403,7 @@ namespace DatabaseModule
         {
             List<Dictionary<string, object>> likelyObjects = new List<Dictionary<string, object>>();
 
-            var collection = objectsDatabase.GetCollection(collectionName);
+            
             var query = queryFromString("{tags:{ $in: " + tags.ToString() + "}}");
 
             MongoCursor docsFound = Get(query);
@@ -431,8 +424,8 @@ namespace DatabaseModule
 
         public List<string> getAllTags()
         {
-            var collection = objectsDatabase.GetCollection(collectionName);
-            MongoCursor cursor = collection.Find(queryFromString("{\"tags\" : {\"$exists\": true}}"));
+            
+            MongoCursor cursor = Get(queryFromString("{\"tags\" : {\"$exists\": true}}"));
 
             HashSet<string> tags = new HashSet<string>();
             foreach (BsonDocument document in cursor)
