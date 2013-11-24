@@ -63,7 +63,6 @@ namespace VisionWithGrace
 
         private void loadAutocompleteOptions()
         {
-            // query DB for cur_word
             List<string> allTags = dbInterface.getAllTags();
             var source = new AutoCompleteStringCollection();
             source.AddRange(allTags.ToArray());
