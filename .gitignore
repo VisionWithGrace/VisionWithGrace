@@ -7,7 +7,9 @@ mongodb/bin/data/
 VisionWithGrace/bin/Debug/*.xml
 
 # Large binary files
-VisionWithGrace/bin/Debug/opencv_gpufilters290.dll
+opencv_gpufilters290.dll
+nppi32_55.dll
+
 
 # mstest test results
 TestResults
