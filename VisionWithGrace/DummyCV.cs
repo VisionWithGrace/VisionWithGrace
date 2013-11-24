@@ -12,6 +12,8 @@ using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Emgu.CV.UI;
 
+using DatabaseModule;
+
 
 /**
  * Handles the Kinect feed and recognizing objects from it
@@ -29,6 +31,7 @@ namespace VisionWithGrace
         //Collecting frames
         private int frameCounter;
         private int frameLimit;
+        private bool FramesReady;
 
         //Depth processing
         private DepthImagePixel[] depthPixels;
@@ -78,6 +81,7 @@ namespace VisionWithGrace
                 sensor.AllFramesReady += this.GetFrames;
                 this.frameCounter = 0;
                 this.frameLimit = 30;
+                this.FramesReady = false;
 
                 //Attempt to start Kinect
                 try
@@ -154,233 +158,242 @@ namespace VisionWithGrace
                     Bitmap colorBitmap = new Bitmap(MainForm.ColorImageFrameToBitmap(colorFrame));
                     this.emguRawColor = new Image<Bgra, byte>(colorBitmap);
                     this.emguProcessedColor = new Image<Bgra, byte>(colorBitmap);
+                    this.FramesReady = true;
                 }
             }
-        
-        
-            // do our processing outside of the using block
-            // so that we return resources to the kinect as soon as possible
-            if (true == depthReceived)
+        }
+
+        private void DetectObjects()
+        {             
+            //************ Map depth data to color pixels *************//                
+            // Microsoft-provided magic
+            this.sensor.CoordinateMapper.MapDepthFrameToColorFrame(
+                DepthFormat, this.depthPixels,
+                ColorFormat, colorCoordinates);
+            //*********************************************************//
+
+            //******* Create grayscale image to represent depth *******//
+            this.emguOverlayedDepth = new Image<Bgra, byte>(this.sensor.ColorStream.FrameWidth, this.sensor.ColorStream.FrameHeight, new Bgra(0, 0, 0, 255));
+            //*********************************************************//
+
+            //**********  Loop through colorCoordinates  **************//
+            for (int i = 0; i < colorCoordinates.Length; i++)
             {
-                //************ Map depth data to color pixels *************//                
-
-                // Microsoft-provided magic
-                this.sensor.CoordinateMapper.MapDepthFrameToColorFrame(
-                    DepthFormat, this.depthPixels,
-                    ColorFormat, colorCoordinates);
-                //*********************************************************//
-
-                //******* Create grayscale image to represent depth *******//
-                this.emguOverlayedDepth = new Image<Bgra, byte>(this.sensor.ColorStream.FrameWidth, this.sensor.ColorStream.FrameHeight, new Bgra(0, 0, 0, 255));
-                //*********************************************************//
-
-                //**********  Loop through colorCoordinates  **************//
-                for (int i = 0; i < colorCoordinates.Length; i++)
+                if (this.depthPixels[i].IsKnownDepth)
                 {
-                    if (this.depthPixels[i].IsKnownDepth)
-                    {
-                        // Scale color coordinates to depth resolution
-                        int colorInDepthX = colorCoordinates[i].X / (this.sensor.ColorStream.FrameWidth / this.sensor.DepthStream.FrameWidth);
-                        int colorInDepthY = colorCoordinates[i].Y / (this.sensor.ColorStream.FrameWidth / this.sensor.DepthStream.FrameWidth);
+                    // Scale color coordinates to depth resolution
+                    int colorInDepthX = colorCoordinates[i].X / (this.sensor.ColorStream.FrameWidth / this.sensor.DepthStream.FrameWidth);
+                    int colorInDepthY = colorCoordinates[i].Y / (this.sensor.ColorStream.FrameWidth / this.sensor.DepthStream.FrameWidth);
 
-                        //Check bounds on picture size
-                        if (colorInDepthX > 0 && colorInDepthX < this.sensor.DepthStream.FrameWidth &&
-                            colorInDepthY >= 0 && colorInDepthY < this.sensor.DepthStream.FrameHeight)
+                    //Check bounds on picture size
+                    if (colorInDepthX > 0 && colorInDepthX < this.sensor.DepthStream.FrameWidth &&
+                        colorInDepthY >= 0 && colorInDepthY < this.sensor.DepthStream.FrameHeight)
+                    {
+                        //Check bounds on depth data
+                        if (this.depthPixels[i].Depth < 4000)
                         {
-                            //Check bounds on depth data
-                            if (this.depthPixels[i].Depth < 4000)
-                            {
-                                //Calculate intensity and populate Image object
-                                var intensity = CalculateIntensityFromDistance(this.depthPixels[i].Depth);
-                                this.emguOverlayedDepth[colorInDepthY, colorInDepthX] = new Bgra(intensity, intensity, intensity, 255);
-                            }
+                            //Calculate intensity and populate Image object
+                            var intensity = CalculateIntensityFromDistance(this.depthPixels[i].Depth);
+                            this.emguOverlayedDepth[colorInDepthY, colorInDepthX] = new Bgra(intensity, intensity, intensity, 255);
                         }
                     }
                 }
-
-                this.debugWindow.emguDepthImageBox.Image = this.emguOverlayedDepth;
-                //*********************************************************//
-
-                //****************** Draw Depth Lines *********************//
-                //Effects:  Converts depth info to canny edges
-                Image<Gray, byte> emguOverlayedGrayDepth = this.emguOverlayedDepth.Convert<Gray, byte>();
-                this.emguProcessedGrayDepth = new Image<Gray, byte>(this.emguOverlayedDepth.Width, this.emguOverlayedDepth.Height);
-
-                CvInvoke.cvSmooth(emguOverlayedGrayDepth, emguOverlayedGrayDepth, Emgu.CV.CvEnum.SMOOTH_TYPE.CV_MEDIAN, 5, 5, 9, 9);
-                CvInvoke.cvCanny(emguOverlayedGrayDepth, this.emguProcessedGrayDepth, 100, 50, 3);
-
-                //*********************************************************//
-
-                //***************** Fatten Up Depth Lines *****************//
-                //Effects: Closes gaps in depth lines
-                Point seedPoint;
-                emguOverlayedGrayDepth = this.emguProcessedGrayDepth.Copy();
-                for (int fillY = emguOverlayedGrayDepth.Height - 1; fillY > 0; fillY--)
-                {
-                    for (int fillX = emguOverlayedGrayDepth.Width - 1; fillX > 0; fillX--)
-                    {
-                        seedPoint = new Point(fillX, fillY);
-                        if (emguOverlayedGrayDepth[fillY, fillX].Intensity >= 200)
-                        {
-                            if (fillX < emguOverlayedGrayDepth.Width - 1)
-                            {
-                                this.emguProcessedGrayDepth[fillY, fillX + 1] = new Emgu.CV.Structure.Gray(255);
-                            }
-                            if (fillX > 0)
-                            {
-                                this.emguProcessedGrayDepth[fillY, fillX - 1] = new Emgu.CV.Structure.Gray(255);
-                            }
-                            if (fillY < emguOverlayedGrayDepth.Height - 1)
-                            {
-                                this.emguProcessedGrayDepth[fillY + 1, fillX] = new Emgu.CV.Structure.Gray(255);
-                            }
-                            if (fillY > 0)
-                            {
-                                this.emguProcessedGrayDepth[fillY - 1, fillX] = new Emgu.CV.Structure.Gray(255);
-                            }
-                        }
-                    }
-                }
-                //Horizon Handling
-                //NOTE: Must be implemented!!!
-                //**********************************************************//
-
-
-                //****************** Draw Boxes ****************************//
-                //Effects:  Floods canny edges with color at arbitrary points
-                //          Group points by color
-                //          Draw boxes around groups of pixels
-
-                // Flood-fill method for boxes
-                IntPtr src = this.emguProcessedGrayDepth;
-                MCvScalar newVal;
-                MCvScalar loDiff = new MCvScalar(0);
-                MCvScalar upDiff = new MCvScalar(0);
-                MCvConnectedComp comp = new MCvConnectedComp();
-
-                //Create array of point-clouds
-                List<PointF>[] pointList = new List<PointF>[256];
-                for (int i = 0; i < 256; i++)
-                {
-                    pointList[i] = new List<PointF>();
-                }
-
-                //****** Iterate through picture, filling in arbitrary pixels ********//
-                int flags = 4;
-                IntPtr mask = new Image<Gray, byte>(this.emguProcessedGrayDepth.Width + 2, this.emguProcessedGrayDepth.Height + 2, new Gray(0));
-                int whatColor = 0;
-                for (int fillY = this.emguProcessedGrayDepth.Height - 1; fillY > 0; fillY -= this.emguProcessedGrayDepth.Height / 256)
-                {
-                    for (int fillX = this.emguProcessedGrayDepth.Width - 1; fillX > 0; fillX -= this.emguProcessedGrayDepth.Width / 256)
-                    {
-                        seedPoint = new Point(fillX, fillY);
-                        if (this.emguProcessedGrayDepth[seedPoint].Intensity == 0)
-                        {
-                            //Fill a region of the picture with a new color
-                            whatColor++;
-                            newVal = new MCvScalar(whatColor);
-                            CvInvoke.cvFloodFill(src, seedPoint, newVal, loDiff, upDiff, out comp, flags, mask);
-                            pointList[whatColor].Add(new PointF(fillX, fillY));
-                        }
-                        else
-                        {
-                            //Hash point into proper point-cloud entry
-                            pointList[(int)this.emguProcessedGrayDepth[seedPoint].Intensity].Add(new PointF(fillX, fillY));
-                        }
-                    }
-                }
-                //****************************************************************//
-
-                //***************** Generate boxes *******************************//
-                HashSet<int> GoodColors = new HashSet<int>();
-                this.emguDepthWithBoxes = this.emguProcessedGrayDepth.Copy();
-                this.num_objects = 0;
-                this.objects.Clear();
-
-                for (int i = 1; i < 255; i++)
-                {
-                    if (pointList[i].Count > 100)
-                    {
-                        Rectangle temp = Emgu.CV.PointCollection.BoundingRectangle(pointList[i].ToArray());
-                        if ((temp.Height < 0.6 * this.emguProcessedGrayDepth.Height)
-                            && (temp.Width < 0.6 * this.emguProcessedGrayDepth.Width))
-                        {
-                            //Draw rectangle around object
-                            this.emguDepthWithBoxes.Draw(temp, new Gray(127), 2);
-
-                            //Add to rectangle list
-                            this.objects.Add(new Tuple<Rectangle, int>(temp,i));
-                            this.num_objects++;
-                        }
-
-                        if (pointList[i].Count < 4000)
-                        {
-                            GoodColors.Add(i);
-                        }
-                    }
-                }
-
-                this.debugWindow.emguDepthProcessedImageBox.Image = this.emguDepthWithBoxes;
-                //***************************************************************//
-
-                //Resize color images to match depth resolution
-                this.emguRawColor = this.emguRawColor.Resize(.5, INTER.CV_INTER_NN).Copy();
-                this.emguProcessedColor = this.emguProcessedColor.Resize(0.5, INTER.CV_INTER_NN);
-
-
-                //Assign colored pixels
-                for (int fillY = this.emguProcessedColor.Height - 1; fillY > 0; fillY--)
-                {
-                    for (int fillX = this.emguProcessedColor.Width - 1; fillX > 0; fillX--)
-                    {
-                        seedPoint = new Point(fillX, fillY);
-                        if (!GoodColors.Contains((int)this.emguProcessedGrayDepth[seedPoint].Intensity))
-                        {              
-                            /*
-                            double b = this.emguProcessedColor[seedPoint].Blue;
-                            double g = this.emguProcessedColor[seedPoint].Green;
-                            double r = this.emguProcessedColor[seedPoint].Red;
-                            double a = this.emguProcessedColor[seedPoint].Alpha;
-                            this.emguProcessedColor[seedPoint] = new Bgra(b, g, r, a / 8);
-                             */
-                            this.emguProcessedColor[seedPoint] = new Bgra(0, 0, 0, 255);
-                        }
-                    }
-                }
-
-                //Get sub-images
-                this.subimages = new List<Image<Bgra,byte>>();
-                foreach(Tuple<Rectangle,int> tuple in this.objects)
-                {
-                    int exceptionsThrown = 0;
-                    try
-                    {
-                        Image<Bgra, byte> subimage = this.emguRawColor.GetSubRect(tuple.Item1).Copy();
-
-                        for (int fillY = tuple.Item1.Top; fillY < tuple.Item1.Bottom; fillY++)
-                        {
-                            for (int fillX = tuple.Item1.Left; fillX < tuple.Item1.Right; fillX++)
-                            {
-                                seedPoint = new Point(fillX, fillY);
-                                if ((int)this.emguProcessedGrayDepth[seedPoint].Intensity != tuple.Item2)
-                                {
-                                    Point subPoint = new Point(fillX - tuple.Item1.Left, fillY - tuple.Item1.Top);
-                                    subimage[subPoint] = new Bgra(0, 0, 0, 255);
-                                }
-                            }
-                        }
-                        this.subimages.Add(subimage);
-                    }
-                    catch
-                    {
-                        exceptionsThrown++;
-                    }
-                }
-
-                //Assign processed color
-                //this.debugWindow.emguColorImageBox.Image = this.emguRawColor;
-                this.debugWindow.emguColorProcessedImageBox.Image = this.emguProcessedColor;
             }
+
+            //Resize Depth images 
+            this.emguOverlayedDepth = this.emguOverlayedDepth.Resize(2.0, INTER.CV_INTER_NN).Copy();
+            //this.emguProcessedColor = this.emguProcessedColor.Resize(0.5, INTER.CV_INTER_NN);
+
+
+            this.debugWindow.emguDepthImageBox.Image = this.emguOverlayedDepth;
+            //*********************************************************//
+
+            //****************** Draw Depth Lines *********************//
+            //Effects:  Converts depth info to canny edges
+            Image<Gray, byte> emguOverlayedGrayDepth = this.emguOverlayedDepth.Convert<Gray, byte>();
+            this.emguProcessedGrayDepth = new Image<Gray, byte>(this.emguOverlayedDepth.Width, this.emguOverlayedDepth.Height);
+
+            CvInvoke.cvSmooth(emguOverlayedGrayDepth, emguOverlayedGrayDepth, Emgu.CV.CvEnum.SMOOTH_TYPE.CV_MEDIAN, 5, 5, 9, 9);
+            CvInvoke.cvCanny(emguOverlayedGrayDepth, this.emguProcessedGrayDepth, 100, 50, 3);
+
+            //*********************************************************//
+
+            //***************** Fatten Up Depth Lines *****************//
+            //Effects: Closes gaps in depth lines
+            Point seedPoint;
+            emguOverlayedGrayDepth = this.emguProcessedGrayDepth.Copy();
+            for (int fillY = emguOverlayedGrayDepth.Height - 1; fillY > 0; fillY--)
+            {
+                for (int fillX = emguOverlayedGrayDepth.Width - 1; fillX > 0; fillX--)
+                {
+                    seedPoint = new Point(fillX, fillY);
+                    if (emguOverlayedGrayDepth[fillY, fillX].Intensity >= 200)
+                    {
+                        if (fillX < emguOverlayedGrayDepth.Width - 1)
+                        {
+                            this.emguProcessedGrayDepth[fillY, fillX + 1] = new Emgu.CV.Structure.Gray(255);
+                        }
+                        if (fillX > 0)
+                        {
+                            this.emguProcessedGrayDepth[fillY, fillX - 1] = new Emgu.CV.Structure.Gray(255);
+                        }
+                        if (fillY < emguOverlayedGrayDepth.Height - 1)
+                        {
+                            this.emguProcessedGrayDepth[fillY + 1, fillX] = new Emgu.CV.Structure.Gray(255);
+                        }
+                        if (fillY > 0)
+                        {
+                            this.emguProcessedGrayDepth[fillY - 1, fillX] = new Emgu.CV.Structure.Gray(255);
+                        }
+                    }
+                }
+            }
+            //Horizon Handling
+            //NOTE: Must be implemented!!!
+            //**********************************************************//
+
+
+            //****************** Draw Boxes ****************************//
+            //Effects:  Floods canny edges with color at arbitrary points
+            //          Group points by color
+            //          Draw boxes around groups of pixels
+
+            // Flood-fill method for boxes
+            IntPtr src = this.emguProcessedGrayDepth;
+            MCvScalar newVal;
+            MCvScalar loDiff = new MCvScalar(0);
+            MCvScalar upDiff = new MCvScalar(0);
+            MCvConnectedComp comp = new MCvConnectedComp();
+
+            //Create array of point-clouds
+            List<PointF>[] pointList = new List<PointF>[256];
+            for (int i = 0; i < 256; i++)
+            {
+                pointList[i] = new List<PointF>();
+            }
+
+            //****** Iterate through picture, filling in arbitrary pixels ********//
+            int flags = 4;
+            IntPtr mask = new Image<Gray, byte>(this.emguProcessedGrayDepth.Width + 2, this.emguProcessedGrayDepth.Height + 2, new Gray(0));
+            int whatColor = 0;
+            for (int fillY = this.emguProcessedGrayDepth.Height - 1; fillY > 0; fillY -= this.emguProcessedGrayDepth.Height / 256)
+            {
+                for (int fillX = this.emguProcessedGrayDepth.Width - 1; fillX > 0; fillX -= this.emguProcessedGrayDepth.Width / 256)
+                {
+                    seedPoint = new Point(fillX, fillY);
+                    if (this.emguProcessedGrayDepth[seedPoint].Intensity == 0)
+                    {
+                        //Fill a region of the picture with a new color
+                        whatColor++;
+                        newVal = new MCvScalar(whatColor);
+                        CvInvoke.cvFloodFill(src, seedPoint, newVal, loDiff, upDiff, out comp, flags, mask);
+                        pointList[whatColor].Add(new PointF(fillX, fillY));
+                    }
+                    else
+                    {
+                        //Hash point into proper point-cloud entry
+                        pointList[(int)this.emguProcessedGrayDepth[seedPoint].Intensity].Add(new PointF(fillX, fillY));
+                    }
+                }
+            }
+            //****************************************************************//
+
+            //***************** Generate boxes *******************************//
+            HashSet<int> GoodColors = new HashSet<int>();
+            this.emguDepthWithBoxes = this.emguProcessedGrayDepth.Copy();
+            this.num_objects = 0;
+            this.objects.Clear();
+
+            for (int i = 1; i < 255; i++)
+            {
+                if (pointList[i].Count > 100)
+                {
+                    Rectangle temp = Emgu.CV.PointCollection.BoundingRectangle(pointList[i].ToArray());
+                    if ((temp.Height < 0.6 * this.emguProcessedGrayDepth.Height)
+                        && (temp.Width < 0.6 * this.emguProcessedGrayDepth.Width)
+                        && (pointList[i].Count < 4000))
+                    {
+                        //Draw rectangle around object
+                        this.emguDepthWithBoxes.Draw(temp, new Gray(127), 2);
+
+                        //Add to rectangle list
+                        this.objects.Add(new Tuple<Rectangle, int>(temp,i));
+                        this.num_objects++;
+
+                        //Add Color to be drawn
+                        GoodColors.Add(i);
+                    }
+
+                    /*if (pointList[i].Count < 4000)
+                    {
+                        GoodColors.Add(i); 
+                    }*/
+                }
+            }
+
+            this.debugWindow.emguDepthProcessedImageBox.Image = this.emguDepthWithBoxes;
+            //***************************************************************//
+
+            //Resize color images to match depth resolution
+            //this.emguRawColor = this.emguRawColor.Resize(.5, INTER.CV_INTER_NN).Copy();
+            //this.emguProcessedColor = this.emguProcessedColor.Resize(0.5, INTER.CV_INTER_NN);
+
+
+            //Assign colored pixels
+            for (int fillY = this.emguProcessedColor.Height - 1; fillY > 0; fillY--)
+            {
+                for (int fillX = this.emguProcessedColor.Width - 1; fillX > 0; fillX--)
+                {
+                    seedPoint = new Point(fillX, fillY);
+                    if (!GoodColors.Contains((int)this.emguProcessedGrayDepth[seedPoint].Intensity))
+                    {              
+                        /*
+                        double b = this.emguProcessedColor[seedPoint].Blue;
+                        double g = this.emguProcessedColor[seedPoint].Green;
+                        double r = this.emguProcessedColor[seedPoint].Red;
+                        double a = this.emguProcessedColor[seedPoint].Alpha;
+                        this.emguProcessedColor[seedPoint] = new Bgra(b, g, r, a / 8);
+                            */
+                        this.emguProcessedColor[seedPoint] = new Bgra(0, 0, 0, 255);
+                    }
+                }
+            }
+
+            //Sort boxes, left to right, then top to bottom
+            this.objects.Sort((a, b) => a.Item1.Left.CompareTo(b.Item1.Left));
+
+            //Get sub-images
+            this.subimages = new List<Image<Bgra,byte>>();
+            foreach(Tuple<Rectangle,int> tuple in this.objects)
+            {
+                int exceptionsThrown = 0;
+                try
+                {
+                    Image<Bgra, byte> subimage = this.emguRawColor.GetSubRect(tuple.Item1).Copy();
+
+                    for (int fillY = tuple.Item1.Top; fillY < tuple.Item1.Bottom; fillY++)
+                    {
+                        for (int fillX = tuple.Item1.Left; fillX < tuple.Item1.Right; fillX++)
+                        {
+                            seedPoint = new Point(fillX, fillY);
+                            if ((int)this.emguProcessedGrayDepth[seedPoint].Intensity != tuple.Item2)
+                            {
+                                Point subPoint = new Point(fillX - tuple.Item1.Left, fillY - tuple.Item1.Top);
+                                subimage[subPoint] = new Bgra(0, 0, 0, 255);
+                            }
+                        }
+                    }
+                    this.subimages.Add(subimage);
+                }
+                catch
+                {
+                    exceptionsThrown++;
+                }
+            }
+
+            //Assign processed color
+            //this.debugWindow.emguColorImageBox.Image = this.emguRawColor;
+            this.debugWindow.emguColorProcessedImageBox.Image = this.emguProcessedColor;
         }
 
         public static byte CalculateIntensityFromDistance(short distance)
@@ -406,20 +419,28 @@ namespace VisionWithGrace
             //If Kinect sensor is being used
             if (isUsingKinect)
             {
+                //Look for objects in latest image
+                if (this.FramesReady == true)
+                {
+                    this.DetectObjects();
+                }
+
+                List<Rectangle> unscaled = new List<Rectangle>();
+                foreach (Tuple<Rectangle, int> tuple in this.objects)
+                {
+                    unscaled.Add(tuple.Item1);
+                }
+                return unscaled;
+
+                /*
+                //Double each rectangle in size to pass to GUI
                 List<Rectangle> scaled = new List<Rectangle>();
                 foreach (Tuple<Rectangle,int> tuple in this.objects)
                 {
                     scaled.Add(new Rectangle(tuple.Item1.X * 2, tuple.Item1.Y * 2, tuple.Item1.Width * 2, tuple.Item1.Height * 2)); 
                 }
-
-                if (this.subimages.Count > 0)
-                {
-                    long matchTime = new long();
-                    this.matchResult = DrawMatches.Draw(this.subimages[0].Convert<Gray, byte>().Resize(5.0, INTER.CV_INTER_NN), this.emguProcessedColor.Convert<Gray, byte>().Resize(5.0,INTER.CV_INTER_NN), out matchTime);
-                    this.debugWindow.emguColorImageBox.Image = this.matchResult;
-                }
-
                 return scaled;
+                */
             }
 
             else
@@ -454,8 +475,63 @@ namespace VisionWithGrace
                     rand_objects.Add(new Rectangle(x, y, z, w));                   
                 }
                 return rand_objects;
+            }           
+        }
+
+        /*
+         * Given the index in the List<Rectangle> just passed, match that pic
+         * against entries in the database. If no suitable match is found, pass
+         * back null reference
+         */
+        public VObject RecognizeObject(int index)
+        {
+            if (!this.isUsingKinect)
+            {
+                return null;
             }
-            
+            //Check for bad index
+            if (index >= this.subimages.Count || index < 0)
+            {
+                //The index is out of range
+                throw new IndexOutOfRangeException();
+            }
+          
+            //Convert selected subimage to larger grayscale
+            Image<Gray,byte> target = this.subimages[index].Convert<Gray, byte>().Resize(5.0, INTER.CV_INTER_NN);
+
+            //Begin to iterate through objects in the database, matching each in scene
+            DatabaseInterface DbInterface = new DatabaseInterface();
+            List<Dictionary<string,object>> entries = DbInterface.getAllObjects();
+
+            int maxMatches = 0;
+            VObject bestMatch = null;
+
+            foreach( Dictionary<string,object> entry in entries)
+            {
+                //Convert bitmap to Emgu image
+                Image<Gray,byte> img = new Image<Gray,byte>(entry["image"] as Bitmap).Resize(5.0, INTER.CV_INTER_NN);
+
+                long matchTime = new long();
+                int numMatches = new int();
+                this.matchResult = DrawMatches.Draw(target, img, out matchTime, out numMatches);
+      
+                this.debugWindow.emguColorImageBox.Image = this.matchResult;
+                this.debugWindow.Text = numMatches.ToString() + " matches.";
+
+                //Record best match
+                if ((numMatches >= 4) && (numMatches > maxMatches))
+                {
+                    maxMatches = numMatches;
+                    bestMatch = new VObject(entry);
+                }
+            }
+
+            if(bestMatch != null)
+            {
+                this.debugWindow.Text = "Object recognized! " + bestMatch.name + "("+maxMatches.ToString()+" matches)";
+            }
+
+            return bestMatch;
         }
 
         public Bitmap getSimulationImage()

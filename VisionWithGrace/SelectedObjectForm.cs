@@ -14,13 +14,19 @@ namespace VisionWithGrace
 {
     public partial class SelectedObjectForm : Form
     {
-        DatabaseInterface dbInterface = new DatabaseInterface("VObjects");
+        DatabaseInterface dbInterface = new DatabaseInterface();
 
-        public SelectedObjectForm(Bitmap image)
+        public SelectedObjectForm(Bitmap image, string name, List<string> tags)
         {
             InitializeComponent();
 
             this.pictureBox1.Image = image;
+            if (name != null)
+            {
+                this.Text = name + " selected!";
+                this.vObjectForm1.VObjectName = name;
+                this.vObjectForm1.VObjectTags = tags;
+            }
         }
 
         private void buttonSave_Click(object sender, EventArgs e)
