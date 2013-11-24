@@ -485,6 +485,10 @@ namespace VisionWithGrace
          */
         public VObject RecognizeObject(int index)
         {
+            if (!this.isUsingKinect)
+            {
+                return null;
+            }
             //Check for bad index
             if (index >= this.subimages.Count || index < 0)
             {

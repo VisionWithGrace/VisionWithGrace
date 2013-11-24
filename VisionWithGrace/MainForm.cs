@@ -146,7 +146,15 @@ namespace VisionWithGrace
             SoundPlayer player = new SoundPlayer(@"C:\WINDOWS\Media\notify.wav");
             player.Play();
 
-            SelectedObjectForm selectedObjectForm = new SelectedObjectForm(zoomView, vobj.name, vobj.tags);
+            SelectedObjectForm selectedObjectForm;
+            if (vobj == null)
+            {
+                selectedObjectForm = new SelectedObjectForm(zoomView, null, null);
+            }
+            else
+            {
+                selectedObjectForm = new SelectedObjectForm(zoomView, vobj.name, vobj.tags);
+            }
             selectedObjectForm.ShowDialog();
         }
 
