@@ -10,7 +10,7 @@ using System.Drawing;
  * */
 namespace VisionWithGrace
 {
-    class VObject
+    public class VObject
     {
         public string name = "Unnamed Object";
         public List<string> tags = new List<string>();
