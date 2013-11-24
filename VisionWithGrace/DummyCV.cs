@@ -200,6 +200,11 @@ namespace VisionWithGrace
                 }
             }
 
+            //Resize Depth images 
+            this.emguOverlayedDepth = this.emguOverlayedDepth.Resize(2.0, INTER.CV_INTER_NN).Copy();
+            //this.emguProcessedColor = this.emguProcessedColor.Resize(0.5, INTER.CV_INTER_NN);
+
+
             this.debugWindow.emguDepthImageBox.Image = this.emguOverlayedDepth;
             //*********************************************************//
 
@@ -330,8 +335,8 @@ namespace VisionWithGrace
             //***************************************************************//
 
             //Resize color images to match depth resolution
-            this.emguRawColor = this.emguRawColor.Resize(.5, INTER.CV_INTER_NN).Copy();
-            this.emguProcessedColor = this.emguProcessedColor.Resize(0.5, INTER.CV_INTER_NN);
+            //this.emguRawColor = this.emguRawColor.Resize(.5, INTER.CV_INTER_NN).Copy();
+            //this.emguProcessedColor = this.emguProcessedColor.Resize(0.5, INTER.CV_INTER_NN);
 
 
             //Assign colored pixels
@@ -420,6 +425,14 @@ namespace VisionWithGrace
                     this.DetectObjects();
                 }
 
+                List<Rectangle> unscaled = new List<Rectangle>();
+                foreach (Tuple<Rectangle, int> tuple in this.objects)
+                {
+                    unscaled.Add(tuple.Item1);
+                }
+                return unscaled;
+
+                /*
                 //Double each rectangle in size to pass to GUI
                 List<Rectangle> scaled = new List<Rectangle>();
                 foreach (Tuple<Rectangle,int> tuple in this.objects)
@@ -427,6 +440,7 @@ namespace VisionWithGrace
                     scaled.Add(new Rectangle(tuple.Item1.X * 2, tuple.Item1.Y * 2, tuple.Item1.Width * 2, tuple.Item1.Height * 2)); 
                 }
                 return scaled;
+                */
             }
 
             else
@@ -482,7 +496,7 @@ namespace VisionWithGrace
             Image<Gray,byte> target = this.subimages[index].Convert<Gray, byte>().Resize(5.0, INTER.CV_INTER_NN);
 
             //Begin to iterate through objects in the database, matching each in scene
-            DatabaseInterface DbInterface = new DatabaseInterface("VObject");
+            DatabaseInterface DbInterface = new DatabaseInterface("VObjects");
             List<Dictionary<string,object>> entries = DbInterface.getAllObjects();
 
             int maxMatches = 0;
@@ -507,6 +521,12 @@ namespace VisionWithGrace
                     bestMatch = new VObject(entry);
                 }
             }
+
+            if(bestMatch != null)
+            {
+                this.debugWindow.Text = "Object recognized! " + bestMatch.name + "("+maxMatches.ToString()+" matches)";
+            }
+
             return bestMatch;
         }
 
