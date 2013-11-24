@@ -8,10 +8,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using DatabaseModule;
+
 namespace VisionWithGrace
 {
     public partial class SelectedObjectForm : Form
     {
+        DatabaseInterface dbInterface = new DatabaseInterface("VObjects");
+
         public SelectedObjectForm(Bitmap image)
         {
             InitializeComponent();
@@ -24,16 +28,8 @@ namespace VisionWithGrace
             VObject obj = new VObject();
 
             obj.image = this.pictureBox1.Image as Bitmap;
-            
-            // Get name, default to "Unnamed Object"
-            obj.name = this.textBoxName.Text;
-            if (obj.name == "")
-                obj.name = "Unnamed Object";
-
-            // Parse tags
-            string tagString = this.textBoxTags.Text;
-            obj.tags = tagString.Split(' ').ToList<string>();
-
+            obj.name  = this.vObjectForm1.VObjectName;
+            obj.tags  = this.vObjectForm1.VObjectTags;
             obj.save();
 
             // close form
@@ -44,5 +40,10 @@ namespace VisionWithGrace
         {
             this.Close();
         }
+
+
+
+
+
     }
 }
