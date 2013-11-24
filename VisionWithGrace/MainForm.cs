@@ -134,7 +134,7 @@ namespace VisionWithGrace
         }
 
         // Display selected object in closeUpDisplay
-        private void showSelectedObject(Rectangle rect)
+        private void showSelectedObject(Rectangle rect, VObject vobj)
         {
             Bitmap zoomView = new Bitmap(rect.Width, rect.Height);
 
@@ -146,7 +146,7 @@ namespace VisionWithGrace
             SoundPlayer player = new SoundPlayer(@"C:\WINDOWS\Media\notify.wav");
             player.Play();
 
-            SelectedObjectForm selectedObjectForm = new SelectedObjectForm(zoomView);
+            SelectedObjectForm selectedObjectForm = new SelectedObjectForm(zoomView, vobj.name, vobj.tags);
             selectedObjectForm.ShowDialog();
         }
 
@@ -209,7 +209,12 @@ namespace VisionWithGrace
             if (isManual) manualStep();
             else
             {
-                showSelectedObject(rectangles[scanner.CurObject]);
+                VObject vobj = cv.RecognizeObject(scanner.CurObject);
+                if (vobj != null)
+                {
+                    this.Text = vobj.name + " found.";
+                }
+                showSelectedObject(rectangles[scanner.CurObject], vobj);
                 refreshTimer.Start();
             }
         }
@@ -242,7 +247,7 @@ namespace VisionWithGrace
             }
             else if (Mstep == 3)
             {
-                showSelectedObject(new Rectangle(x0, y0, x1 - x0, y1 - y0));
+                showSelectedObject(new Rectangle(x0, y0, x1 - x0, y1 - y0), null);
                 y0 = 0;
                 y1 = plainView.Size.Height;
                 x0 = 0;

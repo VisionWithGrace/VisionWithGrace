@@ -12,11 +12,24 @@ namespace VisionWithGrace
 {
     public partial class SelectedObjectForm : Form
     {
-        public SelectedObjectForm(Bitmap image)
+        public SelectedObjectForm(Bitmap image, string name, List<string> tags)
         {
             InitializeComponent();
 
             this.pictureBox1.Image = image;
+            if (name != null)
+            {
+                this.Text = name + " selected!";
+                this.textBoxName.Text = name;
+
+                //Serialize tags
+                string tags_string = "";
+                foreach(string tag in tags)
+                {
+                    tags_string += (tag + ", ");
+                }
+                this.textBoxTags.Text = tags_string;
+            }
         }
 
         private void buttonSave_Click(object sender, EventArgs e)
