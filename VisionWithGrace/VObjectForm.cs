@@ -14,7 +14,7 @@ namespace VisionWithGrace
 {
     public partial class VObjectForm : UserControl
     {
-        DatabaseInterface dbInterface = new DatabaseInterface("VObjects");
+        DatabaseInterface dbInterface = new DatabaseInterface();
 
         public VObjectForm()
         {
@@ -35,6 +35,10 @@ namespace VisionWithGrace
             {
                 return this.textBoxName.Text;
             }
+            set
+            {
+                this.textBoxName.Text = value;
+            }
         }
 
         public List<string> VObjectTags
@@ -47,6 +51,13 @@ namespace VisionWithGrace
                     tags.Add(tag);
                 }
                 return tags;
+            }
+            set
+            {
+                foreach (string tag in value)
+                {
+                    listBoxTags.Items.Add(tag);
+                }
             }
         }
 
