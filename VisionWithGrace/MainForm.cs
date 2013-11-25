@@ -27,7 +27,6 @@ namespace VisionWithGrace
 
         Scanner scanner = new Scanner();
         Timer refreshTimer = new Timer();
-        bool readyForNewFrame = new bool();
 
         int x, x0, x1, y, y0, y1, Mstep, diff, scale;
         bool isManual = false;
@@ -36,8 +35,16 @@ namespace VisionWithGrace
         {
             InitializeComponent();
 
+            // Initialize CV manager
+            cv = new ComputerVision();
+
+            // Set refresh defaults
             refreshTimer.Interval = 5000;
             refreshTimer.Tick += refreshView;
+
+            // Set scanner defaults
+            scanner.OnChange = highlightNextBox;
+
         }
 
 
@@ -46,43 +53,23 @@ namespace VisionWithGrace
         private void Form1_Shown(object sender, EventArgs e)
         {
             this.mainDisplay.Focus();
-            
-            // Start CV and set handler
-            cv = new ComputerVision();
 
-            // Set kinect handler
-            if (cv.isUsingKinect)
-            {
-                cv.set_handler(new EventHandler<ColorImageFrameReadyEventArgs>(this.colorFrameReady));
-                this.readyForNewFrame = true;
-            }
-            else
-            {
-                cv.set_handler(new EventHandler(this.colorFrameReady));
-            }
-
-            scanner.OnChange = highlightNextBox;            
+            // Get one refresh at beginning and then start the timer
+            refreshView(sender, e);
             refreshTimer.Start();
         }
 
         private void refreshView(object sender, EventArgs e)
         {
-            this.readyForNewFrame = true;
-            getNewBoxes();
-        }
+            rectangles = cv.getBoxes();
+            //plainView = cv.getImage();
+            plainView = new Bitmap(400, 400);
 
-        public void colorFrameReady(object sender, EventArgs e)
-        {
-            processFrame(cv.getSimulationImage());
-        }
-        public void colorFrameReady(object sender, ColorImageFrameReadyEventArgs e)
-        {
-            ColorImageFrame colorFrame = e.OpenColorImageFrame();
-            if (this.readyForNewFrame && colorFrame != null)
-            {
-                processFrame(ColorImageFrameToBitmap(colorFrame));
-                this.readyForNewFrame = false;
-            }
+            scanner.NumObjects = rectangles.Count;
+            this.objectDetectedLabel.Text = rectangles.Count.ToString() + " objects detected";
+
+            drawBoxes();
+            drawViews();
         }
 
         public void highlightNextBox(object sender, EventArgs e)
@@ -94,29 +81,7 @@ namespace VisionWithGrace
 
             drawBoxes(nextHighlighted);
         }
-
-        private void processFrame(Bitmap bitmap)
-        {
-            // delete previous values
-            if (plainView != null)
-                plainView.Dispose();
-            plainView = new Bitmap(bitmap);
-
-            if (boxesView == null)
-                getNewBoxes();
-
-            // Redraw views on main display
-            if (mainDisplay.Image != null)
-                this.mainDisplay.Image.Dispose();
-            mainDisplay.Image = new Bitmap(plainView.Size.Width, plainView.Size.Height);
-            using (Graphics g = Graphics.FromImage(mainDisplay.Image))
-            {
-                // overlay the boxedView on the plainView
-                g.DrawImage(plainView, new Rectangle(0, 0, plainView.Width, plainView.Height));
-                g.DrawImage(boxesView, new Rectangle(0, 0, boxesView.Width, boxesView.Height));
-            }
-        }
-
+        
         // Don't touch this function, I didn't write it. It came from the interwebs.
         public static Bitmap ColorImageFrameToBitmap(ColorImageFrame colorFrame)
         {
@@ -151,25 +116,14 @@ namespace VisionWithGrace
         // Re-generate rectangles
         private void refreshButton_Click(object sender, EventArgs e)
         {
-            getNewBoxes();
+            refreshView(sender, e);
         }
-
-        private void getNewBoxes()
-        {
-            rectangles = cv.getBoxes();
-
-            scanner.NumObjects = rectangles.Count;
-            this.objectDetectedLabel.Text = rectangles.Count.ToString() + " objects detected";
-
-            drawBoxes();
-        }
-
+        
         private void drawBoxes(int selected = -1)
         {
             if (boxesView != null)
                 boxesView.Dispose();
             boxesView = new Bitmap(plainView.Size.Width, plainView.Size.Height);
-
 
             Pen redPen = new Pen(Color.Red, 3);
             Pen yellowPen = new Pen(Color.Yellow, 5);
@@ -186,6 +140,21 @@ namespace VisionWithGrace
             }
         }
 
+        private void drawViews()
+        {
+            // Dispose of previously drawn image
+            if (mainDisplay.Image != null)
+                this.mainDisplay.Image.Dispose();
+
+            mainDisplay.Image = new Bitmap(plainView.Size.Width, plainView.Size.Height);
+            using (Graphics g = Graphics.FromImage(mainDisplay.Image))
+            {
+                // overlay the boxedView on the plainView
+                g.DrawImage(plainView, new Rectangle(0, 0, plainView.Width, plainView.Height));
+                g.DrawImage(boxesView, new Rectangle(0, 0, boxesView.Width, boxesView.Height));
+            }
+        }
+
         private void startScanning(object sender, KeyEventArgs e)
         {
              if (e.KeyCode != Keys.Space)
@@ -193,8 +162,6 @@ namespace VisionWithGrace
 
             e.SuppressKeyPress = true;
             refreshTimer.Stop();
-            this.readyForNewFrame = false;
-
             scanner.start();
         }
         private void stopScanning(object sender, KeyEventArgs e)
