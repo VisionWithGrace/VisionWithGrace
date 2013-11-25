@@ -15,28 +15,26 @@ namespace VisionWithGrace
     public partial class SelectedObjectForm : Form
     {
         DatabaseInterface dbInterface = new DatabaseInterface();
+        VObject selectedVObject;
 
-        public SelectedObjectForm(Bitmap image, string name, List<string> tags)
+        public SelectedObjectForm(VObject obj)
         {
             InitializeComponent();
+            selectedVObject = obj;
 
-            this.pictureBox1.Image = image;
-            if (name != null)
+            this.pictureBox1.Image = obj.image;
+            if (obj.name != "")
             {
-                this.Text = name + " selected!";
-                this.vObjectForm1.VObjectName = name;
-                this.vObjectForm1.VObjectTags = tags;
+                this.Text = obj.name + " selected!";
             }
+            this.vObjectForm1.setVObject(obj);
         }
 
         private void buttonSave_Click(object sender, EventArgs e)
         {
-            VObject obj = new VObject();
-
-            obj.image = this.pictureBox1.Image as Bitmap;
-            obj.name  = this.vObjectForm1.VObjectName;
-            obj.tags  = this.vObjectForm1.VObjectTags;
-            obj.save();
+            selectedVObject.name = this.vObjectForm1.VObjectName;
+            selectedVObject.tags = this.vObjectForm1.VObjectTags;
+            selectedVObject.save();
 
             // close form
             this.Close();
