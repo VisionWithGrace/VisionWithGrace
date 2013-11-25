@@ -84,12 +84,16 @@ namespace DatabaseModule
         //details should be a JSON-formatted string (dictionary of key-value pairs)
         public void InsertImage(Image image, string filename, Dictionary<string, object> info)
         {
+
             using (var fs = new System.IO.MemoryStream())
             {
-                image.Save(fs, ImageFormat.Jpeg);
-                fs.Position = 0;
-                var gridFsInfo = objectsDatabase.GridFS.Upload(fs, filename);
-                var fileId = gridFsInfo.Id;
+                if (image != null)
+                {
+                    image.Save(fs, ImageFormat.Jpeg);
+                    fs.Position = 0;
+                    var gridFsInfo = objectsDatabase.GridFS.Upload(fs, filename);
+                    var fileId = gridFsInfo.Id;
+                }
                 BsonDocument bson;
                 try
                 {
@@ -294,6 +298,18 @@ namespace DatabaseModule
                     {
                         int changedCount = (int)doc["count"] + 1;
                         modifyObject("name", info["name"].ToString(), "count", changedCount);
+
+                        if(info.ContainsKey("tags"))
+                        {
+                            object[] tagObjects = info["tags"] as object[];
+                            var newTags = new BsonArray();
+                            for (int i = 0; i < tagObjects.Length; i++)
+                            {
+                                newTags.Add(tagObjects[i] as string);
+                            }
+
+                            modifyObject("name", info["name"].ToString(), "tags", newTags);
+                        }
                     }
                 }
             }
