@@ -51,16 +51,6 @@ namespace VisionWithGrace
             }
         }
 
-        private List<VObject> convertDictionariesToVObjects(List<Dictionary<string, object>> objects)
-        {
-            List<VObject> vObjects = new List<VObject>();
-            foreach (Dictionary<string, object> item in objects)
-            {
-                vObjects.Add(new VObject(item));
-            }
-            return vObjects;
-        }
-
         private void AdminPanel_Load(object sender, EventArgs e)
         {
             objects = dbInterface.getUnnamedObjects();
