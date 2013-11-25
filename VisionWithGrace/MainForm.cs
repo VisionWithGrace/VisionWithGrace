@@ -189,18 +189,18 @@ namespace VisionWithGrace
             {
                 x0 = x;
                 x1 = x;
-                diff = 6;
+                diff = 1;
             }
             else if (Mstep == 1)
             {
                 y = y0;
-                diff = 10;
+                diff = 2;
             }
             else if (Mstep == 2)
             {
                 y0 = y;
                 y1 = y;
-                diff = 6;
+                diff = 1;
             }
             else if (Mstep == 3)
             {
@@ -212,7 +212,7 @@ namespace VisionWithGrace
                 x0 = 0;
                 x1 = plainView.Size.Width;
                 x = x0;
-                diff = 10;
+                diff = 2;
                 Mstep = -1;
             }
             Mstep++;
@@ -231,7 +231,7 @@ namespace VisionWithGrace
             boxesView = new Bitmap(plainView.Size.Width, plainView.Size.Height);
 
 
-            Pen redPen = new Pen(Color.Red, 5);
+            Pen redPen = new Pen(Color.Red, 4);
             //Pen yellowPen = new Pen(Color.Yellow, 5);
             if (Mstep == 0)
             {
@@ -306,7 +306,7 @@ namespace VisionWithGrace
                 y1 = plainView.Size.Height;
                 x0 = 0;
                 x1 = plainView.Size.Width;
-                diff = 10;
+                diff = 2;
                 x = x0;
                 this.objectDetectedLabel.Text = "Manually Scanning View";
                 scale = (plainView.Size.Width - 1) / 600 + 1;
