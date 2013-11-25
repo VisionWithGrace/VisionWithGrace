@@ -291,6 +291,8 @@ namespace VisionWithGrace
                     y1 = y1 + diff + diff;
                 }
             }
+
+            drawViews();
         }
 
         private void manualScanToolStripMenuItem_Click(object sender, EventArgs e)
