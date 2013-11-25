@@ -28,13 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SelectedObjectForm));
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.textBoxName = new System.Windows.Forms.TextBox();
-            this.labelName = new System.Windows.Forms.Label();
             this.buttonDiscard = new System.Windows.Forms.Button();
             this.buttonSave = new System.Windows.Forms.Button();
-            this.textBoxTags = new System.Windows.Forms.TextBox();
-            this.labelTags = new System.Windows.Forms.Label();
+            this.vObjectForm1 = new VisionWithGrace.VObjectForm();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -47,24 +45,9 @@
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
-            // textBoxName
-            // 
-            this.textBoxName.Location = new System.Drawing.Point(459, 12);
-            this.textBoxName.Name = "textBoxName";
-            this.textBoxName.Size = new System.Drawing.Size(204, 20);
-            this.textBoxName.TabIndex = 1;
-            // 
-            // labelName
-            // 
-            this.labelName.AutoSize = true;
-            this.labelName.Location = new System.Drawing.Point(415, 15);
-            this.labelName.Name = "labelName";
-            this.labelName.Size = new System.Drawing.Size(38, 13);
-            this.labelName.TabIndex = 2;
-            this.labelName.Text = "Name:";
-            // 
             // buttonDiscard
             // 
+            this.buttonDiscard.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonDiscard.Location = new System.Drawing.Point(543, 341);
             this.buttonDiscard.Name = "buttonDiscard";
             this.buttonDiscard.Size = new System.Drawing.Size(120, 73);
@@ -75,6 +58,7 @@
             // 
             // buttonSave
             // 
+            this.buttonSave.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonSave.Location = new System.Drawing.Point(417, 341);
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(120, 73);
@@ -83,51 +67,42 @@
             this.buttonSave.UseVisualStyleBackColor = true;
             this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
             // 
-            // textBoxTags
+            // vObjectForm1
             // 
-            this.textBoxTags.Location = new System.Drawing.Point(458, 39);
-            this.textBoxTags.Multiline = true;
-            this.textBoxTags.Name = "textBoxTags";
-            this.textBoxTags.Size = new System.Drawing.Size(205, 86);
-            this.textBoxTags.TabIndex = 5;
-            // 
-            // labelTags
-            // 
-            this.labelTags.AutoSize = true;
-            this.labelTags.Location = new System.Drawing.Point(418, 42);
-            this.labelTags.Name = "labelTags";
-            this.labelTags.Size = new System.Drawing.Size(34, 13);
-            this.labelTags.TabIndex = 6;
-            this.labelTags.Text = "Tags:";
+            this.vObjectForm1.Location = new System.Drawing.Point(417, 12);
+            this.vObjectForm1.Name = "vObjectForm1";
+            this.vObjectForm1.Size = new System.Drawing.Size(258, 202);
+            this.vObjectForm1.TabIndex = 5;
+            this.vObjectForm1.VObjectName = "";
+            this.vObjectForm1.VObjectTags = ((System.Collections.Generic.List<string>)(resources.GetObject("vObjectForm1.VObjectTags")));
             // 
             // SelectedObjectForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(675, 426);
-            this.Controls.Add(this.labelTags);
-            this.Controls.Add(this.textBoxTags);
             this.Controls.Add(this.buttonSave);
             this.Controls.Add(this.buttonDiscard);
-            this.Controls.Add(this.labelName);
-            this.Controls.Add(this.textBoxName);
             this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.vObjectForm1);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "SelectedObjectForm";
-            this.Text = "SelectedObjectForm";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "Edit Selected Object";
+            this.TopMost = true;
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.TextBox textBoxName;
-        private System.Windows.Forms.Label labelName;
         private System.Windows.Forms.Button buttonDiscard;
         private System.Windows.Forms.Button buttonSave;
-        private System.Windows.Forms.TextBox textBoxTags;
-        private System.Windows.Forms.Label labelTags;
+        private VObjectForm vObjectForm1;
     }
 }

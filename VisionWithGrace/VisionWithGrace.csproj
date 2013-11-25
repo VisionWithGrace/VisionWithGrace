@@ -128,6 +128,12 @@
       <DependentUpon>SelectedObjectForm.cs</DependentUpon>
     </Compile>
     <Compile Include="VObject.cs" />
+    <Compile Include="VObjectForm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="VObjectForm.Designer.cs">
+      <DependentUpon>VObjectForm.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="AdminPanel.resx">
       <DependentUpon>AdminPanel.cs</DependentUpon>
     </EmbeddedResource>
@@ -149,6 +155,9 @@
     </Compile>
     <EmbeddedResource Include="SelectedObjectForm.resx">
       <DependentUpon>SelectedObjectForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VObjectForm.resx">
+      <DependentUpon>VObjectForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

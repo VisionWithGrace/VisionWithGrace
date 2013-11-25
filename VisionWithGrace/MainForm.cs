@@ -27,6 +27,7 @@ namespace VisionWithGrace
 
         Scanner scanner = new Scanner();
         Timer refreshTimer = new Timer();
+        bool readyForNewFrame = new bool();
 
         int x, x0, x1, y, y0, y1, Mstep, diff, scale;
         bool isManual = false;
@@ -53,18 +54,20 @@ namespace VisionWithGrace
             if (cv.isUsingKinect)
             {
                 cv.set_handler(new EventHandler<ColorImageFrameReadyEventArgs>(this.colorFrameReady));
+                this.readyForNewFrame = true;
             }
             else
             {
                 cv.set_handler(new EventHandler(this.colorFrameReady));
             }
 
-            scanner.OnChange = highlightNextBox;
+            scanner.OnChange = highlightNextBox;            
             refreshTimer.Start();
         }
 
         private void refreshView(object sender, EventArgs e)
         {
+            this.readyForNewFrame = true;
             getNewBoxes();
         }
 
@@ -75,9 +78,10 @@ namespace VisionWithGrace
         public void colorFrameReady(object sender, ColorImageFrameReadyEventArgs e)
         {
             ColorImageFrame colorFrame = e.OpenColorImageFrame();
-            if (colorFrame != null)
+            if (this.readyForNewFrame && colorFrame != null)
             {
                 processFrame(ColorImageFrameToBitmap(colorFrame));
+                this.readyForNewFrame = false;
             }
         }
 
@@ -134,27 +138,13 @@ namespace VisionWithGrace
         }
 
         // Display selected object in closeUpDisplay
-        private void showSelectedObject(Rectangle rect, VObject vobj)
+        private void showSelectedObject(VObject vobj)
         {
-            Bitmap zoomView = new Bitmap(rect.Width, rect.Height);
-
-            using (var graphics = Graphics.FromImage(zoomView))
-            {
-                graphics.DrawImage(plainView, new Rectangle(0, 0, zoomView.Width, zoomView.Height), rect, GraphicsUnit.Pixel);
-            }
-
             SoundPlayer player = new SoundPlayer(@"C:\WINDOWS\Media\notify.wav");
             player.Play();
 
             SelectedObjectForm selectedObjectForm;
-            if (vobj == null)
-            {
-                selectedObjectForm = new SelectedObjectForm(zoomView, null, null);
-            }
-            else
-            {
-                selectedObjectForm = new SelectedObjectForm(zoomView, vobj.name, vobj.tags);
-            }
+            selectedObjectForm = new SelectedObjectForm(vobj);
             selectedObjectForm.ShowDialog();
         }
 
@@ -203,6 +193,8 @@ namespace VisionWithGrace
 
             e.SuppressKeyPress = true;
             refreshTimer.Stop();
+            this.readyForNewFrame = false;
+
             scanner.start();
         }
         private void stopScanning(object sender, KeyEventArgs e)
@@ -222,9 +214,26 @@ namespace VisionWithGrace
                 {
                     this.Text = vobj.name + " found.";
                 }
-                showSelectedObject(rectangles[scanner.CurObject], vobj);
+                else
+                {
+                    vobj = new VObject();
+                    vobj.image = getImageInBox(rectangles[scanner.CurObject]);
+                }
+                showSelectedObject(vobj);
                 refreshTimer.Start();
             }
+        }
+
+        private Bitmap getImageInBox(Rectangle rectangle)
+        {
+            Bitmap image = new Bitmap(rectangle.Width, rectangle.Height);
+
+            using (var graphics = Graphics.FromImage(image))
+            {
+                graphics.DrawImage(plainView, new Rectangle(0, 0, image.Width, image.Height), rectangle, GraphicsUnit.Pixel);
+            }
+
+            return image;
         }
 
         // Opens the admin panel for editing tags
@@ -255,7 +264,9 @@ namespace VisionWithGrace
             }
             else if (Mstep == 3)
             {
-                showSelectedObject(new Rectangle(x0, y0, x1 - x0, y1 - y0), null);
+                VObject vObject = new VObject();
+                vObject.image = getImageInBox(new Rectangle(x0, y0, x1 - x0, y1 - y0));
+                showSelectedObject(vObject);
                 y0 = 0;
                 y1 = plainView.Size.Height;
                 x0 = 0;

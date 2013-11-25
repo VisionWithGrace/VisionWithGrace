@@ -8,46 +8,33 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using DatabaseModule;
+
 namespace VisionWithGrace
 {
     public partial class SelectedObjectForm : Form
     {
-        public SelectedObjectForm(Bitmap image, string name, List<string> tags)
+        DatabaseInterface dbInterface = new DatabaseInterface();
+        VObject selectedVObject;
+
+        public SelectedObjectForm(VObject obj)
         {
             InitializeComponent();
+            selectedVObject = obj;
 
-            this.pictureBox1.Image = image;
-            if (name != null)
+            this.pictureBox1.Image = obj.image;
+            if (obj.name != "")
             {
-                this.Text = name + " selected!";
-                this.textBoxName.Text = name;
-
-                //Serialize tags
-                string tags_string = "";
-                foreach(string tag in tags)
-                {
-                    tags_string += (tag + ", ");
-                }
-                this.textBoxTags.Text = tags_string;
+                this.Text = obj.name + " selected!";
             }
+            this.vObjectForm1.setVObject(obj);
         }
 
         private void buttonSave_Click(object sender, EventArgs e)
         {
-            VObject obj = new VObject();
-
-            obj.image = this.pictureBox1.Image as Bitmap;
-            
-            // Get name, default to "Unnamed Object"
-            obj.name = this.textBoxName.Text;
-            if (obj.name == "")
-                obj.name = "Unnamed Object";
-
-            // Parse tags
-            string tagString = this.textBoxTags.Text;
-            obj.tags = tagString.Split(' ').ToList<string>();
-
-            obj.save();
+            selectedVObject.name = this.vObjectForm1.VObjectName;
+            selectedVObject.tags = this.vObjectForm1.VObjectTags;
+            selectedVObject.save();
 
             // close form
             this.Close();
@@ -57,5 +44,10 @@ namespace VisionWithGrace
         {
             this.Close();
         }
+
+
+
+
+
     }
 }

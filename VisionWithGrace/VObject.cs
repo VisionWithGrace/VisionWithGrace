@@ -10,9 +10,10 @@ using System.Drawing;
  * */
 namespace VisionWithGrace
 {
-    class VObject
+    public class VObject
     {
-        public string name = "Unnamed Object";
+        private string id = null;
+        public string name = "";
         public List<string> tags = new List<string>();
         public Bitmap image;
 
@@ -22,6 +23,8 @@ namespace VisionWithGrace
 
         public VObject(Dictionary<string, object> fromDictionary)
         {
+            id = fromDictionary["_id"].ToString();
+
             if (fromDictionary.Keys.Contains("name"))
                 name = fromDictionary["name"] as string;
 
@@ -46,13 +49,19 @@ namespace VisionWithGrace
             // structure data for database
             Dictionary<string, object> data = new Dictionary<string,object>();
 
-            if (name != "Unnamed Object")
-                data["name"] = name;
-            
+            data["name"] = name;
             data["tags"] = tags;
-            
-            // save item
-            db.saveSelection(image, data);
+
+            if (id != null)
+            {
+                db.updateSelectionInfo(id, "name", name);
+                //db.updateSelectionInfo(id, "tags", tags);
+            }
+            else
+            {
+                // save item
+                db.saveSelection(image, data);
+            }
         }
     }
 }

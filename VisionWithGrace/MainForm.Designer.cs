@@ -35,10 +35,10 @@
             this.adminToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.adminPanelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mainDisplay = new System.Windows.Forms.PictureBox();
-            this.mainDisplayLayout = new System.Windows.Forms.TableLayoutPanel();
             this.manualToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.manualScanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mainDisplay = new System.Windows.Forms.PictureBox();
+            this.mainDisplayLayout = new System.Windows.Forms.TableLayoutPanel();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mainDisplay)).BeginInit();
@@ -100,15 +100,30 @@
             // adminPanelToolStripMenuItem
             // 
             this.adminPanelToolStripMenuItem.Name = "adminPanelToolStripMenuItem";
-            this.adminPanelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.adminPanelToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.adminPanelToolStripMenuItem.Text = "Admin Panel";
             this.adminPanelToolStripMenuItem.Click += new System.EventHandler(this.adminPanelToolStripMenuItem_Click);
             // 
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
+            // 
+            // manualToolStripMenuItem
+            // 
+            this.manualToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.manualScanToolStripMenuItem});
+            this.manualToolStripMenuItem.Name = "manualToolStripMenuItem";
+            this.manualToolStripMenuItem.Size = new System.Drawing.Size(59, 20);
+            this.manualToolStripMenuItem.Text = "Manual";
+            // 
+            // manualScanToolStripMenuItem
+            // 
+            this.manualScanToolStripMenuItem.Name = "manualScanToolStripMenuItem";
+            this.manualScanToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.manualScanToolStripMenuItem.Text = "Manual Scan";
+            this.manualScanToolStripMenuItem.Click += new System.EventHandler(this.manualScanToolStripMenuItem_Click);
             // 
             // mainDisplay
             // 
@@ -149,21 +164,6 @@
             this.mainDisplayLayout.Size = new System.Drawing.Size(1062, 576);
             this.mainDisplayLayout.TabIndex = 0;
             // 
-            // manualToolStripMenuItem
-            // 
-            this.manualToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.manualScanToolStripMenuItem});
-            this.manualToolStripMenuItem.Name = "manualToolStripMenuItem";
-            this.manualToolStripMenuItem.Size = new System.Drawing.Size(59, 20);
-            this.manualToolStripMenuItem.Text = "Manual";
-            // 
-            // manualScanToolStripMenuItem
-            // 
-            this.manualScanToolStripMenuItem.Name = "manualScanToolStripMenuItem";
-            this.manualScanToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.manualScanToolStripMenuItem.Text = "Manual Scan";
-            this.manualScanToolStripMenuItem.Click += new System.EventHandler(this.manualScanToolStripMenuItem_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -176,6 +176,7 @@
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Vision With Grace";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Shown += new System.EventHandler(this.Form1_Shown);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.startScanning);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.stopScanning);
