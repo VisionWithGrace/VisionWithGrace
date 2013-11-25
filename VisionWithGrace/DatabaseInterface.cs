@@ -21,6 +21,8 @@ using System.Text;
 using System.Diagnostics;
 using System.Linq;
 using DatabaseModule;
+using VisionWithGrace;
+
 
 
 namespace DatabaseModule
@@ -71,7 +73,7 @@ namespace DatabaseModule
         private void Insert(BsonDocument documentToAdd)
         {
             objectsCollection.Insert(documentToAdd);
-
+            
         }
         //inserts a bson document into specified collection
         //documentToAdd is a JSON-formatted key-value dicitonary
@@ -80,9 +82,16 @@ namespace DatabaseModule
             BsonDocument docToInsert = new BsonDocument(documentToAdd);
             this.Insert(docToInsert);
         }
+
+        public void InsertImage(Image image, Dictionary<string, object> info)
+        {
+            string filename = RandomString(10) + ".jpg";
+            InsertImage(image, filename, info);
+        }
+
         //inserts an image with the given metadata into specified collection
         //details should be a JSON-formatted string (dictionary of key-value pairs)
-        public void InsertImage(Image image, string filename, Dictionary<string, object> info)
+        private void InsertImage(Image image, string filename, Dictionary<string, object> info)
         {
 
             using (var fs = new System.IO.MemoryStream())
@@ -126,7 +135,7 @@ namespace DatabaseModule
 
         }
         //get image associated with document
-        public Image GetImage(BsonDocument document)
+        private Image GetImage(BsonDocument document)
         {
             var filename = document["filename"];
             System.Console.Write(filename);
@@ -143,6 +152,7 @@ namespace DatabaseModule
                 return image;
 
             }
+            
         }
 
 
@@ -150,7 +160,7 @@ namespace DatabaseModule
             edit object where identifyingKey= identifyingValue (i.e., “location” = “home”, or “id” = 7).
             Leaning towards some stack overflow-ish tagging system where Grace’s aid is able to add objects to some general tag (home, school, but in addition things like food, toys)
         */
-        void modifyObject(string identifyingKey, string identifyingValue, string fieldName, BsonValue changedValue)
+        private void modifyObject(string identifyingKey, string identifyingValue, string fieldName, BsonValue changedValue)
         {
             MongoCursor objectsToEdit = Get(Query.EQ(identifyingKey, identifyingValue));
             foreach (BsonDocument doc in objectsToEdit)
@@ -166,7 +176,7 @@ namespace DatabaseModule
          * Reference: http://stackoverflow.com/questions/11553481/updating-elements-inside-of-an-array-within-a-bsondocument
          *            http://stackoverflow.com/questions/6260936/adding-bson-array-to-bsondocument-in-mongodb
          */
-        void addTags(string identifyingKey, string identifyingValue, List<string> tagsToAdd)
+        public void addTags(string identifyingKey, string identifyingValue, List<string> tagsToAdd)
         {
             MongoCursor objectsToTag = Get(Query.EQ(identifyingKey, identifyingValue));
             foreach (BsonDocument doc in objectsToTag)
@@ -191,7 +201,7 @@ namespace DatabaseModule
             Clears tags specified by oldTags.
             Can add functionality to clearAllTags if it's needed
         */
-        void clearTags(string identifyingKey, string identifyingValue, List<string> tagsToRemove)
+        public void clearTags(string identifyingKey, string identifyingValue, List<string> tagsToRemove)
         {
             MongoCursor docsToClearTags = Get(Query.EQ(identifyingKey, identifyingValue));
             foreach (BsonDocument doc in docsToClearTags)
@@ -217,7 +227,7 @@ namespace DatabaseModule
          * Returns a list of tags associated with an object that matches the key value pair passed in
          * Currently requiring the key value pair to return one unique element, will return null otherwise
          */
-        List<string> getTags(string identifyingKey, string identifyingValue)
+        public List<string> getTags(string identifyingKey, string identifyingValue)
         {
             MongoCursor matchedObjects = Get(Query.EQ(identifyingKey, identifyingValue));
             List<string> foundTags = new List<string>();
@@ -259,10 +269,7 @@ namespace DatabaseModule
             return this.Get(Query.EQ(key, value));
 
         }
-        public Dictionary<string, object> GetOne(string key, string value)
-        {
-            return objectsDatabase.GetCollection(collectionName).FindOne(Query.EQ(key, value)).ToDictionary();
-        }
+        
         //queryDict: a Dictionary of key-value pairs
         //returns a cursor which points to the set of elements which match the AND of every key-value pair
         //in queryDict
@@ -325,22 +332,9 @@ namespace DatabaseModule
 
 
         }
-        //Retrieve a previous selection, where key=value
-        //Returns a Dictionary containing info about the selection + the cropped image
-        //if no result found, returns null
-        public Dictionary<string, object> getSelection(string key, string value)
-        {
 
-            BsonDocument matchedDoc = objectsCollection.FindOneAs<BsonDocument>(Query.EQ(key, value));
-            if (matchedDoc != null)
-            {
-                Image image = GetImage(matchedDoc);
-                Dictionary<string, object> dict = matchedDoc.ToDictionary();
-                dict.Add("image", image);
-                return dict;
-            }
-            return null;
-        }
+
+       
 
 
         //Updates a selection with the given id, to have the given key/value pair in its info
@@ -366,43 +360,6 @@ namespace DatabaseModule
             document.Set("_id", new ObjectId(id));
             objectsCollection.Save(document);
         }
-        //Retrieves all objects that do not have a 'name' attribute
-        //Returns a List containting Dictionaries of key/value pairs representing a selection
-        //If no objects found without names, will return an empty list
-        public List<Dictionary<string, object>> getUnnamedObjects()
-        {
-            List<Dictionary<string, object>> list = new List<Dictionary<string, object>>();
-
-         
-
-            MongoCursor cursor = Get(Query.EQ("name", ""));
-            foreach (BsonDocument document in cursor)
-            {
-                Image image = GetImage(document);
-                Dictionary<string, object> listItem = document.ToDictionary();
-                listItem.Add("image", image);
-                list.Add(listItem);
-            }
-            return list;
-
-        }
-
-        public List<Dictionary<string, object>> getAllObjects()
-        {
-            
-            MongoCursor cursor = objectsCollection.FindAllAs<BsonDocument>();
-
-            List<Dictionary<string, object>> list = new List<Dictionary<string, object>>();
-            foreach (BsonDocument document in cursor)
-            {
-                Dictionary<string, object> listItem = document.ToDictionary();
-                Image image = GetImage(document);
-                listItem.Add("image", image);
-                list.Add(listItem);
-            }
-            return list;
-        }
-
         private int compareDocsTimestamp(Dictionary<string, object> dict1, Dictionary<string, object> dict2)
         {
             int frequencyDiff = (int)(dict1["count"]) - (int)(dict2["count"]);
@@ -413,9 +370,66 @@ namespace DatabaseModule
 
 
         }
+        //get a vobject where key=value
+        public VObject getOne(string key, string value)
+        {
+            var dict = objectsCollection.FindOneAs<BsonDocument>(Query.EQ(key, value)).ToDictionary();
+            return new VObject(dict);
+        }
+
+        //return previous selections where key=value
+        public List<VObject> getSelections(string key, string value)
+        {
+
+            List<VObject> vObjects = new List<VObject>();
+            var matchedDocs = objectsCollection.FindAs<BsonDocument>(Query.EQ(key, value));
+            foreach (BsonDocument doc in matchedDocs)
+            {
+                Image image = GetImage(doc);
+                Dictionary<string, object> dict = doc.ToDictionary();
+                dict.Add("image", image);
+                vObjects.Add(new VObject(dict));
+            }
+            return vObjects;
+        }
+        //Retrieves all objects with a blank 'name' attribute
+        //If no objects found without names, will return an empty list
+        public List<VObject> getUnnamedObjects()
+        {
+            List<VObject> list = new List<VObject>();
+
+            MongoCursor cursor = Get(Query.EQ("name", ""));
+            foreach (BsonDocument document in cursor)
+            {
+                Image image = GetImage(document);
+                Dictionary<string, object> listItem = document.ToDictionary();
+                listItem.Add("image", image);
+                list.Add(new VObject(listItem));
+            }
+            return list;
+
+        }
+
+        public List<VObject> getAllObjects()
+        {
+            
+            MongoCursor cursor = objectsCollection.FindAllAs<BsonDocument>();
+
+            List<VObject> list = new List<VObject>();
+            foreach (BsonDocument document in cursor)
+            {
+                Dictionary<string, object> listItem = document.ToDictionary();
+                Image image = GetImage(document);
+                listItem.Add("image", image);
+                list.Add(new VObject(listItem));
+            }
+            return list;
+        }
+
+       
         //given a list of tags describing a current context, return a list of objects that are tagged
         //with these tags
-        public List<Dictionary<string, object>> getLikelyObjects(List<string> tags, int maxResults = 99)
+        public List<VObject> getLikelyObjects(List<string> tags, int maxResults = 99)
         {
             List<Dictionary<string, object>> likelyObjects = new List<Dictionary<string, object>>();
 
@@ -434,7 +448,13 @@ namespace DatabaseModule
             }
 
 
-            return likelyObjects;
+            List<VObject> vObjects = new List<VObject>();
+            foreach(var dict in likelyObjects)
+            {
+                vObjects.Add(new VObject(dict));
+            }
+
+            return vObjects;
         }
 
 

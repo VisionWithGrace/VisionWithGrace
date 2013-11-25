@@ -501,15 +501,15 @@ namespace VisionWithGrace
 
             //Begin to iterate through objects in the database, matching each in scene
             DatabaseInterface DbInterface = new DatabaseInterface();
-            List<Dictionary<string,object>> entries = DbInterface.getAllObjects();
+            List<VObject> entries = DbInterface.getAllObjects();
 
             int maxMatches = 0;
             VObject bestMatch = null;
 
-            foreach( Dictionary<string,object> entry in entries)
+            foreach( VObject entry in entries)
             {
                 //Convert bitmap to Emgu image
-                Image<Gray,byte> img = new Image<Gray,byte>(entry["image"] as Bitmap).Resize(5.0, INTER.CV_INTER_NN);
+                Image<Gray,byte> img = new Image<Gray,byte>(entry.image as Bitmap).Resize(5.0, INTER.CV_INTER_NN);
 
                 long matchTime = new long();
                 int numMatches = new int();
@@ -522,7 +522,7 @@ namespace VisionWithGrace
                 if ((numMatches >= 4) && (numMatches > maxMatches))
                 {
                     maxMatches = numMatches;
-                    bestMatch = new VObject(entry);
+                    bestMatch = entry;
                 }
             }
 

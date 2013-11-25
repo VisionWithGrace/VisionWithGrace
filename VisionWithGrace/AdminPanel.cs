@@ -63,7 +63,7 @@ namespace VisionWithGrace
 
         private void AdminPanel_Load(object sender, EventArgs e)
         {
-            objects = convertDictionariesToVObjects(dbInterface.getUnnamedObjects());
+            objects = dbInterface.getUnnamedObjects();
             refreshObjectsInView();
         }
 
@@ -75,7 +75,7 @@ namespace VisionWithGrace
 
         private void allObjectsButton_Click(object sender, EventArgs e)
         {
-            objects = convertDictionariesToVObjects(dbInterface.getAllObjects());
+            objects = dbInterface.getAllObjects();
             refreshObjectsInView();
         }
 

@@ -52,16 +52,7 @@ namespace VisionWithGrace
             data["name"] = name;
             data["tags"] = tags;
 
-            if (id != null)
-            {
-                db.updateSelectionInfo(id, "name", name);
-                //db.updateSelectionInfo(id, "tags", tags);
-            }
-            else
-            {
-                // save item
-                db.saveSelection(image, data);
-            }
+            db.saveSelection(image, data);
         }
     }
 }
