@@ -54,5 +54,12 @@ namespace VisionWithGrace
 
             db.saveSelection(image, data);
         }
+
+        public void delete()
+        {
+            DatabaseModule.DatabaseInterface db = new DatabaseModule.DatabaseInterface();
+            
+           
+        }
     }
 }
