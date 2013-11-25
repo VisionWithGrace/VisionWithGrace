@@ -27,6 +27,7 @@ namespace VisionWithGrace
 
         Scanner scanner = new Scanner();
         Timer refreshTimer = new Timer();
+        bool readyForNewFrame = new bool();
 
         int x, x0, x1, y, y0, y1, Mstep, diff, scale;
         bool isManual = false;
@@ -53,18 +54,20 @@ namespace VisionWithGrace
             if (cv.isUsingKinect)
             {
                 cv.set_handler(new EventHandler<ColorImageFrameReadyEventArgs>(this.colorFrameReady));
+                this.readyForNewFrame = true;
             }
             else
             {
                 cv.set_handler(new EventHandler(this.colorFrameReady));
             }
 
-            scanner.OnChange = highlightNextBox;
+            scanner.OnChange = highlightNextBox;            
             refreshTimer.Start();
         }
 
         private void refreshView(object sender, EventArgs e)
         {
+            this.readyForNewFrame = true;
             getNewBoxes();
         }
 
@@ -75,9 +78,10 @@ namespace VisionWithGrace
         public void colorFrameReady(object sender, ColorImageFrameReadyEventArgs e)
         {
             ColorImageFrame colorFrame = e.OpenColorImageFrame();
-            if (colorFrame != null)
+            if (this.readyForNewFrame && colorFrame != null)
             {
                 processFrame(ColorImageFrameToBitmap(colorFrame));
+                this.readyForNewFrame = false;
             }
         }
 
@@ -189,6 +193,8 @@ namespace VisionWithGrace
 
             e.SuppressKeyPress = true;
             refreshTimer.Stop();
+            this.readyForNewFrame = false;
+
             scanner.start();
         }
         private void stopScanning(object sender, KeyEventArgs e)
