@@ -7,8 +7,8 @@ using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.Kinect;
 using System.Media;
-using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Timers;
 
 using Emgu.CV;
 using Emgu.CV.CvEnum;
@@ -61,7 +61,6 @@ namespace VisionWithGrace
 
         //Simulation (for when Kinect is not present)
         private Bitmap simulationImage;
-        Timer timer = new Timer();
         
         public ComputerVision()
         {
@@ -82,8 +81,8 @@ namespace VisionWithGrace
 
                 //Set handler to read image when depth rolls in
                 sensor.AllFramesReady += this.GetFrames;
-                this.frameCounter = 0;
-                this.frameLimit = 30;
+                this.frameCounter = 4;
+                this.frameLimit = 3;
                 this.FramesReady = false;
 
                 //Attempt to start Kinect
@@ -106,10 +105,6 @@ namespace VisionWithGrace
             {
                 isUsingKinect = false;
                 simulationImage = new Bitmap("../../SampleImages/room.jpeg");
-
-                // Initialize timer to simulate Kinect frames
-                // 33 ms ~= 1/30 sec ~= 30 FPS
-                timer.Interval = 33;
             }
 
             this.objects = new List<Tuple<Rectangle,int>>();
@@ -401,7 +396,12 @@ namespace VisionWithGrace
             else
                 return (byte)255;
         }
-
+           
+        private static void getFrameTimeout(object source, ElapsedEventArgs e)
+        {
+            Console.WriteLine("The kinect did not serve a frame for 3 seconds. Exiting.");
+            throw new Exception();
+        } 
         public Bitmap getFrame()
         {
             if (isUsingKinect)
@@ -412,8 +412,35 @@ namespace VisionWithGrace
                 }
                 else
                 {
-                    return null;
+                    ColorImageFrame cFrame = this.sensor.ColorStream.OpenNextFrame(4000);
+                    if (cFrame != null)
+                    {
+                        return this.ColorImageFrameToBitmap(cFrame);
+                    }
+                    else
+                    {
+                        Console.WriteLine("The kinect did not serve a frame for 4 seconds. Exiting.");
+                        throw new Exception();
+                    }
                 }
+                /*System.Timers.Timer t = new System.Timers.Timer(10000);
+                t.Elapsed += getFrameTimeout;
+                t.Start();
+
+                int counter = 0;
+                while (!this.FramesReady)
+                {
+                    System.Threading.Thread.Sleep(500);
+                    if (counter++ > 8)
+                    {
+                        Console.WriteLine("The kinect did not serve a frame for 4 seconds. Exiting.");
+                        throw new Exception();
+                    }
+                }
+                else
+                {
+                    return new Bitmap(this.sensor.ColorStream.FrameWidth, this.sensor.ColorStream.FrameHeight);
+                }*/
             }
             else
             {
