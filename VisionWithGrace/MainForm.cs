@@ -82,26 +82,6 @@ namespace VisionWithGrace
             drawBoxes(nextHighlighted);
         }
         
-        // Don't touch this function, I didn't write it. It came from the interwebs.
-        public static Bitmap ColorImageFrameToBitmap(ColorImageFrame colorFrame)
-        {
-            byte[] pixelBuffer = new byte[colorFrame.PixelDataLength];
-            colorFrame.CopyPixelDataTo(pixelBuffer);
-
-            Bitmap bitmapFrame = new Bitmap(colorFrame.Width, colorFrame.Height,
-                PixelFormat.Format32bppRgb);
-
-            BitmapData bitmapData = bitmapFrame.LockBits(new Rectangle(0, 0,
-                                             colorFrame.Width, colorFrame.Height),
-            ImageLockMode.WriteOnly, bitmapFrame.PixelFormat);
-
-            IntPtr intPointer = bitmapData.Scan0;
-            Marshal.Copy(pixelBuffer, 0, intPointer, colorFrame.PixelDataLength);
-
-            bitmapFrame.UnlockBits(bitmapData);
-            return bitmapFrame;
-        }
-
         // Display selected object in closeUpDisplay
         private void showSelectedObject(VObject vobj)
         {
