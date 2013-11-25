@@ -434,22 +434,12 @@ namespace VisionWithGrace
                     this.DetectObjects();
                 }
 
-                List<Rectangle> unscaled = new List<Rectangle>();
+                List<Rectangle> unscaled_boxes = new List<Rectangle>();
                 foreach (Tuple<Rectangle, int> tuple in this.objects)
                 {
-                    unscaled.Add(tuple.Item1);
+                    unscaled_boxes.Add(tuple.Item1);
                 }
-                return unscaled;
-
-                /*
-                //Double each rectangle in size to pass to GUI
-                List<Rectangle> scaled = new List<Rectangle>();
-                foreach (Tuple<Rectangle,int> tuple in this.objects)
-                {
-                    scaled.Add(new Rectangle(tuple.Item1.X * 2, tuple.Item1.Y * 2, tuple.Item1.Width * 2, tuple.Item1.Height * 2)); 
-                }
-                return scaled;
-                */
+                return unscaled_boxes;
             }
 
             else
@@ -483,6 +473,9 @@ namespace VisionWithGrace
                     w = (rand.Next() % 120) + 40;
                     rand_objects.Add(new Rectangle(x, y, z, w));                   
                 }
+
+                //Sort boxes, left to right
+                rand_objects.Sort((a, b) => a.Left.CompareTo(b.Left));
                 return rand_objects;
             }           
         }
@@ -542,6 +535,8 @@ namespace VisionWithGrace
 
             return bestMatch;
         }
+
+
 
         // Don't touch this function, I didn't write it. It came from the interwebs.
         public Bitmap ColorImageFrameToBitmap(ColorImageFrame colorFrame)
