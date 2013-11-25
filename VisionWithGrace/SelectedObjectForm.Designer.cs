@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SelectedObjectForm));
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.buttonDiscard = new System.Windows.Forms.Button();
             this.buttonSave = new System.Windows.Forms.Button();
@@ -46,6 +47,7 @@
             // 
             // buttonDiscard
             // 
+            this.buttonDiscard.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonDiscard.Location = new System.Drawing.Point(543, 341);
             this.buttonDiscard.Name = "buttonDiscard";
             this.buttonDiscard.Size = new System.Drawing.Size(120, 73);
@@ -56,6 +58,7 @@
             // 
             // buttonSave
             // 
+            this.buttonSave.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonSave.Location = new System.Drawing.Point(417, 341);
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(120, 73);
@@ -70,6 +73,8 @@
             this.vObjectForm1.Name = "vObjectForm1";
             this.vObjectForm1.Size = new System.Drawing.Size(258, 202);
             this.vObjectForm1.TabIndex = 5;
+            this.vObjectForm1.VObjectName = "";
+            this.vObjectForm1.VObjectTags = ((System.Collections.Generic.List<string>)(resources.GetObject("vObjectForm1.VObjectTags")));
             // 
             // SelectedObjectForm
             // 
@@ -80,8 +85,14 @@
             this.Controls.Add(this.buttonDiscard);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.vObjectForm1);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "SelectedObjectForm";
-            this.Text = "SelectedObjectForm";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "Edit Selected Object";
+            this.TopMost = true;
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
