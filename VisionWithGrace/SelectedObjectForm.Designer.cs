@@ -40,7 +40,7 @@
             this.buttonDiscard.Location = new System.Drawing.Point(543, 341);
             this.buttonDiscard.Name = "buttonDiscard";
             this.buttonDiscard.Size = new System.Drawing.Size(120, 73);
-            this.buttonDiscard.TabIndex = 3;
+            this.buttonDiscard.TabIndex = 0;
             this.buttonDiscard.Text = "Discard";
             this.buttonDiscard.UseVisualStyleBackColor = true;
             this.buttonDiscard.Click += new System.EventHandler(this.buttonDiscard_Click);
@@ -51,7 +51,7 @@
             this.buttonSave.Location = new System.Drawing.Point(417, 341);
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(120, 73);
-            this.buttonSave.TabIndex = 4;
+            this.buttonSave.TabIndex = 1;
             this.buttonSave.Text = "Save";
             this.buttonSave.UseVisualStyleBackColor = true;
             this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
@@ -61,7 +61,7 @@
             this.vObjectForm1.Location = new System.Drawing.Point(12, 12);
             this.vObjectForm1.Name = "vObjectForm1";
             this.vObjectForm1.Size = new System.Drawing.Size(650, 401);
-            this.vObjectForm1.TabIndex = 5;
+            this.vObjectForm1.TabIndex = 2;
             this.vObjectForm1.VObjectName = "";
             this.vObjectForm1.VObjectTags = ((System.Collections.Generic.List<string>)(resources.GetObject("vObjectForm1.VObjectTags")));
             // 

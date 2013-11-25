@@ -44,7 +44,7 @@
             this.buttonRemoveTag.Location = new System.Drawing.Point(423, 81);
             this.buttonRemoveTag.Name = "buttonRemoveTag";
             this.buttonRemoveTag.Size = new System.Drawing.Size(18, 23);
-            this.buttonRemoveTag.TabIndex = 23;
+            this.buttonRemoveTag.TabIndex = 4;
             this.buttonRemoveTag.Text = "-";
             this.buttonRemoveTag.UseVisualStyleBackColor = true;
             this.buttonRemoveTag.Click += new System.EventHandler(this.buttonRemoveTag_Click);
@@ -54,7 +54,7 @@
             this.buttonAddTag.Location = new System.Drawing.Point(423, 52);
             this.buttonAddTag.Name = "buttonAddTag";
             this.buttonAddTag.Size = new System.Drawing.Size(18, 23);
-            this.buttonAddTag.TabIndex = 22;
+            this.buttonAddTag.TabIndex = 2;
             this.buttonAddTag.Text = "+";
             this.buttonAddTag.UseVisualStyleBackColor = true;
             this.buttonAddTag.Click += new System.EventHandler(this.buttonAddTag_Click);
@@ -67,7 +67,7 @@
             this.listBoxTags.Location = new System.Drawing.Point(447, 52);
             this.listBoxTags.Name = "listBoxTags";
             this.listBoxTags.Size = new System.Drawing.Size(202, 108);
-            this.listBoxTags.TabIndex = 21;
+            this.listBoxTags.TabIndex = 3;
             // 
             // textBoxTag
             // 
@@ -77,7 +77,7 @@
             this.textBoxTag.Location = new System.Drawing.Point(447, 26);
             this.textBoxTag.Name = "textBoxTag";
             this.textBoxTag.Size = new System.Drawing.Size(202, 20);
-            this.textBoxTag.TabIndex = 20;
+            this.textBoxTag.TabIndex = 1;
             this.textBoxTag.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxTag_KeyDown);
             // 
             // label2
@@ -103,7 +103,7 @@
             this.textBoxName.Location = new System.Drawing.Point(447, 0);
             this.textBoxName.Name = "textBoxName";
             this.textBoxName.Size = new System.Drawing.Size(202, 20);
-            this.textBoxName.TabIndex = 17;
+            this.textBoxName.TabIndex = 0;
             // 
             // pictureBox1
             // 
