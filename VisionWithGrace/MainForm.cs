@@ -60,8 +60,8 @@ namespace VisionWithGrace
 
         private void refreshView(object sender, EventArgs e)
         {
-            rectangles = cv.getBoxes();
             plainView = cv.getFrame();
+            rectangles = cv.getBoxes();
 
             scanner.NumObjects = rectangles.Count;
             this.objectDetectedLabel.Text = rectangles.Count.ToString() + " objects detected";
