@@ -47,14 +47,13 @@ namespace VisionWithGrace
 
         }
 
-
         // Initialize Computer Vision and Kinect upon Load
         // Draw mockup GUI if no kinect is found
         private void Form1_Shown(object sender, EventArgs e)
         {
             this.mainDisplay.Focus();
 
-            // Get one refresh at beginning and then start the timer
+            // refresh once at the beginning and then start the timer
             refreshView(sender, e);
             refreshTimer.Start();
         }
@@ -91,12 +90,6 @@ namespace VisionWithGrace
             SelectedObjectForm selectedObjectForm;
             selectedObjectForm = new SelectedObjectForm(vobj);
             selectedObjectForm.ShowDialog();
-        }
-
-        // Re-generate rectangles
-        private void refreshButton_Click(object sender, EventArgs e)
-        {
-            refreshView(sender, e);
         }
         
         private void drawBoxes(int selected = -1)
