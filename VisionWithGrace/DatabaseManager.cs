@@ -19,6 +19,9 @@ using System.IO;
 using System.Drawing.Imaging;
 using System.Text;
 using System.Diagnostics;
+using System.Threading;
+using System.Net;
+using System.Net.Sockets;
 
 
 
@@ -87,19 +90,41 @@ namespace DatabaseModule
             }
             return false;
         }
+        private bool mongoListeningOnPort()
+        {
+            
+    
+            string hostname = "localhost";
+            int portno = 27017;
+            TcpClient tcpClient = new TcpClient();
+            try
+            {
+                tcpClient.Connect(hostname, portno);
+                tcpClient.Close();
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+            return true;
+    
+        }
         //launch the mongo process on the user's computer
         //assuming the mongo directory has a data\db directory for mongo inside
-        public void startMongoProcess()
+        //returns true if everything is ok, false if there was an error starting mongo
+        public bool startMongoProcess()
         {
             if (mongoIsRunning())
             {
-                return;
+                return true;
             }
 
             ProcessStartInfo start = new ProcessStartInfo();
             start.UseShellExecute = false;
             start.FileName = mongodir + @"\mongod.exe";
-            start.WindowStyle = ProcessWindowStyle.Hidden;
+            start.WindowStyle = ProcessWindowStyle.Normal;
             var directory = Directory.GetCurrentDirectory();
             var mongoDataDir = mongodir + @"\data\db";
             if (!Directory.Exists(mongoDataDir))
@@ -107,15 +132,13 @@ namespace DatabaseModule
                 Directory.CreateDirectory(mongoDataDir);
             }
             start.Arguments = "--dbpath " + mongoDataDir;
-            start.RedirectStandardOutput = true;
             mongod = Process.Start(start);
-            
-            var outputline = "";
-            do
-            {
-                outputline = mongod.StandardOutput.ReadLine();
-                System.Console.WriteLine(outputline);
-            } while (outputline == null || !outputline.Contains("waiting for connections"));
+
+            Thread.Sleep(500);
+            return mongoListeningOnPort();
+
+
+           
         }
         public void killMongoProcess()
         {
