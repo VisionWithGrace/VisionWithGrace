@@ -55,9 +55,12 @@ namespace VisionWithGrace
             }
             set
             {
-                foreach (string tag in value)
+                if (value != null)
                 {
-                    listBoxTags.Items.Add(tag);
+                    foreach (string tag in value)
+                    {
+                        listBoxTags.Items.Add(tag);
+                    }
                 }
             }
         }
