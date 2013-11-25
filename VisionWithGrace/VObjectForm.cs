@@ -20,6 +20,7 @@ namespace VisionWithGrace
         {
             InitializeComponent();
             loadAutocompleteOptions();
+            this.listBoxTags.Items.Clear();
         }
 
         public void setVObject(VObject obj)
