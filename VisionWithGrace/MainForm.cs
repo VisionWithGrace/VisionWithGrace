@@ -62,8 +62,7 @@ namespace VisionWithGrace
         private void refreshView(object sender, EventArgs e)
         {
             rectangles = cv.getBoxes();
-            //plainView = cv.getImage();
-            plainView = new Bitmap(400, 400);
+            plainView = cv.getFrame();
 
             scanner.NumObjects = rectangles.Count;
             this.objectDetectedLabel.Text = rectangles.Count.ToString() + " objects detected";
@@ -80,6 +79,7 @@ namespace VisionWithGrace
                 return;
 
             drawBoxes(nextHighlighted);
+            drawViews();
         }
         
         // Don't touch this function, I didn't write it. It came from the interwebs.
