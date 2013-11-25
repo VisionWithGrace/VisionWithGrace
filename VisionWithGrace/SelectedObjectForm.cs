@@ -22,7 +22,6 @@ namespace VisionWithGrace
             InitializeComponent();
             selectedVObject = obj;
 
-            this.pictureBox1.Image = obj.image;
             if (obj.name != "")
             {
                 this.Text = obj.name + " selected!";
