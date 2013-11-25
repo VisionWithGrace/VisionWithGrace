@@ -6,6 +6,9 @@ using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.Kinect;
+using System.Media;
+using System.Drawing;
+using System.Runtime.InteropServices;
 
 using Emgu.CV;
 using Emgu.CV.CvEnum;
@@ -111,22 +114,6 @@ namespace VisionWithGrace
 
             this.objects = new List<Tuple<Rectangle,int>>();
         }
-
-        public void set_handler(EventHandler handler)
-        {
-            if (isUsingKinect)
-                throw new InvalidOperationException();
-
-            timer.Tick += handler;
-            timer.Start();
-        }
-        public void set_handler(EventHandler<ColorImageFrameReadyEventArgs> handler)
-        {
-            if (!isUsingKinect)
-                throw new InvalidOperationException();
-
-            sensor.ColorFrameReady += handler;
-        }
         
         // Get depth and color frames from Kinect
         private void GetFrames(object sender, AllFramesReadyEventArgs e)
@@ -155,7 +142,7 @@ namespace VisionWithGrace
                 if (null != colorFrame && depthReceived)
                 {
                     //Copy color immediately to two EMGU images
-                    Bitmap colorBitmap = new Bitmap(MainForm.ColorImageFrameToBitmap(colorFrame));
+                    Bitmap colorBitmap = new Bitmap(this.ColorImageFrameToBitmap(colorFrame));
                     this.emguRawColor = new Image<Bgra, byte>(colorBitmap);
                     this.emguProcessedColor = new Image<Bgra, byte>(colorBitmap);
                     this.FramesReady = true;
@@ -393,7 +380,9 @@ namespace VisionWithGrace
 
             //Assign processed color
             //this.debugWindow.emguColorImageBox.Image = this.emguRawColor;
-            this.debugWindow.emguColorProcessedImageBox.Image = this.emguProcessedColor;
+            int windowWidth = this.debugWindow.emguColorProcessedImageBox.Width;
+            int windowHeight = this.debugWindow.emguColorProcessedImageBox.Height;
+            this.debugWindow.emguColorProcessedImageBox.Image = this.emguProcessedColor.Resize(windowWidth, windowHeight, INTER.CV_INTER_NN);
         }
 
         public static byte CalculateIntensityFromDistance(short distance)
@@ -412,6 +401,26 @@ namespace VisionWithGrace
             else
                 return (byte)255;
         }
+
+        public Bitmap getFrame()
+        {
+            if (isUsingKinect)
+            {
+                if (this.FramesReady)
+                {
+                    return this.emguRawColor.ToBitmap();
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return this.simulationImage;
+            }
+        }
+
 
         // Return boxes scaled to color resolution
         public List<Rectangle> getBoxes()
@@ -534,9 +543,24 @@ namespace VisionWithGrace
             return bestMatch;
         }
 
-        public Bitmap getSimulationImage()
+        // Don't touch this function, I didn't write it. It came from the interwebs.
+        public Bitmap ColorImageFrameToBitmap(ColorImageFrame colorFrame)
         {
-            return simulationImage;
+            byte[] pixelBuffer = new byte[colorFrame.PixelDataLength];
+            colorFrame.CopyPixelDataTo(pixelBuffer);
+
+            Bitmap bitmapFrame = new Bitmap(colorFrame.Width, colorFrame.Height,
+                System.Drawing.Imaging.PixelFormat.Format32bppRgb);
+
+            System.Drawing.Imaging.BitmapData bitmapData = bitmapFrame.LockBits(new Rectangle(0, 0,
+                                             colorFrame.Width, colorFrame.Height),
+            System.Drawing.Imaging.ImageLockMode.WriteOnly, bitmapFrame.PixelFormat);
+
+            IntPtr intPointer = bitmapData.Scan0;
+            Marshal.Copy(pixelBuffer, 0, intPointer, colorFrame.PixelDataLength);
+
+            bitmapFrame.UnlockBits(bitmapData);
+            return bitmapFrame;
         }
     }
 }
