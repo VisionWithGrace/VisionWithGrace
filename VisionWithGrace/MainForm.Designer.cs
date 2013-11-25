@@ -94,20 +94,20 @@
             this.settingsToolStripMenuItem});
             this.adminToolStripMenuItem.Name = "adminToolStripMenuItem";
             this.adminToolStripMenuItem.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.adminToolStripMenuItem.Size = new System.Drawing.Size(55, 20);
-            this.adminToolStripMenuItem.Text = "Admin";
+            this.adminToolStripMenuItem.Size = new System.Drawing.Size(108, 20);
+            this.adminToolStripMenuItem.Text = "Admininistration";
             // 
             // adminPanelToolStripMenuItem
             // 
             this.adminPanelToolStripMenuItem.Name = "adminPanelToolStripMenuItem";
-            this.adminPanelToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
-            this.adminPanelToolStripMenuItem.Text = "Admin Panel";
+            this.adminPanelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.adminPanelToolStripMenuItem.Text = "Edit Objects";
             this.adminPanelToolStripMenuItem.Click += new System.EventHandler(this.adminPanelToolStripMenuItem_Click);
             // 
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
             // 
             // manualToolStripMenuItem
@@ -115,14 +115,14 @@
             this.manualToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.manualScanToolStripMenuItem});
             this.manualToolStripMenuItem.Name = "manualToolStripMenuItem";
-            this.manualToolStripMenuItem.Size = new System.Drawing.Size(59, 20);
-            this.manualToolStripMenuItem.Text = "Manual";
+            this.manualToolStripMenuItem.Size = new System.Drawing.Size(102, 20);
+            this.manualToolStripMenuItem.Text = "Scanning Mode";
             // 
             // manualScanToolStripMenuItem
             // 
             this.manualScanToolStripMenuItem.Name = "manualScanToolStripMenuItem";
-            this.manualScanToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
-            this.manualScanToolStripMenuItem.Text = "Manual Scan";
+            this.manualScanToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.manualScanToolStripMenuItem.Text = "Free Form";
             this.manualScanToolStripMenuItem.Click += new System.EventHandler(this.manualScanToolStripMenuItem_Click);
             // 
             // mainDisplay
