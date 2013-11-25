@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AdminPanel));
             this.listBoxObjects = new System.Windows.Forms.ListBox();
             this.recentObjectsButton = new System.Windows.Forms.Button();
             this.allObjectsButton = new System.Windows.Forms.Button();
@@ -46,7 +47,7 @@
             // 
             // recentObjectsButton
             // 
-            this.recentObjectsButton.Location = new System.Drawing.Point(114, 308);
+            this.recentObjectsButton.Location = new System.Drawing.Point(12, 308);
             this.recentObjectsButton.Name = "recentObjectsButton";
             this.recentObjectsButton.Size = new System.Drawing.Size(140, 58);
             this.recentObjectsButton.TabIndex = 1;
@@ -56,7 +57,7 @@
             // 
             // allObjectsButton
             // 
-            this.allObjectsButton.Location = new System.Drawing.Point(329, 308);
+            this.allObjectsButton.Location = new System.Drawing.Point(178, 308);
             this.allObjectsButton.Name = "allObjectsButton";
             this.allObjectsButton.Size = new System.Drawing.Size(150, 58);
             this.allObjectsButton.TabIndex = 2;
@@ -66,7 +67,7 @@
             // 
             // buttonSave
             // 
-            this.buttonSave.Location = new System.Drawing.Point(502, 179);
+            this.buttonSave.Location = new System.Drawing.Point(910, 176);
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(75, 23);
             this.buttonSave.TabIndex = 10;
@@ -76,16 +77,18 @@
             // 
             // vObjectForm1
             // 
-            this.vObjectForm1.Location = new System.Drawing.Point(329, 12);
+            this.vObjectForm1.Location = new System.Drawing.Point(334, 12);
             this.vObjectForm1.Name = "vObjectForm1";
-            this.vObjectForm1.Size = new System.Drawing.Size(258, 202);
+            this.vObjectForm1.Size = new System.Drawing.Size(651, 402);
             this.vObjectForm1.TabIndex = 11;
+            this.vObjectForm1.VObjectName = "";
+            this.vObjectForm1.VObjectTags = ((System.Collections.Generic.List<string>)(resources.GetObject("vObjectForm1.VObjectTags")));
             // 
             // AdminPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(589, 378);
+            this.ClientSize = new System.Drawing.Size(990, 418);
             this.Controls.Add(this.buttonSave);
             this.Controls.Add(this.allObjectsButton);
             this.Controls.Add(this.recentObjectsButton);

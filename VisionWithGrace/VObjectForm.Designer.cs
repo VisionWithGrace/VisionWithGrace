@@ -35,11 +35,13 @@
             this.label2 = new System.Windows.Forms.Label();
             this.labelName = new System.Windows.Forms.Label();
             this.textBoxName = new System.Windows.Forms.TextBox();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonRemoveTag
             // 
-            this.buttonRemoveTag.Location = new System.Drawing.Point(24, 84);
+            this.buttonRemoveTag.Location = new System.Drawing.Point(423, 81);
             this.buttonRemoveTag.Name = "buttonRemoveTag";
             this.buttonRemoveTag.Size = new System.Drawing.Size(18, 23);
             this.buttonRemoveTag.TabIndex = 23;
@@ -49,7 +51,7 @@
             // 
             // buttonAddTag
             // 
-            this.buttonAddTag.Location = new System.Drawing.Point(24, 55);
+            this.buttonAddTag.Location = new System.Drawing.Point(423, 52);
             this.buttonAddTag.Name = "buttonAddTag";
             this.buttonAddTag.Size = new System.Drawing.Size(18, 23);
             this.buttonAddTag.TabIndex = 22;
@@ -62,7 +64,7 @@
             this.listBoxTags.FormattingEnabled = true;
             this.listBoxTags.Items.AddRange(new object[] {
             ""});
-            this.listBoxTags.Location = new System.Drawing.Point(48, 55);
+            this.listBoxTags.Location = new System.Drawing.Point(447, 52);
             this.listBoxTags.Name = "listBoxTags";
             this.listBoxTags.Size = new System.Drawing.Size(202, 108);
             this.listBoxTags.TabIndex = 21;
@@ -72,7 +74,7 @@
             this.textBoxTag.AcceptsTab = true;
             this.textBoxTag.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
             this.textBoxTag.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
-            this.textBoxTag.Location = new System.Drawing.Point(48, 29);
+            this.textBoxTag.Location = new System.Drawing.Point(447, 26);
             this.textBoxTag.Name = "textBoxTag";
             this.textBoxTag.Size = new System.Drawing.Size(202, 20);
             this.textBoxTag.TabIndex = 20;
@@ -81,7 +83,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(11, 32);
+            this.label2.Location = new System.Drawing.Point(410, 29);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(34, 13);
             this.label2.TabIndex = 19;
@@ -90,7 +92,7 @@
             // labelName
             // 
             this.labelName.AutoSize = true;
-            this.labelName.Location = new System.Drawing.Point(4, 6);
+            this.labelName.Location = new System.Drawing.Point(403, 3);
             this.labelName.Name = "labelName";
             this.labelName.Size = new System.Drawing.Size(38, 13);
             this.labelName.TabIndex = 18;
@@ -98,10 +100,19 @@
             // 
             // textBoxName
             // 
-            this.textBoxName.Location = new System.Drawing.Point(48, 3);
+            this.textBoxName.Location = new System.Drawing.Point(447, 0);
             this.textBoxName.Name = "textBoxName";
             this.textBoxName.Size = new System.Drawing.Size(202, 20);
             this.textBoxName.TabIndex = 17;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(400, 400);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 24;
+            this.pictureBox1.TabStop = false;
             // 
             // VObjectForm
             // 
@@ -114,8 +125,10 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.labelName);
             this.Controls.Add(this.textBoxName);
+            this.Controls.Add(this.pictureBox1);
             this.Name = "VObjectForm";
-            this.Size = new System.Drawing.Size(258, 202);
+            this.Size = new System.Drawing.Size(650, 401);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -130,5 +143,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label labelName;
         private System.Windows.Forms.TextBox textBoxName;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }
