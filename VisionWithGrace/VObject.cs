@@ -12,17 +12,13 @@ namespace VisionWithGrace
 {
     public class VObject
     {
-        private string id;
-        public string name;
-        public List<string> tags;
+        private string id = null;
+        public string name = "";
+        public List<string> tags = new List<string>();
         public Bitmap image;
 
         public VObject()
         {
-            id    = null;
-            name  = "";
-            tags  = new List<string>();
-            image = null;
         }
 
         public VObject(Dictionary<string, object> fromDictionary)
