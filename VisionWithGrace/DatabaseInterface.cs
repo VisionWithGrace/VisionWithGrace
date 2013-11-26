@@ -489,6 +489,21 @@ namespace DatabaseModule
             return tags.ToList<string>();
         }
         
+        //removes object with given id from collection
+        public void deleteObject(string _id)
+        {
+            BsonDocument docToDelete = objectsCollection.FindOneByIdAs<BsonDocument>(new ObjectId(_id));
+            if(docToDelete!=null)
+            {
+               
+                var dict = docToDelete.ToDictionary();
+                if(dict.ContainsKey("filename"))
+                {
+                    objectsDatabase.GridFS.Delete(dict["filename"] as string);
+                }
+            }
+            objectsCollection.Remove(Query.EQ("_id", new ObjectId(_id)));
+        }
     }
 
 }

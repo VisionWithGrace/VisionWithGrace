@@ -58,7 +58,7 @@ namespace VisionWithGrace
         public void delete()
         {
             DatabaseModule.DatabaseInterface db = new DatabaseModule.DatabaseInterface();
-            
+            db.deleteObject(this.id);
            
         }
     }
