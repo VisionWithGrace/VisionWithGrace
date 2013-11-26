@@ -1,7 +1,7 @@
 VisionWithGrace
 ===============
 
-## Prerequisits
+## Prerequisites
 
 * Kinect for Windows sensor
 * Windows 7+
