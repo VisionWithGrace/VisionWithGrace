@@ -32,8 +32,6 @@ namespace VisionWithGrace
         private const ColorImageFormat ColorFormat = ColorImageFormat.RgbResolution640x480Fps30;
 
         //Collecting frames
-        private int frameCounter;
-        private int frameLimit;
         private bool FramesReady;
 
         //Depth processing
@@ -80,9 +78,6 @@ namespace VisionWithGrace
                 this.depthPixels = new DepthImagePixel[this.sensor.DepthStream.FramePixelDataLength];
 
                 //Set handler to read image when depth rolls in
-                sensor.AllFramesReady += this.GetFrames;
-                this.frameCounter = 4;
-                this.frameLimit = 3;
                 this.FramesReady = false;
 
                 //Attempt to start Kinect
@@ -108,41 +103,6 @@ namespace VisionWithGrace
             }
 
             this.objects = new List<Tuple<Rectangle,int>>();
-        }
-        
-        // Get depth and color frames from Kinect
-        private void GetFrames(object sender, AllFramesReadyEventArgs e)
-        {
-            if (null == this.sensor)
-            {
-                //Kinect is shutting down or not connected
-                return;
-            }
-
-            bool depthReceived = false;
-
-            using (DepthImageFrame depthFrame = e.OpenDepthImageFrame())
-            {
-                if (null != depthFrame && (this.frameCounter++ >= this.frameLimit))
-                {
-                    // Copy the pixel data from the image to a temporary array
-                    depthFrame.CopyDepthImagePixelDataTo(this.depthPixels);
-                    depthReceived = true;
-                    this.frameCounter = 0;
-                }
-            }
-
-            using (ColorImageFrame colorFrame = e.OpenColorImageFrame())
-            {
-                if (null != colorFrame && depthReceived)
-                {
-                    //Copy color immediately to two EMGU images
-                    Bitmap colorBitmap = new Bitmap(this.ColorImageFrameToBitmap(colorFrame));
-                    this.emguRawColor = new Image<Bgra, byte>(colorBitmap);
-                    this.emguProcessedColor = new Image<Bgra, byte>(colorBitmap);
-                    this.FramesReady = true;
-                }
-            }
         }
 
         private void DetectObjects()
@@ -316,11 +276,6 @@ namespace VisionWithGrace
             this.debugWindow.emguDepthProcessedImageBox.Image = this.emguDepthWithBoxes;
             //***************************************************************//
 
-            //Resize color images to match depth resolution
-            //this.emguRawColor = this.emguRawColor.Resize(.5, INTER.CV_INTER_NN).Copy();
-            //this.emguProcessedColor = this.emguProcessedColor.Resize(0.5, INTER.CV_INTER_NN);
-
-
             //Assign colored pixels
             for (int fillY = this.emguProcessedColor.Height - 1; fillY > 0; fillY--)
             {
@@ -329,13 +284,6 @@ namespace VisionWithGrace
                     seedPoint = new Point(fillX, fillY);
                     if (!GoodColors.Contains((int)this.emguProcessedGrayDepth[seedPoint].Intensity))
                     {              
-                        /*
-                        double b = this.emguProcessedColor[seedPoint].Blue;
-                        double g = this.emguProcessedColor[seedPoint].Green;
-                        double r = this.emguProcessedColor[seedPoint].Red;
-                        double a = this.emguProcessedColor[seedPoint].Alpha;
-                        this.emguProcessedColor[seedPoint] = new Bgra(b, g, r, a / 8);
-                            */
                         this.emguProcessedColor[seedPoint] = new Bgra(0, 0, 0, 255);
                     }
                 }
@@ -396,51 +344,31 @@ namespace VisionWithGrace
             else
                 return (byte)255;
         }
-           
-        private static void getFrameTimeout(object source, ElapsedEventArgs e)
-        {
-            Console.WriteLine("The kinect did not serve a frame for 3 seconds. Exiting.");
-            throw new Exception();
-        } 
+
+        /* Get color color frame for display in GUI */
         public Bitmap getFrame()
         {
             if (isUsingKinect)
             {
-                if (this.FramesReady)
+                ColorImageFrame cFrame = this.sensor.ColorStream.OpenNextFrame(1000);
+                DepthImageFrame dFrame = this.sensor.DepthStream.OpenNextFrame(1000);
+                if (cFrame != null && null != dFrame)
                 {
-                    return this.emguRawColor.ToBitmap();
-                }
-                else
-                {
-                    ColorImageFrame cFrame = this.sensor.ColorStream.OpenNextFrame(4000);
-                    if (cFrame != null)
-                    {
-                        return this.ColorImageFrameToBitmap(cFrame);
-                    }
-                    else
-                    {
-                        Console.WriteLine("The kinect did not serve a frame for 4 seconds. Exiting.");
-                        throw new Exception();
-                    }
-                }
-                /*System.Timers.Timer t = new System.Timers.Timer(10000);
-                t.Elapsed += getFrameTimeout;
-                t.Start();
+                    dFrame.CopyDepthImagePixelDataTo(this.depthPixels);
+                    dFrame.Dispose();
 
-                int counter = 0;
-                while (!this.FramesReady)
-                {
-                    System.Threading.Thread.Sleep(500);
-                    if (counter++ > 8)
-                    {
-                        Console.WriteLine("The kinect did not serve a frame for 4 seconds. Exiting.");
-                        throw new Exception();
-                    }
+                    Bitmap colorBitmap = this.ColorImageFrameToBitmap(cFrame);
+                    this.emguRawColor = new Image<Bgra, byte>(colorBitmap);
+                    this.emguProcessedColor = new Image<Bgra, byte>(colorBitmap);
+                    this.FramesReady = true;
+
+                    return colorBitmap;
                 }
                 else
                 {
-                    return new Bitmap(this.sensor.ColorStream.FrameWidth, this.sensor.ColorStream.FrameHeight);
-                }*/
+                    Console.WriteLine("The kinect did not serve a frame for 1000 ms. Exiting.");
+                    throw new Exception();
+                }
             }
             else
             {
