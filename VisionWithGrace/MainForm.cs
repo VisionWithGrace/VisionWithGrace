@@ -27,7 +27,6 @@ namespace VisionWithGrace
 
         Scanner scanner = new Scanner();
         Timer refreshTimer = new Timer();
-        bool readyForNewFrame = new bool();
 
         int x, x0, x1, y, y0, y1, Mstep, diff, scale;
         bool isManual = false;
@@ -36,53 +35,39 @@ namespace VisionWithGrace
         {
             InitializeComponent();
 
+            // Initialize CV manager
+            cv = new ComputerVision();
+
+            // Set refresh defaults
             refreshTimer.Interval = 5000;
             refreshTimer.Tick += refreshView;
-        }
 
+            // Set scanner defaults
+            scanner.OnChange = highlightNextBox;
+
+        }
 
         // Initialize Computer Vision and Kinect upon Load
         // Draw mockup GUI if no kinect is found
         private void Form1_Shown(object sender, EventArgs e)
         {
             this.mainDisplay.Focus();
-            
-            // Start CV and set handler
-            cv = new ComputerVision();
 
-            // Set kinect handler
-            if (cv.isUsingKinect)
-            {
-                cv.set_handler(new EventHandler<ColorImageFrameReadyEventArgs>(this.colorFrameReady));
-                this.readyForNewFrame = true;
-            }
-            else
-            {
-                cv.set_handler(new EventHandler(this.colorFrameReady));
-            }
-
-            scanner.OnChange = highlightNextBox;            
+            // refresh once at the beginning and then start the timer
+            refreshView(sender, e);
             refreshTimer.Start();
         }
 
         private void refreshView(object sender, EventArgs e)
         {
-            this.readyForNewFrame = true;
-            getNewBoxes();
-        }
+            plainView = cv.getFrame();
+            rectangles = cv.getBoxes();
 
-        public void colorFrameReady(object sender, EventArgs e)
-        {
-            processFrame(cv.getSimulationImage());
-        }
-        public void colorFrameReady(object sender, ColorImageFrameReadyEventArgs e)
-        {
-            ColorImageFrame colorFrame = e.OpenColorImageFrame();
-            if (this.readyForNewFrame && colorFrame != null)
-            {
-                processFrame(ColorImageFrameToBitmap(colorFrame));
-                this.readyForNewFrame = false;
-            }
+            scanner.NumObjects = rectangles.Count;
+            this.objectDetectedLabel.Text = rectangles.Count.ToString() + " objects detected";
+
+            drawBoxes();
+            drawViews();
         }
 
         public void highlightNextBox(object sender, EventArgs e)
@@ -93,50 +78,9 @@ namespace VisionWithGrace
                 return;
 
             drawBoxes(nextHighlighted);
+            drawViews();
         }
-
-        private void processFrame(Bitmap bitmap)
-        {
-            // delete previous values
-            if (plainView != null)
-                plainView.Dispose();
-            plainView = new Bitmap(bitmap);
-
-            if (boxesView == null)
-                getNewBoxes();
-
-            // Redraw views on main display
-            if (mainDisplay.Image != null)
-                this.mainDisplay.Image.Dispose();
-            mainDisplay.Image = new Bitmap(plainView.Size.Width, plainView.Size.Height);
-            using (Graphics g = Graphics.FromImage(mainDisplay.Image))
-            {
-                // overlay the boxedView on the plainView
-                g.DrawImage(plainView, new Rectangle(0, 0, plainView.Width, plainView.Height));
-                g.DrawImage(boxesView, new Rectangle(0, 0, boxesView.Width, boxesView.Height));
-            }
-        }
-
-        // Don't touch this function, I didn't write it. It came from the interwebs.
-        public static Bitmap ColorImageFrameToBitmap(ColorImageFrame colorFrame)
-        {
-            byte[] pixelBuffer = new byte[colorFrame.PixelDataLength];
-            colorFrame.CopyPixelDataTo(pixelBuffer);
-
-            Bitmap bitmapFrame = new Bitmap(colorFrame.Width, colorFrame.Height,
-                PixelFormat.Format32bppRgb);
-
-            BitmapData bitmapData = bitmapFrame.LockBits(new Rectangle(0, 0,
-                                             colorFrame.Width, colorFrame.Height),
-            ImageLockMode.WriteOnly, bitmapFrame.PixelFormat);
-
-            IntPtr intPointer = bitmapData.Scan0;
-            Marshal.Copy(pixelBuffer, 0, intPointer, colorFrame.PixelDataLength);
-
-            bitmapFrame.UnlockBits(bitmapData);
-            return bitmapFrame;
-        }
-
+        
         // Display selected object in closeUpDisplay
         private void showSelectedObject(VObject vobj)
         {
@@ -147,29 +91,12 @@ namespace VisionWithGrace
             selectedObjectForm = new SelectedObjectForm(vobj);
             selectedObjectForm.ShowDialog();
         }
-
-        // Re-generate rectangles
-        private void refreshButton_Click(object sender, EventArgs e)
-        {
-            getNewBoxes();
-        }
-
-        private void getNewBoxes()
-        {
-            rectangles = cv.getBoxes();
-
-            scanner.NumObjects = rectangles.Count;
-            this.objectDetectedLabel.Text = rectangles.Count.ToString() + " objects detected";
-
-            drawBoxes();
-        }
-
+        
         private void drawBoxes(int selected = -1)
         {
             if (boxesView != null)
                 boxesView.Dispose();
             boxesView = new Bitmap(plainView.Size.Width, plainView.Size.Height);
-
 
             Pen redPen = new Pen(Color.Red, 3);
             Pen yellowPen = new Pen(Color.Yellow, 5);
@@ -186,6 +113,21 @@ namespace VisionWithGrace
             }
         }
 
+        private void drawViews()
+        {
+            // Dispose of previously drawn image
+            if (mainDisplay.Image != null)
+                this.mainDisplay.Image.Dispose();
+
+            mainDisplay.Image = new Bitmap(plainView.Size.Width, plainView.Size.Height);
+            using (Graphics g = Graphics.FromImage(mainDisplay.Image))
+            {
+                // overlay the boxedView on the plainView
+                g.DrawImage(plainView, new Rectangle(0, 0, plainView.Width, plainView.Height));
+                g.DrawImage(boxesView, new Rectangle(0, 0, boxesView.Width, boxesView.Height));
+            }
+        }
+
         private void startScanning(object sender, KeyEventArgs e)
         {
              if (e.KeyCode != Keys.Space)
@@ -193,8 +135,6 @@ namespace VisionWithGrace
 
             e.SuppressKeyPress = true;
             refreshTimer.Stop();
-            this.readyForNewFrame = false;
-
             scanner.start();
         }
         private void stopScanning(object sender, KeyEventArgs e)
@@ -249,18 +189,18 @@ namespace VisionWithGrace
             {
                 x0 = x;
                 x1 = x;
-                diff = 6;
+                diff = 1;
             }
             else if (Mstep == 1)
             {
                 y = y0;
-                diff = 10;
+                diff = 2;
             }
             else if (Mstep == 2)
             {
                 y0 = y;
                 y1 = y;
-                diff = 6;
+                diff = 1;
             }
             else if (Mstep == 3)
             {
@@ -272,7 +212,7 @@ namespace VisionWithGrace
                 x0 = 0;
                 x1 = plainView.Size.Width;
                 x = x0;
-                diff = 10;
+                diff = 2;
                 Mstep = -1;
             }
             Mstep++;
@@ -291,7 +231,7 @@ namespace VisionWithGrace
             boxesView = new Bitmap(plainView.Size.Width, plainView.Size.Height);
 
 
-            Pen redPen = new Pen(Color.Red, 5);
+            Pen redPen = new Pen(Color.Red, 4);
             //Pen yellowPen = new Pen(Color.Yellow, 5);
             if (Mstep == 0)
             {
@@ -351,6 +291,8 @@ namespace VisionWithGrace
                     y1 = y1 + diff + diff;
                 }
             }
+
+            drawViews();
         }
 
         private void manualScanToolStripMenuItem_Click(object sender, EventArgs e)
@@ -364,7 +306,7 @@ namespace VisionWithGrace
                 y1 = plainView.Size.Height;
                 x0 = 0;
                 x1 = plainView.Size.Width;
-                diff = 10;
+                diff = 2;
                 x = x0;
                 this.objectDetectedLabel.Text = "Manually Scanning View";
                 scale = (plainView.Size.Width - 1) / 600 + 1;

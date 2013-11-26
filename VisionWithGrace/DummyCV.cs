@@ -6,6 +6,9 @@ using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.Kinect;
+using System.Media;
+using System.Runtime.InteropServices;
+using System.Timers;
 
 using Emgu.CV;
 using Emgu.CV.CvEnum;
@@ -58,7 +61,6 @@ namespace VisionWithGrace
 
         //Simulation (for when Kinect is not present)
         private Bitmap simulationImage;
-        Timer timer = new Timer();
         
         public ComputerVision()
         {
@@ -79,8 +81,8 @@ namespace VisionWithGrace
 
                 //Set handler to read image when depth rolls in
                 sensor.AllFramesReady += this.GetFrames;
-                this.frameCounter = 0;
-                this.frameLimit = 30;
+                this.frameCounter = 4;
+                this.frameLimit = 3;
                 this.FramesReady = false;
 
                 //Attempt to start Kinect
@@ -103,29 +105,9 @@ namespace VisionWithGrace
             {
                 isUsingKinect = false;
                 simulationImage = new Bitmap("../../SampleImages/room.jpeg");
-
-                // Initialize timer to simulate Kinect frames
-                // 33 ms ~= 1/30 sec ~= 30 FPS
-                timer.Interval = 33;
             }
 
             this.objects = new List<Tuple<Rectangle,int>>();
-        }
-
-        public void set_handler(EventHandler handler)
-        {
-            if (isUsingKinect)
-                throw new InvalidOperationException();
-
-            timer.Tick += handler;
-            timer.Start();
-        }
-        public void set_handler(EventHandler<ColorImageFrameReadyEventArgs> handler)
-        {
-            if (!isUsingKinect)
-                throw new InvalidOperationException();
-
-            sensor.ColorFrameReady += handler;
         }
         
         // Get depth and color frames from Kinect
@@ -155,7 +137,7 @@ namespace VisionWithGrace
                 if (null != colorFrame && depthReceived)
                 {
                     //Copy color immediately to two EMGU images
-                    Bitmap colorBitmap = new Bitmap(MainForm.ColorImageFrameToBitmap(colorFrame));
+                    Bitmap colorBitmap = new Bitmap(this.ColorImageFrameToBitmap(colorFrame));
                     this.emguRawColor = new Image<Bgra, byte>(colorBitmap);
                     this.emguProcessedColor = new Image<Bgra, byte>(colorBitmap);
                     this.FramesReady = true;
@@ -393,7 +375,9 @@ namespace VisionWithGrace
 
             //Assign processed color
             //this.debugWindow.emguColorImageBox.Image = this.emguRawColor;
-            this.debugWindow.emguColorProcessedImageBox.Image = this.emguProcessedColor;
+            int windowWidth = this.debugWindow.emguColorProcessedImageBox.Width;
+            int windowHeight = this.debugWindow.emguColorProcessedImageBox.Height;
+            this.debugWindow.emguColorProcessedImageBox.Image = this.emguProcessedColor.Resize(windowWidth, windowHeight, INTER.CV_INTER_NN);
         }
 
         public static byte CalculateIntensityFromDistance(short distance)
@@ -412,6 +396,58 @@ namespace VisionWithGrace
             else
                 return (byte)255;
         }
+           
+        private static void getFrameTimeout(object source, ElapsedEventArgs e)
+        {
+            Console.WriteLine("The kinect did not serve a frame for 3 seconds. Exiting.");
+            throw new Exception();
+        } 
+        public Bitmap getFrame()
+        {
+            if (isUsingKinect)
+            {
+                if (this.FramesReady)
+                {
+                    return this.emguRawColor.ToBitmap();
+                }
+                else
+                {
+                    ColorImageFrame cFrame = this.sensor.ColorStream.OpenNextFrame(4000);
+                    if (cFrame != null)
+                    {
+                        return this.ColorImageFrameToBitmap(cFrame);
+                    }
+                    else
+                    {
+                        Console.WriteLine("The kinect did not serve a frame for 4 seconds. Exiting.");
+                        throw new Exception();
+                    }
+                }
+                /*System.Timers.Timer t = new System.Timers.Timer(10000);
+                t.Elapsed += getFrameTimeout;
+                t.Start();
+
+                int counter = 0;
+                while (!this.FramesReady)
+                {
+                    System.Threading.Thread.Sleep(500);
+                    if (counter++ > 8)
+                    {
+                        Console.WriteLine("The kinect did not serve a frame for 4 seconds. Exiting.");
+                        throw new Exception();
+                    }
+                }
+                else
+                {
+                    return new Bitmap(this.sensor.ColorStream.FrameWidth, this.sensor.ColorStream.FrameHeight);
+                }*/
+            }
+            else
+            {
+                return this.simulationImage;
+            }
+        }
+
 
         // Return boxes scaled to color resolution
         public List<Rectangle> getBoxes()
@@ -425,22 +461,12 @@ namespace VisionWithGrace
                     this.DetectObjects();
                 }
 
-                List<Rectangle> unscaled = new List<Rectangle>();
+                List<Rectangle> unscaled_boxes = new List<Rectangle>();
                 foreach (Tuple<Rectangle, int> tuple in this.objects)
                 {
-                    unscaled.Add(tuple.Item1);
+                    unscaled_boxes.Add(tuple.Item1);
                 }
-                return unscaled;
-
-                /*
-                //Double each rectangle in size to pass to GUI
-                List<Rectangle> scaled = new List<Rectangle>();
-                foreach (Tuple<Rectangle,int> tuple in this.objects)
-                {
-                    scaled.Add(new Rectangle(tuple.Item1.X * 2, tuple.Item1.Y * 2, tuple.Item1.Width * 2, tuple.Item1.Height * 2)); 
-                }
-                return scaled;
-                */
+                return unscaled_boxes;
             }
 
             else
@@ -474,6 +500,9 @@ namespace VisionWithGrace
                     w = (rand.Next() % 120) + 40;
                     rand_objects.Add(new Rectangle(x, y, z, w));                   
                 }
+
+                //Sort boxes, left to right
+                rand_objects.Sort((a, b) => a.Left.CompareTo(b.Left));
                 return rand_objects;
             }           
         }
@@ -534,9 +563,26 @@ namespace VisionWithGrace
             return bestMatch;
         }
 
-        public Bitmap getSimulationImage()
+
+
+        // Don't touch this function, I didn't write it. It came from the interwebs.
+        public Bitmap ColorImageFrameToBitmap(ColorImageFrame colorFrame)
         {
-            return simulationImage;
+            byte[] pixelBuffer = new byte[colorFrame.PixelDataLength];
+            colorFrame.CopyPixelDataTo(pixelBuffer);
+
+            Bitmap bitmapFrame = new Bitmap(colorFrame.Width, colorFrame.Height,
+                System.Drawing.Imaging.PixelFormat.Format32bppRgb);
+
+            System.Drawing.Imaging.BitmapData bitmapData = bitmapFrame.LockBits(new Rectangle(0, 0,
+                                             colorFrame.Width, colorFrame.Height),
+            System.Drawing.Imaging.ImageLockMode.WriteOnly, bitmapFrame.PixelFormat);
+
+            IntPtr intPointer = bitmapData.Scan0;
+            Marshal.Copy(pixelBuffer, 0, intPointer, colorFrame.PixelDataLength);
+
+            bitmapFrame.UnlockBits(bitmapData);
+            return bitmapFrame;
         }
     }
 }

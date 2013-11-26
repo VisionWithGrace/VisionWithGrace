@@ -30,7 +30,6 @@ namespace VisionWithGrace
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             int selectedIndex = this.listBoxObjects.SelectedIndex;
-
             if (selectedIndex == -1)
                 return;
 
@@ -51,16 +50,6 @@ namespace VisionWithGrace
             }
         }
 
-        private List<VObject> convertDictionariesToVObjects(List<Dictionary<string, object>> objects)
-        {
-            List<VObject> vObjects = new List<VObject>();
-            foreach (Dictionary<string, object> item in objects)
-            {
-                vObjects.Add(new VObject(item));
-            }
-            return vObjects;
-        }
-
         private void AdminPanel_Load(object sender, EventArgs e)
         {
             objects = dbInterface.getUnnamedObjects();
@@ -69,7 +58,9 @@ namespace VisionWithGrace
 
         private void recentObjectsButton_Click(object sender, EventArgs e)
         {
-            //objects = dbInterface.getRecentObjects();
+            List<string> tags = new List<string>();
+            tags.Add("home");
+            objects = dbInterface.getLikelyObjects(tags);
             refreshObjectsInView();
         }
 
@@ -87,6 +78,23 @@ namespace VisionWithGrace
             current.name = this.vObjectForm1.VObjectName;
             current.tags = this.vObjectForm1.VObjectTags;
             current.save();
+        }
+
+        private void buttonDelete_Click(object sender, EventArgs e)
+        {
+            // get currently selected object
+            int index = this.listBoxObjects.SelectedIndex;
+            VObject current = objects[index];
+            objects.RemoveAt(index);
+
+            refreshObjectsInView();
+            if (index >= this.listBoxObjects.Items.Count)
+                this.listBoxObjects.SelectedIndex = index - 1;
+            else
+                this.listBoxObjects.SelectedIndex = index;
+            this.listBox1_SelectedIndexChanged(sender, e);
+            
+            current.delete();
         }
     }
 }
