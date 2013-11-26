@@ -17,7 +17,7 @@ namespace VisionWithGrace
 {
    public static class DrawMatches
    {
-      public static void FindMatch(Image<Gray, Byte> modelImage, Image<Gray, byte> observedImage, out long matchTime, out int numMatches, out VectorOfKeyPoint modelKeyPoints, out VectorOfKeyPoint observedKeyPoints, out Matrix<int> indices, out Matrix<byte> mask, out HomographyMatrix homography)
+      public static void FindMatch(Image<Gray, Byte> modelImage, Image<Gray, byte> observedImage, out long matchTime, out int numMatches, out int numModelKeys, out int numObservedKeys, out VectorOfKeyPoint modelKeyPoints, out VectorOfKeyPoint observedKeyPoints, out Matrix<int> indices, out Matrix<byte> mask, out HomographyMatrix homography)
       {
          int k = 2;
          double uniquenessThreshold = 0.8;
@@ -25,8 +25,10 @@ namespace VisionWithGrace
          Stopwatch watch;
          homography = null;
          numMatches = 0;
+         numObservedKeys = 0;
+         numModelKeys = 0;
 
-         if (GpuInvoke.HasCuda)
+         if (false) //GpuInvoke.HasCuda)
          {
             GpuSURFDetector surfGPU = new GpuSURFDetector(surfCPU.SURFParams, 0.01f);
             using (GpuImage<Gray, Byte> gpuModelImage = new GpuImage<Gray, byte>(modelImage))
@@ -76,8 +78,11 @@ namespace VisionWithGrace
                      if (nonZeroCount >= 4)
                      {
                          homography = Features2DToolbox.GetHomographyMatrixFromMatchedFeatures(modelKeyPoints, observedKeyPoints, indices, mask, 2);
+                         numMatches = nonZeroCount;
+                         numModelKeys = modelKeyPoints.Size;
+                         numObservedKeys = observedKeyPoints.Size;
                      }
-                     numMatches = nonZeroCount;
+                     
                   }
 
                   watch.Stop();
@@ -112,8 +117,12 @@ namespace VisionWithGrace
             {
                nonZeroCount = Features2DToolbox.VoteForSizeAndOrientation(modelKeyPoints, observedKeyPoints, indices, mask, 1.5, 20);
                if (nonZeroCount >= 4)
-                  homography = Features2DToolbox.GetHomographyMatrixFromMatchedFeatures(modelKeyPoints, observedKeyPoints, indices, mask, 2);
-               numMatches = nonZeroCount;
+               {
+                   homography = Features2DToolbox.GetHomographyMatrixFromMatchedFeatures(modelKeyPoints, observedKeyPoints, indices, mask, 2);
+                   numMatches = nonZeroCount;
+                   numModelKeys = modelKeyPoints.Size;
+                   numObservedKeys = observedKeyPoints.Size;
+               }
             }
 
             watch.Stop();
@@ -128,7 +137,7 @@ namespace VisionWithGrace
       /// <param name="observedImage">The observed image</param>
       /// <param name="matchTime">The output total time for computing the homography matrix.</param>
       /// <returns>The model image and observed image, the matched features and homography projection.</returns>
-      public static Image<Bgr, Byte> Draw(Image<Gray, Byte> modelImage, Image<Gray, byte> observedImage, out long matchTime, out int numMatches)
+      public static Image<Bgr, Byte> Draw(Image<Gray, Byte> modelImage, Image<Gray, byte> observedImage, out long matchTime, out int numMatches, out int numModelKeys, out int numObservedKeys)
       {
          HomographyMatrix homography;
          VectorOfKeyPoint modelKeyPoints;
@@ -136,7 +145,7 @@ namespace VisionWithGrace
          Matrix<int> indices;
          Matrix<byte> mask;
 
-         FindMatch(modelImage, observedImage, out matchTime, out numMatches, out modelKeyPoints, out observedKeyPoints, out indices, out mask, out homography);
+         FindMatch(modelImage, observedImage, out matchTime, out numMatches, out numModelKeys, out numObservedKeys, out modelKeyPoints, out observedKeyPoints, out indices, out mask, out homography);
 
          
 

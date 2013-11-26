@@ -461,6 +461,8 @@ namespace VisionWithGrace
             List<VObject> entries = DbInterface.getAllObjects();
 
             int maxMatches = 0;
+            int maxModelKeys = 0;
+            int maxObservedKeys = 0;
             VObject bestMatch = null;
 
             foreach( VObject entry in entries)
@@ -469,17 +471,28 @@ namespace VisionWithGrace
                 Image<Gray,byte> img = new Image<Gray,byte>(entry.image as Bitmap).Resize(5.0, INTER.CV_INTER_NN);
 
                 long matchTime = new long();
-                int numMatches = new int();
-                this.matchResult = DrawMatches.Draw(target, img, out matchTime, out numMatches);
-      
-                this.debugWindow.emguColorImageBox.Image = this.matchResult;
-                this.debugWindow.Text = numMatches.ToString() + " matches.";
-
-                //Record best match
-                if ((numMatches >= 4) && (numMatches > maxMatches))
+                int numMatches = 0;
+                int numModelKeys = 0;
+                int numObservedKeys = 0;
+                try
                 {
-                    maxMatches = numMatches;
-                    bestMatch = entry;
+                    this.matchResult = DrawMatches.Draw(target, img, out matchTime, out numMatches, out numModelKeys, out numObservedKeys);
+
+                    this.debugWindow.emguColorImageBox.Image = this.matchResult;
+                    this.debugWindow.Text = numMatches.ToString() + " matches.";
+
+                    //Record best match
+                    if ((numMatches >= 10) && (numMatches > maxMatches))
+                    {
+                        maxMatches = numMatches;
+                        maxModelKeys = numModelKeys;
+                        maxObservedKeys = numObservedKeys;
+                        bestMatch = entry;
+                    }
+                }
+                catch
+                {
+
                 }
             }
 
