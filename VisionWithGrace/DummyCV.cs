@@ -350,8 +350,8 @@ namespace VisionWithGrace
         {
             if (isUsingKinect)
             {
-                ColorImageFrame cFrame = this.sensor.ColorStream.OpenNextFrame(1000);
-                DepthImageFrame dFrame = this.sensor.DepthStream.OpenNextFrame(1000);
+                ColorImageFrame cFrame = this.sensor.ColorStream.OpenNextFrame(4000);
+                DepthImageFrame dFrame = this.sensor.DepthStream.OpenNextFrame(4000);
                 if (cFrame != null && null != dFrame)
                 {
                     dFrame.CopyDepthImagePixelDataTo(this.depthPixels);
