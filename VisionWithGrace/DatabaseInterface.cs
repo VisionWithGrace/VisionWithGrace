@@ -67,6 +67,17 @@ namespace DatabaseModule
 
             return builder.ToString();
         }
+        private string tagsToString(List<string> tags)
+        {
+            string outString = "[";
+            foreach(string tag in tags)
+            {
+                outString += "'"+tag + "',";
+            }
+            outString.Remove(outString.LastIndexOf(','));
+            outString += "]";
+            return outString;
+        }
 
         //inserts a bson document into specified collection
         //BSON is a key-value dicitonary similar to JSON
@@ -434,7 +445,7 @@ namespace DatabaseModule
             List<Dictionary<string, object>> likelyObjects = new List<Dictionary<string, object>>();
 
             
-            var query = queryFromString("{tags:{ $in: " + tags.ToString() + "}}");
+            var query = queryFromString("{tags:{ $in: " + tagsToString(tags) + "}}");
 
             MongoCursor docsFound = Get(query);
             foreach (BsonDocument doc in docsFound)
@@ -442,6 +453,7 @@ namespace DatabaseModule
                 likelyObjects.Add(doc.ToDictionary());
             }
             likelyObjects.Sort(compareDocsTimestamp);
+            likelyObjects.Reverse();
             if (likelyObjects.Count > maxResults)
             {
                 likelyObjects.RemoveRange(maxResults, likelyObjects.Count - maxResults);
