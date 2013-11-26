@@ -1,6 +1,12 @@
 VisionWithGrace
 ===============
 
+## Description
+
+VisionWithGrace is a Windows application designed to help people with Cerebral Palsy in communicating their needs.
+The software uses a Microsoft Kinect to view and recognize objects in its field of view.
+Objects the Kinect recognizes will be highlighted in the GUI and holding down the spacebar will cycle through the highlighted objects.
+
 ## Prerequisites
 
 * Kinect for Windows sensor
