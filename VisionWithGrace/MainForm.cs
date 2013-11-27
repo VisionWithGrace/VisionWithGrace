@@ -375,5 +375,10 @@ namespace VisionWithGrace
                 scanner.update_interval();
             }
         }
+
+        private void computerVisionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.cv.OpenDebugWindow();
+        }
     }
 }

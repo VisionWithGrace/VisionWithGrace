@@ -41,6 +41,7 @@
             this.objectDetectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainDisplay = new System.Windows.Forms.PictureBox();
             this.mainDisplayLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.computerVisionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mainDisplay)).BeginInit();
@@ -81,7 +82,7 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.adminToolStripMenuItem,
             this.manualToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 377);
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.MaximumSize = new System.Drawing.Size(0, 24);
             this.menuStrip1.MinimumSize = new System.Drawing.Size(0, 24);
             this.menuStrip1.Name = "menuStrip1";
@@ -93,7 +94,8 @@
             // 
             this.adminToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.adminPanelToolStripMenuItem,
-            this.settingsToolStripMenuItem});
+            this.settingsToolStripMenuItem,
+            this.computerVisionToolStripMenuItem});
             this.adminToolStripMenuItem.Name = "adminToolStripMenuItem";
             this.adminToolStripMenuItem.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.adminToolStripMenuItem.Size = new System.Drawing.Size(108, 20);
@@ -102,14 +104,14 @@
             // adminPanelToolStripMenuItem
             // 
             this.adminPanelToolStripMenuItem.Name = "adminPanelToolStripMenuItem";
-            this.adminPanelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.adminPanelToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.adminPanelToolStripMenuItem.Text = "Edit Objects";
             this.adminPanelToolStripMenuItem.Click += new System.EventHandler(this.adminPanelToolStripMenuItem_Click);
             // 
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
@@ -142,11 +144,11 @@
             this.mainDisplay.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.mainDisplayLayout.SetColumnSpan(this.mainDisplay, 2);
             this.mainDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainDisplay.Location = new System.Drawing.Point(10, 10);
+            this.mainDisplay.Location = new System.Drawing.Point(10, 34);
             this.mainDisplay.Margin = new System.Windows.Forms.Padding(10);
             this.mainDisplay.Name = "mainDisplay";
             this.mainDisplayLayout.SetRowSpan(this.mainDisplay, 4);
-            this.mainDisplay.Size = new System.Drawing.Size(1042, 357);
+            this.mainDisplay.Size = new System.Drawing.Size(1042, 489);
             this.mainDisplay.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.mainDisplay.TabIndex = 0;
             this.mainDisplay.TabStop = false;
@@ -174,6 +176,13 @@
             this.mainDisplayLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.mainDisplayLayout.Size = new System.Drawing.Size(1062, 576);
             this.mainDisplayLayout.TabIndex = 0;
+            // 
+            // computerVisionToolStripMenuItem
+            // 
+            this.computerVisionToolStripMenuItem.Name = "computerVisionToolStripMenuItem";
+            this.computerVisionToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.computerVisionToolStripMenuItem.Text = "Computer Vision";
+            this.computerVisionToolStripMenuItem.Click += new System.EventHandler(this.computerVisionToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -217,6 +226,7 @@
         private System.Windows.Forms.ToolStripMenuItem manualToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem manualScanToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem objectDetectionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem computerVisionToolStripMenuItem;
 
     }
 }

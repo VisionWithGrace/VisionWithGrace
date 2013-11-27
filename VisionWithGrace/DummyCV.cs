@@ -95,7 +95,7 @@ namespace VisionWithGrace
                 this.subimages = new List<Image<Bgra,byte>>();
 
                 this.debugWindow = new cvDebug();
-                this.debugWindow.Show();
+                //this.debugWindow.Show();
             }
             // Open file dialog if no kinect is found
             catch
@@ -105,6 +105,12 @@ namespace VisionWithGrace
             }
 
             this.objects = new List<Tuple<Rectangle,int>>();
+        }
+
+        public void OpenDebugWindow()
+        {
+            //Open debug window
+            this.debugWindow.Show();
         }
 
         private void DetectObjects()
