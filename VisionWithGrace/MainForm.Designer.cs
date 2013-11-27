@@ -36,12 +36,12 @@
             this.adminToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.adminPanelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.computerVisionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.manualToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.manualScanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.objectDetectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainDisplay = new System.Windows.Forms.PictureBox();
             this.mainDisplayLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.computerVisionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mainDisplay)).BeginInit();
@@ -66,8 +66,8 @@
             this.objectDetectedLabel.Font = new System.Drawing.Font("Segoe UI", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.objectDetectedLabel.Name = "objectDetectedLabel";
             this.objectDetectedLabel.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.objectDetectedLabel.Size = new System.Drawing.Size(260, 37);
-            this.objectDetectedLabel.Text = "4 Objects Detected";
+            this.objectDetectedLabel.Size = new System.Drawing.Size(261, 37);
+            this.objectDetectedLabel.Text = "Waiting for picture";
             // 
             // labelTimeRemaining
             // 
@@ -114,6 +114,13 @@
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
+            // 
+            // computerVisionToolStripMenuItem
+            // 
+            this.computerVisionToolStripMenuItem.Name = "computerVisionToolStripMenuItem";
+            this.computerVisionToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.computerVisionToolStripMenuItem.Text = "Computer Vision";
+            this.computerVisionToolStripMenuItem.Click += new System.EventHandler(this.computerVisionToolStripMenuItem_Click);
             // 
             // manualToolStripMenuItem
             // 
@@ -176,13 +183,6 @@
             this.mainDisplayLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.mainDisplayLayout.Size = new System.Drawing.Size(1062, 576);
             this.mainDisplayLayout.TabIndex = 0;
-            // 
-            // computerVisionToolStripMenuItem
-            // 
-            this.computerVisionToolStripMenuItem.Name = "computerVisionToolStripMenuItem";
-            this.computerVisionToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.computerVisionToolStripMenuItem.Text = "Computer Vision";
-            this.computerVisionToolStripMenuItem.Click += new System.EventHandler(this.computerVisionToolStripMenuItem_Click);
             // 
             // MainForm
             // 
