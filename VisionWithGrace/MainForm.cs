@@ -40,6 +40,7 @@ namespace VisionWithGrace
 
             // Set refresh defaults
             refreshTimer.Interval = 5000;
+            refreshTimer.Interval = Properties.Settings.Default.refreshRate;
             refreshTimer.Tick += refreshView;
 
             // Set scanner defaults
@@ -68,6 +69,9 @@ namespace VisionWithGrace
 
             drawBoxes();
             drawViews();
+
+            refreshTimer.Interval = Properties.Settings.Default.refreshRate;
+            scanner.update_interval();
         }
 
         public void highlightNextBox(object sender, EventArgs e)
@@ -322,6 +326,14 @@ namespace VisionWithGrace
                 refreshTimer.Start();
                 isManual = false;
             }
+        }
+
+        // Listener for the settings button, updates refreshrate, scanrate, and box color
+        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            settingsPanel settings = new settingsPanel();
+            settings.Show();
+            refreshTimer.Interval = Properties.Settings.Default.refreshRate;
         }
     }
 }

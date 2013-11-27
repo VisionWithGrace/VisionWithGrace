@@ -79,7 +79,7 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.adminToolStripMenuItem,
             this.manualToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Location = new System.Drawing.Point(0, 377);
             this.menuStrip1.MaximumSize = new System.Drawing.Size(0, 24);
             this.menuStrip1.MinimumSize = new System.Drawing.Size(0, 24);
             this.menuStrip1.Name = "menuStrip1";
@@ -109,6 +109,7 @@
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
+            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // manualToolStripMenuItem
             // 
@@ -121,7 +122,7 @@
             // manualScanToolStripMenuItem
             // 
             this.manualScanToolStripMenuItem.Name = "manualScanToolStripMenuItem";
-            this.manualScanToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.manualScanToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.manualScanToolStripMenuItem.Text = "Free Form";
             this.manualScanToolStripMenuItem.Click += new System.EventHandler(this.manualScanToolStripMenuItem_Click);
             // 
@@ -131,11 +132,11 @@
             this.mainDisplay.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.mainDisplayLayout.SetColumnSpan(this.mainDisplay, 2);
             this.mainDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainDisplay.Location = new System.Drawing.Point(10, 34);
+            this.mainDisplay.Location = new System.Drawing.Point(10, 10);
             this.mainDisplay.Margin = new System.Windows.Forms.Padding(10);
             this.mainDisplay.Name = "mainDisplay";
             this.mainDisplayLayout.SetRowSpan(this.mainDisplay, 4);
-            this.mainDisplay.Size = new System.Drawing.Size(1042, 489);
+            this.mainDisplay.Size = new System.Drawing.Size(1042, 357);
             this.mainDisplay.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.mainDisplay.TabIndex = 0;
             this.mainDisplay.TabStop = false;
