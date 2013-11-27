@@ -335,6 +335,7 @@ namespace VisionWithGrace
             if (settings.DialogResult == DialogResult.OK)
             {
                 refreshTimer.Interval = Properties.Settings.Default.refreshRate;
+                drawBoxes();
                 scanner.update_interval();
             }
         }
