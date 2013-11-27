@@ -27,6 +27,7 @@ namespace VisionWithGrace
     {
         Bitmap plainView;
         Bitmap boxesView;
+        Bitmap dullView;
         List<Rectangle> rectangles;
         ComputerVision cv;
 
@@ -74,6 +75,7 @@ namespace VisionWithGrace
 
             drawBoxes();
             drawViews();
+            dullView = reduceSaturation(plainView);
 
         }
 
@@ -112,6 +114,10 @@ namespace VisionWithGrace
 
             using (var graphics = Graphics.FromImage(boxesView))
             {
+                if(selected != -1)
+                {
+                    graphics.DrawImage(dullView, new Rectangle(0, 0, plainView.Width, plainView.Height));
+                }
                 for (int i = 0; i < rectangles.Count; i++)
                 {
                     //if (selected != -1 && i == selected)
@@ -171,6 +177,22 @@ namespace VisionWithGrace
                 showSelectedObject(vobj);
                 refreshTimer.Start();
             }
+        }
+        private Bitmap reduceSaturation(Bitmap image)
+        {
+            Bitmap dull = new Bitmap(image.Width, image.Height);
+            for(int x = 0; x < image.Width; x++)
+            {
+                for(int y = 0; y < image.Height; y++)
+                {
+                    Color pixelColor = image.GetPixel(x, y);
+                    int G = (pixelColor.R + pixelColor.G + pixelColor.B) / 3;
+                    Color newColor = Color.FromArgb((4 * G + 2 * pixelColor.R) / 9, (4 * G + 2 * pixelColor.G) / 9, (4 * G + 2 * pixelColor.B) / 9);
+                    dull.SetPixel(x, y, newColor);
+                }
+            }
+
+            return dull;
         }
 
         private Bitmap getImageInBox(Rectangle rectangle)
@@ -258,6 +280,8 @@ namespace VisionWithGrace
             {
                 using (var graphics = Graphics.FromImage(boxesView))
                 {
+                    graphics.DrawImage(dullView, new Rectangle(0, 0, plainView.Width, plainView.Height));
+                    graphics.DrawImage(plainView, new Rectangle(x0, y0, x1 - x0, y1 - y0), new Rectangle(x0, y0, x1 - x0, y1 - y0), GraphicsUnit.Pixel);
                     graphics.DrawRectangle(redPen, new Rectangle(x0, y0, x1 - x0, y1 - y0));
                 }
                 x0 = x0 - diff;
@@ -273,6 +297,8 @@ namespace VisionWithGrace
             {
                 using (var graphics = Graphics.FromImage(boxesView))
                 {
+                    graphics.DrawImage(dullView, new Rectangle(0, 0, plainView.Width, plainView.Height));
+                    graphics.DrawImage(plainView, new Rectangle(x0, y0, x1 - x0, y1 - y0), new Rectangle(x0, y0, x1 - x0, y1 - y0), GraphicsUnit.Pixel);
                     graphics.DrawLine(redPen, new Point(x0, y), new Point(x1, y));
                     graphics.DrawLine(redPen, new Point(x0, y0), new Point(x0, y1));
                     graphics.DrawLine(redPen, new Point(x1, y0), new Point(x1, y1));
@@ -288,6 +314,8 @@ namespace VisionWithGrace
             {
                 using (var graphics = Graphics.FromImage(boxesView))
                 {
+                    graphics.DrawImage(dullView, new Rectangle(0, 0, plainView.Width, plainView.Height));
+                    graphics.DrawImage(plainView, new Rectangle(x0, y0, x1 - x0, y1 - y0), new Rectangle(x0, y0, x1 - x0, y1 - y0), GraphicsUnit.Pixel);
                     graphics.DrawRectangle(redPen, new Rectangle(x0, y0, x1 - x0, y1 - y0));
                 }
                 y0 = y0 - diff;
