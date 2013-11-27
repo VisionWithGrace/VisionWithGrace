@@ -38,6 +38,7 @@
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.manualToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.manualScanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.objectDetectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainDisplay = new System.Windows.Forms.PictureBox();
             this.mainDisplayLayout = new System.Windows.Forms.TableLayoutPanel();
             this.statusStrip1.SuspendLayout();
@@ -114,7 +115,8 @@
             // manualToolStripMenuItem
             // 
             this.manualToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.manualScanToolStripMenuItem});
+            this.manualScanToolStripMenuItem,
+            this.objectDetectionToolStripMenuItem});
             this.manualToolStripMenuItem.Name = "manualToolStripMenuItem";
             this.manualToolStripMenuItem.Size = new System.Drawing.Size(102, 20);
             this.manualToolStripMenuItem.Text = "Scanning Mode";
@@ -122,9 +124,16 @@
             // manualScanToolStripMenuItem
             // 
             this.manualScanToolStripMenuItem.Name = "manualScanToolStripMenuItem";
-            this.manualScanToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.manualScanToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.manualScanToolStripMenuItem.Text = "Free Form";
             this.manualScanToolStripMenuItem.Click += new System.EventHandler(this.manualScanToolStripMenuItem_Click);
+            // 
+            // objectDetectionToolStripMenuItem
+            // 
+            this.objectDetectionToolStripMenuItem.Name = "objectDetectionToolStripMenuItem";
+            this.objectDetectionToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.objectDetectionToolStripMenuItem.Text = "Object Detection";
+            this.objectDetectionToolStripMenuItem.Click += new System.EventHandler(this.objectDetectionToolStripMenuItem_Click);
             // 
             // mainDisplay
             // 
@@ -206,6 +215,7 @@
         private System.Windows.Forms.ToolStripStatusLabel labelTimeRemaining;
         private System.Windows.Forms.ToolStripMenuItem manualToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem manualScanToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem objectDetectionToolStripMenuItem;
 
     }
 }
