@@ -75,8 +75,6 @@ namespace VisionWithGrace
             drawBoxes();
             drawViews();
 
-            refreshTimer.Interval = Properties.Settings.Default.refreshRate;
-            scanner.update_interval();
         }
 
         public void highlightNextBox(object sender, EventArgs e)
@@ -109,7 +107,7 @@ namespace VisionWithGrace
                 boxesView.Dispose();
             boxesView = new Bitmap(plainView.Size.Width, plainView.Size.Height);
 
-            Pen redPen = new Pen(Color.Red, 3);
+            Pen redPen = new Pen(Properties.Settings.Default.boxColor, 3);
             Pen yellowPen = new Pen(Color.Yellow, 5);
 
             using (var graphics = Graphics.FromImage(boxesView))
@@ -236,8 +234,7 @@ namespace VisionWithGrace
                 boxesView.Dispose();
             boxesView = new Bitmap(plainView.Size.Width, plainView.Size.Height);
 
-
-            Pen redPen = new Pen(Color.Red, 4);
+            Pen redPen = new Pen(Properties.Settings.Default.boxColor, 4);
             //Pen yellowPen = new Pen(Color.Yellow, 5);
             if (Mstep == 0)
             {
@@ -333,8 +330,13 @@ namespace VisionWithGrace
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             settingsPanel settings = new settingsPanel();
-            settings.Show();
-            refreshTimer.Interval = Properties.Settings.Default.refreshRate;
+            settings.ShowDialog();
+            if (settings.DialogResult == DialogResult.OK)
+            {
+                refreshTimer.Interval = Properties.Settings.Default.refreshRate;
+                drawBoxes();
+                scanner.update_interval();
+            }
         }
     }
 }

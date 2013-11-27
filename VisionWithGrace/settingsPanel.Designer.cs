@@ -34,6 +34,12 @@
             this.scanTrackBar = new System.Windows.Forms.TrackBar();
             this.colorDropDown = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.okButton = new System.Windows.Forms.Button();
+            this.cancelButton = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.refreshTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.scanTrackBar)).BeginInit();
             this.SuspendLayout();
@@ -80,11 +86,21 @@
             // 
             // colorDropDown
             // 
+            this.colorDropDown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.colorDropDown.FormattingEnabled = true;
+            this.colorDropDown.Items.AddRange(new object[] {
+            "Red",
+            "Blue",
+            "Green",
+            "Purple",
+            "Pink",
+            "White",
+            "Black"});
             this.colorDropDown.Location = new System.Drawing.Point(123, 150);
             this.colorDropDown.Name = "colorDropDown";
             this.colorDropDown.Size = new System.Drawing.Size(121, 21);
             this.colorDropDown.TabIndex = 4;
+            this.colorDropDown.SelectedIndexChanged += new System.EventHandler(this.colorDropDown_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -95,11 +111,73 @@
             this.label1.TabIndex = 5;
             this.label1.Text = "Highlight Color";
             // 
+            // okButton
+            // 
+            this.okButton.Location = new System.Drawing.Point(103, 213);
+            this.okButton.Name = "okButton";
+            this.okButton.Size = new System.Drawing.Size(75, 23);
+            this.okButton.TabIndex = 6;
+            this.okButton.Text = "Ok";
+            this.okButton.UseVisualStyleBackColor = true;
+            this.okButton.Click += new System.EventHandler(this.okButton_Click);
+            // 
+            // cancelButton
+            // 
+            this.cancelButton.Location = new System.Drawing.Point(304, 213);
+            this.cancelButton.Name = "cancelButton";
+            this.cancelButton.Size = new System.Drawing.Size(75, 23);
+            this.cancelButton.TabIndex = 7;
+            this.cancelButton.Text = "Cancel";
+            this.cancelButton.UseVisualStyleBackColor = true;
+            this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(123, 13);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(27, 13);
+            this.label2.TabIndex = 8;
+            this.label2.Text = "Fast";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(123, 83);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(27, 13);
+            this.label3.TabIndex = 9;
+            this.label3.Text = "Fast";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(435, 13);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(30, 13);
+            this.label4.TabIndex = 10;
+            this.label4.Text = "Slow";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(432, 83);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(30, 13);
+            this.label5.TabIndex = 11;
+            this.label5.Text = "Slow";
+            // 
             // settingsPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(474, 262);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.cancelButton);
+            this.Controls.Add(this.okButton);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.colorDropDown);
             this.Controls.Add(this.scanLabel);
@@ -123,5 +201,11 @@
         private System.Windows.Forms.TrackBar scanTrackBar;
         private System.Windows.Forms.ComboBox colorDropDown;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button okButton;
+        private System.Windows.Forms.Button cancelButton;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
     }
 }
