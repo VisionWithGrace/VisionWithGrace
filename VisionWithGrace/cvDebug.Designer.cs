@@ -79,7 +79,7 @@
             this.recognitionOutput.Name = "recognitionOutput";
             this.recognitionOutput.ReadOnly = true;
             this.recognitionOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.recognitionOutput.Size = new System.Drawing.Size(325, 152);
+            this.recognitionOutput.Size = new System.Drawing.Size(656, 152);
             this.recognitionOutput.TabIndex = 6;
             // 
             // cvDebug
@@ -94,6 +94,7 @@
             this.Controls.Add(this.emguColorImageBox);
             this.Name = "cvDebug";
             this.Text = "CV Debug";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.cvDebug_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.emguColorImageBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.emguDepthImageBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.emguColorProcessedImageBox)).EndInit();
