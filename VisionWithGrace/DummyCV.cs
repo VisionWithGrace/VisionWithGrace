@@ -277,11 +277,6 @@ namespace VisionWithGrace
                         //Add Color to be drawn
                         GoodColors.Add(i);
                     }
-
-                    /*if (pointList[i].Count < 4000)
-                    {
-                        GoodColors.Add(i); 
-                    }*/
                 }
             }
 
@@ -313,6 +308,7 @@ namespace VisionWithGrace
                 {
                     Image<Bgra, byte> subimage = this.emguRawColor.GetSubRect(tuple.Item1).Copy();
 
+                    //Black-out all pixels not identified by depth stream
                     /*for (int fillY = tuple.Item1.Top; fillY < tuple.Item1.Bottom; fillY++)
                     {
                         for (int fillX = tuple.Item1.Left; fillX < tuple.Item1.Right; fillX++)
@@ -325,6 +321,7 @@ namespace VisionWithGrace
                             }
                         }
                     }*/
+
                     this.subimages.Add(subimage);
                 }
                 catch
@@ -362,6 +359,14 @@ namespace VisionWithGrace
             {
                 ColorImageFrame cFrame = this.sensor.ColorStream.OpenNextFrame(4000);
                 DepthImageFrame dFrame = this.sensor.DepthStream.OpenNextFrame(4000);
+
+                //Prevents the first frame from being bad
+                if (this.FramesReady == false)
+                {
+                    cFrame = this.sensor.ColorStream.OpenNextFrame(500);
+                    dFrame = this.sensor.DepthStream.OpenNextFrame(500);
+                }
+
                 if (cFrame != null && null != dFrame)
                 {
                     dFrame.CopyDepthImagePixelDataTo(this.depthPixels);
