@@ -96,7 +96,15 @@ namespace VisionWithGrace
             SoundPlayer player = new SoundPlayer(@"C:\WINDOWS\Media\notify.wav");
             player.Play();
 
-            VObject recognized = cv.RecognizeObject(scanner.CurObject);
+            VObject recognized;
+            if (scanningMode == ScanningMode.AUTO_DETECTION)
+            {
+                recognized = cv.RecognizeObject(scanner.CurObject);
+            }
+            else
+            {
+                recognized = null;
+            }
 
             SelectedObjectForm selectedObjectForm;
             selectedObjectForm = new SelectedObjectForm(detected, recognized);

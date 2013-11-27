@@ -263,8 +263,8 @@ namespace VisionWithGrace
                 if (pointList[i].Count > 100)
                 {
                     Rectangle temp = Emgu.CV.PointCollection.BoundingRectangle(pointList[i].ToArray());
-                    if ((temp.Height < 0.6 * this.emguProcessedGrayDepth.Height)
-                        && (temp.Width < 0.6 * this.emguProcessedGrayDepth.Width)
+                    if ((temp.Height < 0.5 * this.emguProcessedGrayDepth.Height)
+                        && (temp.Width < 0.5 * this.emguProcessedGrayDepth.Width)
                         && (pointList[i].Count < 4000))
                     {
                         //Draw rectangle around object
@@ -450,6 +450,11 @@ namespace VisionWithGrace
             }           
         }
 
+        public VObject RecognizeObject(Rectangle subimage)
+        {
+            this.subimages.Add(this.emguRawColor.GetSubRect(subimage));
+            return this.RecognizeObject(this.subimages.Count - 1);
+        }
         /*
          * Given the index in the List<Rectangle> just passed, match that pic
          * against entries in the database. If no suitable match is found, pass
@@ -501,7 +506,7 @@ namespace VisionWithGrace
 
                     //Record best match
 
-                    if ((numMatches >= 10) && (similarity > 0.08) && (similarity > maxSimilarity))
+                    if ((numMatches >= 10) && (similarity > 0.06) && (similarity > maxSimilarity))
                     {
                         this.matchResult = matches;
                         maxMatches = numMatches;
