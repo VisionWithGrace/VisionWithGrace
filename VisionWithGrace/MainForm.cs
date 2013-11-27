@@ -91,13 +91,15 @@ namespace VisionWithGrace
         }
         
         // Display selected object in closeUpDisplay
-        private void showSelectedObject(VObject vobj)
+        private void showSelectedObject(VObject detected)
         {
             SoundPlayer player = new SoundPlayer(@"C:\WINDOWS\Media\notify.wav");
             player.Play();
 
+            VObject recognized = cv.RecognizeObject(scanner.CurObject);
+
             SelectedObjectForm selectedObjectForm;
-            selectedObjectForm = new SelectedObjectForm(vobj);
+            selectedObjectForm = new SelectedObjectForm(detected, recognized);
             selectedObjectForm.ShowDialog();
         }
         
@@ -155,19 +157,14 @@ namespace VisionWithGrace
             scanner.stop();
 
             this.labelTimeRemaining.Text = "";
-            if (scanningMode == ScanningMode.FREE_FORM) manualStep();
+            if (scanningMode == ScanningMode.FREE_FORM)
+            {
+                manualStep();
+            }
             else
             {
-                VObject vobj = cv.RecognizeObject(scanner.CurObject);
-                if (vobj != null)
-                {
-                    this.Text = vobj.name + " found.";
-                }
-                else
-                {
-                    vobj = new VObject();
-                    vobj.image = getImageInBox(rectangles[scanner.CurObject]);
-                }
+                VObject vobj = new VObject();
+                vobj.image = getImageInBox(rectangles[scanner.CurObject]);
                 showSelectedObject(vobj);
                 refreshTimer.Start();
             }
@@ -307,6 +304,8 @@ namespace VisionWithGrace
         private void manualScanToolStripMenuItem_Click(object sender, EventArgs e)
         {
             scanningMode = ScanningMode.FREE_FORM;
+            refreshTimer.Stop();
+
             scanner = new Scanner(13);
             Mstep = 0;
             y0 = 0;

@@ -31,6 +31,8 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SelectedObjectForm));
             this.buttonDiscard = new System.Windows.Forms.Button();
             this.buttonSave = new System.Windows.Forms.Button();
+            this.radioButtonRecognizedObject = new System.Windows.Forms.RadioButton();
+            this.radioButtonDetectedObject = new System.Windows.Forms.RadioButton();
             this.vObjectForm1 = new VisionWithGrace.VObjectForm();
             this.SuspendLayout();
             // 
@@ -56,6 +58,32 @@
             this.buttonSave.UseVisualStyleBackColor = true;
             this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
             // 
+            // radioButtonRecognizedObject
+            // 
+            this.radioButtonRecognizedObject.AutoSize = true;
+            this.radioButtonRecognizedObject.Location = new System.Drawing.Point(417, 226);
+            this.radioButtonRecognizedObject.Name = "radioButtonRecognizedObject";
+            this.radioButtonRecognizedObject.Size = new System.Drawing.Size(116, 17);
+            this.radioButtonRecognizedObject.TabIndex = 3;
+            this.radioButtonRecognizedObject.TabStop = true;
+            this.radioButtonRecognizedObject.Text = "Recognized Object";
+            this.radioButtonRecognizedObject.UseVisualStyleBackColor = true;
+            this.radioButtonRecognizedObject.Visible = false;
+            this.radioButtonRecognizedObject.CheckedChanged += new System.EventHandler(this.radioButtonRecognizedObject_CheckedChanged);
+            // 
+            // radioButtonDetectedObject
+            // 
+            this.radioButtonDetectedObject.AutoSize = true;
+            this.radioButtonDetectedObject.Location = new System.Drawing.Point(417, 249);
+            this.radioButtonDetectedObject.Name = "radioButtonDetectedObject";
+            this.radioButtonDetectedObject.Size = new System.Drawing.Size(103, 17);
+            this.radioButtonDetectedObject.TabIndex = 4;
+            this.radioButtonDetectedObject.TabStop = true;
+            this.radioButtonDetectedObject.Text = "Detected Object";
+            this.radioButtonDetectedObject.UseVisualStyleBackColor = true;
+            this.radioButtonDetectedObject.Visible = false;
+            this.radioButtonDetectedObject.CheckedChanged += new System.EventHandler(this.radioButtonDetectedObject_CheckedChanged);
+            // 
             // vObjectForm1
             // 
             this.vObjectForm1.Location = new System.Drawing.Point(12, 12);
@@ -70,6 +98,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(675, 426);
+            this.Controls.Add(this.radioButtonDetectedObject);
+            this.Controls.Add(this.radioButtonRecognizedObject);
             this.Controls.Add(this.buttonSave);
             this.Controls.Add(this.buttonDiscard);
             this.Controls.Add(this.vObjectForm1);
@@ -82,6 +112,7 @@
             this.Text = "Edit Selected Object";
             this.TopMost = true;
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -90,5 +121,7 @@
         private System.Windows.Forms.Button buttonDiscard;
         private System.Windows.Forms.Button buttonSave;
         private VObjectForm vObjectForm1;
+        private System.Windows.Forms.RadioButton radioButtonRecognizedObject;
+        private System.Windows.Forms.RadioButton radioButtonDetectedObject;
     }
 }

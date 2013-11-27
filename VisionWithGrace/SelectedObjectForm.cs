@@ -15,13 +15,31 @@ namespace VisionWithGrace
     public partial class SelectedObjectForm : Form
     {
         DatabaseInterface dbInterface = new DatabaseInterface();
-        VObject selectedVObject;
+        VObject recognizedObject;
+        VObject detectedObject;
 
-        public SelectedObjectForm(VObject obj)
+        public SelectedObjectForm(VObject detectedObj, VObject recognizedObj)
         {
             InitializeComponent();
-            selectedVObject = obj;
 
+            detectedObject = detectedObj;
+            recognizedObject = recognizedObj;
+
+            if (recognizedObject != null)
+            {
+                radioButtonDetectedObject.Visible = true;
+                radioButtonRecognizedObject.Visible = true;
+                radioButtonRecognizedObject.Checked = true;
+                showObject(recognizedObject);
+            }
+            else
+            {
+                showObject(detectedObject);
+            }
+        }
+
+        private void showObject(VObject obj)
+        {
             if (obj.name != "")
             {
                 this.Text = obj.name + " selected!";
@@ -31,9 +49,18 @@ namespace VisionWithGrace
 
         private void buttonSave_Click(object sender, EventArgs e)
         {
-            selectedVObject.name = this.vObjectForm1.VObjectName;
-            selectedVObject.tags = this.vObjectForm1.VObjectTags;
-            selectedVObject.save();
+            if (radioButtonRecognizedObject.Checked && recognizedObject != null)
+            {
+                recognizedObject.name = vObjectForm1.VObjectName;
+                recognizedObject.tags = vObjectForm1.VObjectTags;
+                recognizedObject.save();
+            }
+            else
+            {
+                detectedObject.name = this.vObjectForm1.VObjectName;
+                detectedObject.tags = this.vObjectForm1.VObjectTags;
+                detectedObject.save();
+            }
 
             // close form
             this.Close();
@@ -43,6 +70,17 @@ namespace VisionWithGrace
         {
             this.Close();
         }
+
+        private void radioButtonDetectedObject_CheckedChanged(object sender, EventArgs e)
+        {
+            showObject(detectedObject);
+        }
+
+        private void radioButtonRecognizedObject_CheckedChanged(object sender, EventArgs e)
+        {
+            showObject(recognizedObject);
+        }
+
 
 
 
