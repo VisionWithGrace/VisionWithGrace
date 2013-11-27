@@ -320,15 +320,6 @@ namespace VisionWithGrace
             scale = (plainView.Size.Width - 1) / 600 + 1;
             scanner.NumObjects = 2;
             scanner.OnChange = manualScanNextBox;
-            
-            /*
-            scanner = new Scanner();
-            scanner.OnChange = highlightNextBox;
-            scanner.NumObjects = rectangles.Count;
-            this.objectDetectedLabel.Text = rectangles.Count.ToString() + " objects detected";
-            refreshTimer.Start();
-            isManual = false;
-            */
         }
 
         private void objectDetectionToolStripMenuItem_Click(object sender, EventArgs e)
