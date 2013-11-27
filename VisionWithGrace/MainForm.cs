@@ -307,7 +307,6 @@ namespace VisionWithGrace
         private void manualScanToolStripMenuItem_Click(object sender, EventArgs e)
         {
             scanningMode = ScanningMode.FREE_FORM;
-
             scanner = new Scanner(13);
             Mstep = 0;
             y0 = 0;
@@ -316,7 +315,7 @@ namespace VisionWithGrace
             x1 = plainView.Size.Width;
             diff = 2;
             x = x0;
-            this.objectDetectedLabel.Text = "Manually Scanning View";
+            this.objectDetectedLabel.Text = "Free Form Scanning";
             scale = (plainView.Size.Width - 1) / 600 + 1;
             scanner.NumObjects = 2;
             scanner.OnChange = manualScanNextBox;
@@ -325,7 +324,6 @@ namespace VisionWithGrace
         private void objectDetectionToolStripMenuItem_Click(object sender, EventArgs e)
         {
             scanningMode = ScanningMode.AUTO_DETECTION;
-
             scanner = new Scanner();
             scanner.OnChange = highlightNextBox;
             refreshView(sender, e);
