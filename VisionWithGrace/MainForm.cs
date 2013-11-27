@@ -18,6 +18,11 @@ using DatabaseModule;
  * */
 namespace VisionWithGrace
 {
+    enum ScanningMode{
+        FREE_FORM,
+        AUTO_DETECTION
+    }
+
     public partial class MainForm : Form
     {
         Bitmap plainView;
@@ -29,7 +34,7 @@ namespace VisionWithGrace
         Timer refreshTimer = new Timer();
 
         int x, x0, x1, y, y0, y1, Mstep, diff, scale;
-        bool isManual = false;
+        ScanningMode scanningMode = ScanningMode.AUTO_DETECTION;
 
         public MainForm()
         {
@@ -150,7 +155,7 @@ namespace VisionWithGrace
             scanner.stop();
 
             this.labelTimeRemaining.Text = "";
-            if (isManual) manualStep();
+            if (scanningMode == ScanningMode.FREE_FORM) manualStep();
             else
             {
                 VObject vobj = cv.RecognizeObject(scanner.CurObject);
@@ -301,31 +306,28 @@ namespace VisionWithGrace
 
         private void manualScanToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!isManual)
-            {
-                isManual = true;
-                scanner = new Scanner(13);
-                Mstep = 0;
-                y0 = 0;
-                y1 = plainView.Size.Height;
-                x0 = 0;
-                x1 = plainView.Size.Width;
-                diff = 2;
-                x = x0;
-                this.objectDetectedLabel.Text = "Manually Scanning View";
-                scale = (plainView.Size.Width - 1) / 600 + 1;
-                scanner.NumObjects = 2;
-                scanner.OnChange = manualScanNextBox;
-            }
-            else
-            {
-                scanner = new Scanner();
-                scanner.OnChange = highlightNextBox;
-                scanner.NumObjects = rectangles.Count;
-                this.objectDetectedLabel.Text = rectangles.Count.ToString() + " objects detected";
-                refreshTimer.Start();
-                isManual = false;
-            }
+            scanningMode = ScanningMode.FREE_FORM;
+            scanner = new Scanner(13);
+            Mstep = 0;
+            y0 = 0;
+            y1 = plainView.Size.Height;
+            x0 = 0;
+            x1 = plainView.Size.Width;
+            diff = 2;
+            x = x0;
+            this.objectDetectedLabel.Text = "Free Form Scanning";
+            scale = (plainView.Size.Width - 1) / 600 + 1;
+            scanner.NumObjects = 2;
+            scanner.OnChange = manualScanNextBox;
+        }
+
+        private void objectDetectionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            scanningMode = ScanningMode.AUTO_DETECTION;
+            scanner = new Scanner();
+            scanner.OnChange = highlightNextBox;
+            refreshView(sender, e);
+            refreshTimer.Start();
         }
 
         // Listener for the settings button, updates refreshrate, scanrate, and box color
