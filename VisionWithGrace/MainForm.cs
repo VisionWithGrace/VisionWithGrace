@@ -114,10 +114,15 @@ namespace VisionWithGrace
             {
                 for (int i = 0; i < rectangles.Count; i++)
                 {
-                    if (selected != -1 && i == selected)
-                        graphics.DrawRectangle(yellowPen, rectangles[i]);
-                    else
+                    //if (selected != -1 && i == selected)
+                     //   graphics.DrawRectangle(yellowPen, rectangles[i]);
+                    //else
                         graphics.DrawRectangle(redPen, rectangles[i]);
+                }
+                if (selected != -1)
+                {
+                    graphics.DrawImage(plainView, rectangles[selected], rectangles[selected], GraphicsUnit.Pixel);
+                    graphics.DrawRectangle(yellowPen, rectangles[selected]);
                 }
             }
         }
