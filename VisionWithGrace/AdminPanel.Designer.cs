@@ -52,9 +52,9 @@
             this.recentObjectsButton.Name = "recentObjectsButton";
             this.recentObjectsButton.Size = new System.Drawing.Size(140, 58);
             this.recentObjectsButton.TabIndex = 1;
-            this.recentObjectsButton.Text = "Get Likely Objects";
+            this.recentObjectsButton.Text = "Get Unnamed Objects";
             this.recentObjectsButton.UseVisualStyleBackColor = true;
-            this.recentObjectsButton.Click += new System.EventHandler(this.recentObjectsButton_Click);
+            this.recentObjectsButton.Click += new System.EventHandler(this.unnamedObjectsButton_Click);
             // 
             // allObjectsButton
             // 

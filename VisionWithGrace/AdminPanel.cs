@@ -52,15 +52,13 @@ namespace VisionWithGrace
 
         private void AdminPanel_Load(object sender, EventArgs e)
         {
-            objects = dbInterface.getUnnamedObjects();
+            objects = dbInterface.getAllObjects();
             refreshObjectsInView();
         }
 
-        private void recentObjectsButton_Click(object sender, EventArgs e)
+        private void unnamedObjectsButton_Click(object sender, EventArgs e)
         {
-            List<string> tags = new List<string>();
-            tags.Add("home");
-            objects = dbInterface.getLikelyObjects(tags);
+            objects = dbInterface.getUnnamedObjects();
             refreshObjectsInView();
         }
 
