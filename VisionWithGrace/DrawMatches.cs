@@ -28,7 +28,7 @@ namespace VisionWithGrace
          numObservedKeys = 0;
          numModelKeys = 0;
 
-         if (false) //GpuInvoke.HasCuda)
+         if (GpuInvoke.HasCuda)
          {
             GpuSURFDetector surfGPU = new GpuSURFDetector(surfCPU.SURFParams, 0.01f);
             using (GpuImage<Gray, Byte> gpuModelImage = new GpuImage<Gray, byte>(modelImage))
