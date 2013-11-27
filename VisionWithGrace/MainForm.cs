@@ -302,6 +302,10 @@ namespace VisionWithGrace
         {
             scanningMode = ScanningMode.FREE_FORM;
             refreshTimer.Stop();
+            if (boxesView != null)
+                boxesView.Dispose();
+            boxesView = new Bitmap(plainView.Size.Width, plainView.Size.Height);
+            drawViews();
 
             scanner = new Scanner(13);
             Mstep = 0;
