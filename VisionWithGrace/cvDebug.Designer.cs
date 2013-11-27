@@ -33,6 +33,7 @@
             this.emguDepthImageBox = new Emgu.CV.UI.ImageBox();
             this.emguColorProcessedImageBox = new Emgu.CV.UI.ImageBox();
             this.emguDepthProcessedImageBox = new Emgu.CV.UI.ImageBox();
+            this.recognitionOutput = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.emguColorImageBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.emguDepthImageBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.emguColorProcessedImageBox)).BeginInit();
@@ -71,11 +72,22 @@
             this.emguDepthProcessedImageBox.TabIndex = 5;
             this.emguDepthProcessedImageBox.TabStop = false;
             // 
+            // recognitionOutput
+            // 
+            this.recognitionOutput.Location = new System.Drawing.Point(9, 506);
+            this.recognitionOutput.Multiline = true;
+            this.recognitionOutput.Name = "recognitionOutput";
+            this.recognitionOutput.ReadOnly = true;
+            this.recognitionOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.recognitionOutput.Size = new System.Drawing.Size(325, 152);
+            this.recognitionOutput.TabIndex = 6;
+            // 
             // cvDebug
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(672, 505);
+            this.ClientSize = new System.Drawing.Size(671, 670);
+            this.Controls.Add(this.recognitionOutput);
             this.Controls.Add(this.emguDepthProcessedImageBox);
             this.Controls.Add(this.emguColorProcessedImageBox);
             this.Controls.Add(this.emguDepthImageBox);
@@ -87,6 +99,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.emguColorProcessedImageBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.emguDepthProcessedImageBox)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -96,5 +109,6 @@
         public Emgu.CV.UI.ImageBox emguDepthImageBox;
         public Emgu.CV.UI.ImageBox emguColorProcessedImageBox;
         public Emgu.CV.UI.ImageBox emguDepthProcessedImageBox;
+        public System.Windows.Forms.TextBox recognitionOutput;
     }
 }
