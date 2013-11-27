@@ -99,7 +99,7 @@ namespace VisionWithGrace
             catch
             {
                 isUsingKinect = false;
-                simulationImage = new Bitmap("../../SampleImages/room.jpeg");
+                simulationImage = VisionWithGrace.Properties.Resources.room;
             }
 
             this.objects = new List<Tuple<Rectangle,int>>();
