@@ -50,12 +50,12 @@ namespace VisionWithGrace.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Red")]
-        public global::System.Drawing.Color color {
+        public global::System.Drawing.Color boxColor {
             get {
-                return ((global::System.Drawing.Color)(this["color"]));
+                return ((global::System.Drawing.Color)(this["boxColor"]));
             }
             set {
-                this["color"] = value;
+                this["boxColor"] = value;
             }
         }
     }

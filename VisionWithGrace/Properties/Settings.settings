@@ -8,7 +8,7 @@
     <Setting Name="scanSpeed" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1300</Value>
     </Setting>
-    <Setting Name="color" Type="System.Drawing.Color" Scope="User">
+    <Setting Name="boxColor" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">Red</Value>
     </Setting>
   </Settings>
