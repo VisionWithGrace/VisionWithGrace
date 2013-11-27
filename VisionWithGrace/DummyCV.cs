@@ -56,6 +56,8 @@ namespace VisionWithGrace
 
         //Debug window 
         private cvDebug debugWindow;
+        private int emguWindowWidth = 325;
+        private int emguWindowHeight = 244;
 
         //Simulation (for when Kinect is not present)
         private Bitmap simulationImage;
@@ -147,7 +149,7 @@ namespace VisionWithGrace
             //this.emguProcessedColor = this.emguProcessedColor.Resize(0.5, INTER.CV_INTER_NN);
 
 
-            this.debugWindow.emguDepthImageBox.Image = this.emguOverlayedDepth;
+            this.debugWindow.emguDepthImageBox.Image = this.emguOverlayedDepth.Resize(this.emguWindowWidth, this.emguWindowHeight, INTER.CV_INTER_NN);
             //*********************************************************//
 
             //****************** Draw Depth Lines *********************//
@@ -273,7 +275,7 @@ namespace VisionWithGrace
                 }
             }
 
-            this.debugWindow.emguDepthProcessedImageBox.Image = this.emguDepthWithBoxes;
+            this.debugWindow.emguDepthProcessedImageBox.Image = this.emguDepthWithBoxes.Resize(this.emguWindowWidth, this.emguWindowHeight, INTER.CV_INTER_NN);
             //***************************************************************//
 
             //Assign colored pixels
@@ -323,9 +325,7 @@ namespace VisionWithGrace
 
             //Assign processed color
             //this.debugWindow.emguColorImageBox.Image = this.emguRawColor;
-            int windowWidth = this.debugWindow.emguColorProcessedImageBox.Width;
-            int windowHeight = this.debugWindow.emguColorProcessedImageBox.Height;
-            this.debugWindow.emguColorProcessedImageBox.Image = this.emguProcessedColor.Resize(windowWidth, windowHeight, INTER.CV_INTER_NN);
+            this.debugWindow.emguColorProcessedImageBox.Image = this.emguProcessedColor.Resize(this.emguWindowWidth, this.emguWindowHeight, INTER.CV_INTER_NN);
         }
 
         public static byte CalculateIntensityFromDistance(short distance)
@@ -465,6 +465,8 @@ namespace VisionWithGrace
             int maxObservedKeys = 0;
             VObject bestMatch = null;
 
+            this.debugWindow.recognitionOutput.Clear();
+
             foreach( VObject entry in entries)
             {
                 //Convert bitmap to Emgu image
@@ -476,14 +478,16 @@ namespace VisionWithGrace
                 int numObservedKeys = 0;
                 try
                 {
-                    this.matchResult = DrawMatches.Draw(target, img, out matchTime, out numMatches, out numModelKeys, out numObservedKeys);
+                    Image<Bgr, byte> matches = DrawMatches.Draw(target, img, out matchTime, out numMatches, out numModelKeys, out numObservedKeys);
 
                     this.debugWindow.emguColorImageBox.Image = this.matchResult;
-                    this.debugWindow.Text = numMatches.ToString() + " matches.";
+                    string output = entry.name + "\t" + numMatches.ToString() + "\t" + numModelKeys.ToString() + "\t" + numObservedKeys.ToString() +"\t\n";
+                    this.debugWindow.recognitionOutput.AppendText(output);
 
                     //Record best match
                     if ((numMatches >= 10) && (numMatches > maxMatches))
                     {
+                        this.matchResult = matches;
                         maxMatches = numMatches;
                         maxModelKeys = numModelKeys;
                         maxObservedKeys = numObservedKeys;
@@ -492,13 +496,18 @@ namespace VisionWithGrace
                 }
                 catch
                 {
-
+                    string output = entry.name + " threw an exception during recognition.\n";
                 }
             }
 
-            if(bestMatch != null)
+            if (bestMatch != null)
             {
-                this.debugWindow.Text = "Object recognized! " + bestMatch.name + "("+maxMatches.ToString()+" matches)";
+                this.debugWindow.Text = "Object recognized! " + bestMatch.name + "(" + maxMatches.ToString() + " matches)";
+                this.debugWindow.emguColorImageBox.Image = this.matchResult.Resize(this.emguWindowWidth, this.emguWindowHeight, INTER.CV_INTER_NN);
+            }
+            else
+            {
+                this.debugWindow.Text = "Object not recognized!";
             }
 
             return bestMatch;
