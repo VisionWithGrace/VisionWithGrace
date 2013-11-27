@@ -110,7 +110,11 @@ namespace VisionWithGrace
         public void OpenDebugWindow()
         {
             //Open debug window
-            this.debugWindow.Show();
+            if (this.isUsingKinect)
+            {
+                if(this.debugWindow != null)
+                    this.debugWindow.Show();
+            }
         }
 
         private void DetectObjects()
@@ -309,7 +313,7 @@ namespace VisionWithGrace
                 {
                     Image<Bgra, byte> subimage = this.emguRawColor.GetSubRect(tuple.Item1).Copy();
 
-                    for (int fillY = tuple.Item1.Top; fillY < tuple.Item1.Bottom; fillY++)
+                    /*for (int fillY = tuple.Item1.Top; fillY < tuple.Item1.Bottom; fillY++)
                     {
                         for (int fillX = tuple.Item1.Left; fillX < tuple.Item1.Right; fillX++)
                         {
@@ -320,7 +324,7 @@ namespace VisionWithGrace
                                 subimage[subPoint] = new Bgra(0, 0, 0, 255);
                             }
                         }
-                    }
+                    }*/
                     this.subimages.Add(subimage);
                 }
                 catch
@@ -460,7 +464,7 @@ namespace VisionWithGrace
             }
           
             //Convert selected subimage to larger grayscale
-            Image<Gray,byte> target = this.subimages[index].Convert<Gray, byte>().Resize(5.0, INTER.CV_INTER_NN);
+            Image<Gray,byte> target = this.subimages[index].Convert<Gray, byte>().Resize(10.0, INTER.CV_INTER_NN);
 
             //Begin to iterate through objects in the database, matching each in scene
             DatabaseInterface DbInterface = new DatabaseInterface();
@@ -469,6 +473,7 @@ namespace VisionWithGrace
             int maxMatches = 0;
             int maxModelKeys = 0;
             int maxObservedKeys = 0;
+            double maxSimilarity = 0;
             VObject bestMatch = null;
 
             this.debugWindow.recognitionOutput.Clear();
@@ -476,7 +481,7 @@ namespace VisionWithGrace
             foreach( VObject entry in entries)
             {
                 //Convert bitmap to Emgu image
-                Image<Gray,byte> img = new Image<Gray,byte>(entry.image as Bitmap).Resize(5.0, INTER.CV_INTER_NN);
+                Image<Gray,byte> img = new Image<Gray,byte>(entry.image as Bitmap).Resize(10.0, INTER.CV_INTER_NN);
 
                 long matchTime = new long();
                 int numMatches = 0;
@@ -485,18 +490,19 @@ namespace VisionWithGrace
                 try
                 {
                     Image<Bgr, byte> matches = DrawMatches.Draw(target, img, out matchTime, out numMatches, out numModelKeys, out numObservedKeys);
-
-                    this.debugWindow.emguColorImageBox.Image = this.matchResult;
-                    string output = entry.name + "\t" + numMatches.ToString() + "\t" + numModelKeys.ToString() + "\t" + numObservedKeys.ToString() +"\t\n";
+                    double similarity = ((double)numMatches / numModelKeys + (double) numMatches / numObservedKeys) / 2;
+                    string output = entry.name + "\t" + numMatches.ToString() + "\t" + numModelKeys.ToString() + "\t" + numObservedKeys.ToString() +"\t" + similarity.ToString() +"\n";
                     this.debugWindow.recognitionOutput.AppendText(output);
 
                     //Record best match
-                    if ((numMatches >= 10) && (numMatches > maxMatches))
+
+                    if ((numMatches >= 10) && (similarity > 0.08) && (similarity > maxSimilarity))
                     {
                         this.matchResult = matches;
                         maxMatches = numMatches;
                         maxModelKeys = numModelKeys;
                         maxObservedKeys = numObservedKeys;
+                        maxSimilarity = similarity;
                         bestMatch = entry;
                     }
                 }
@@ -514,6 +520,7 @@ namespace VisionWithGrace
             else
             {
                 this.debugWindow.Text = "Object not recognized!";
+                this.debugWindow.emguColorImageBox.Image = null;
             }
 
             return bestMatch;
