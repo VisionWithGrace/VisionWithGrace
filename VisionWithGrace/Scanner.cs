@@ -23,7 +23,7 @@ namespace VisionWithGrace
         {
             // Initialize timer to simulate 50 Kinect frames
             // 50 frames/tick * 30 FPS != 1667 ms/tick
-            timer.Interval = 1300;
+            timer.Interval = Properties.Settings.Default.scanSpeed;
             timer.Tick += new EventHandler(on_tick);
             curObject = 0;
         }
@@ -43,6 +43,11 @@ namespace VisionWithGrace
 
             if (isHandlerSet)
                 onChange.Invoke(sender, e);
+        }
+
+        public void update_interval()
+        {
+            timer.Interval = Properties.Settings.Default.scanSpeed;
         }
 
         public EventHandler OnChange

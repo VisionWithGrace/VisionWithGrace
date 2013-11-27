@@ -65,9 +65,9 @@
     <Reference Include="Emgu.CV.Stitching">
       <HintPath>..\..\..\..\..\..\Emgu\emgucv-windows-universal-cuda 2.9.0.1922\bin\Emgu.CV.Stitching.dll</HintPath>
     </Reference>
-    <Reference Include="Emgu.CV.UI, Version=2.2.0.1010, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
+    <Reference Include="Emgu.CV.UI, Version=2.9.0.1922, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Emgu\emgucv-windows-universal-cuda 2.9.0.1922\bin\Emgu.CV.UI.dll</HintPath>
+      <HintPath>bin\Debug\Emgu.CV.UI.dll</HintPath>
     </Reference>
     <Reference Include="Emgu.CV.VideoStab">
       <HintPath>..\..\..\..\..\..\Emgu\emgucv-windows-universal-cuda 2.9.0.1922\bin\Emgu.CV.VideoStab.dll</HintPath>
@@ -112,6 +112,12 @@
     <Compile Include="cvDebug.Designer.cs">
       <DependentUpon>cvDebug.cs</DependentUpon>
     </Compile>
+    <Compile Include="settingsPanel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="settingsPanel.Designer.cs">
+      <DependentUpon>settingsPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -127,6 +133,7 @@
     <Compile Include="SelectedObjectForm.Designer.cs">
       <DependentUpon>SelectedObjectForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Settings.cs" />
     <Compile Include="VObject.cs" />
     <Compile Include="VObjectForm.cs">
       <SubType>UserControl</SubType>
@@ -139,6 +146,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="cvDebug.resx">
       <DependentUpon>cvDebug.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="settingsPanel.resx">
+      <DependentUpon>settingsPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
