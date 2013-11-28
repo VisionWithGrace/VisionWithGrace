@@ -21,8 +21,8 @@ Objects the Kinect recognizes will be highlighted in the GUI and holding down th
 	* http://tklovett.com/assets/opencv_gpufilters290.dll
 	* http://tklovett.com/assets/nppc32_55.dll
 4. Paste BOTH of these files into BOTH of the following locations:
-	VisionWithGrace\VisionWithGrace\bin\Debug
-	VisionWithGrace\VisionWithGrace\bin\Release
+	* VisionWithGrace\VisionWithGrace\bin\Debug
+	* VisionWithGrace\VisionWithGrace\bin\Release
 
 ## Start up
 
