@@ -18,8 +18,8 @@ Objects the Kinect recognizes will be highlighted in the GUI and holding down th
 1. Install the [Kinect for Windows SDK](http://www.microsoft.com/en-us/kinectforwindowsdev/Start.aspx)
 2. Clone VisionWithGrace: `$ git clone https://github.com/VisionWithGrace/VisionWithGrace.git`
 3. Download the following binaries using the following links. These were too big for GitHub:
-	* http://tklovett.com/assets/opencv_gpufilters290.dll
-	* http://tklovett.com/assets/nppc32_55.dll
+	* [http://tklovett.com/assets/opencv_gpufilters290.dll](http://tklovett.com/assets/opencv_gpufilters290.dll)
+	* [http://tklovett.com/assets/nppi32_55.dll](http://tklovett.com/assets/nppi32_55.dll)
 4. Paste BOTH of these files into BOTH of the following locations:
 	* VisionWithGrace\VisionWithGrace\bin\Debug
 	* VisionWithGrace\VisionWithGrace\bin\Release
