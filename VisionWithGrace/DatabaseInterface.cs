@@ -317,13 +317,14 @@ namespace DatabaseModule
                         int changedCount = (int)doc["count"] + 1;
                         modifyObject("name", info["name"].ToString(), "count", changedCount);
 
-                        if(info.ContainsKey("tags"))
+                        if(info.ContainsKey("tags") && info["tags"]!=null)
                         {
-                            object[] tagObjects = info["tags"] as object[];
+
+                            List<string> tagObjects = info["tags"] as List<string>;
                             var newTags = new BsonArray();
-                            for (int i = 0; i < tagObjects.Length; i++)
+                            for (int i= 0; i < tagObjects.Count; i++)
                             {
-                                newTags.Add(tagObjects[i] as string);
+                                newTags.Add(tagObjects[i]);
                             }
 
                             modifyObject("name", info["name"].ToString(), "tags", newTags);
