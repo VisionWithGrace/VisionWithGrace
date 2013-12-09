@@ -51,7 +51,6 @@ namespace VisionWithGrace
             {
                 recognizedObject.name = vObjectForm1.VObjectName;
                 recognizedObject.tags = vObjectForm1.VObjectTags;
-                recognizedObject.images.Add(detectedObject.images[0]);
                 recognizedObject.save();
             }
             else
