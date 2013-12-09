@@ -58,5 +58,17 @@ namespace VisionWithGrace.Properties {
                 this["boxColor"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool helpFlag {
+            get {
+                return ((bool)(this["helpFlag"]));
+            }
+            set {
+                this["helpFlag"] = value;
+            }
+        }
     }
 }

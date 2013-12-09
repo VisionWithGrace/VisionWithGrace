@@ -72,5 +72,10 @@ namespace VisionWithGrace
         {
             Close();
         }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.helpFlag = this.checkBox1.Checked;
+        }
     }
 }
