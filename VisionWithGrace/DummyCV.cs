@@ -492,7 +492,7 @@ namespace VisionWithGrace
             foreach( VObject entry in entries)
             {
                 //Convert bitmap to Emgu image
-                Image<Gray,byte> img = new Image<Gray,byte>(entry.image as Bitmap).Resize(10.0, INTER.CV_INTER_NN);
+                Image<Gray,byte> img = new Image<Gray,byte>(entry.images[0] as Bitmap).Resize(10.0, INTER.CV_INTER_NN);
 
                 long matchTime = new long();
                 int numMatches = 0;

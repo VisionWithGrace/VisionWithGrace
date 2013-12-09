@@ -15,10 +15,18 @@ namespace VisionWithGrace
         private string id = null;
         public string name = "";
         public List<string> tags = new List<string>();
-        public Bitmap image;
+        public List<Bitmap> images = new List<Bitmap>();
 
         public VObject()
         {
+        }
+
+        public ~VObject()
+        {
+            foreach (Bitmap image in images)
+            {
+                image.Dispose();
+            }
         }
 
         public VObject(Dictionary<string, object> fromDictionary)
@@ -38,7 +46,7 @@ namespace VisionWithGrace
             }
 
             if (fromDictionary.Keys.Contains("image"))
-                image = fromDictionary["image"] as Bitmap;
+                images[0] = fromDictionary["image"] as Bitmap;
         }
 
         public void save()
@@ -52,7 +60,7 @@ namespace VisionWithGrace
             data["name"] = name;
             data["tags"] = tags;
 
-            db.saveSelection(image, data);
+            db.saveSelection(images[0], data);
         }
 
         public void delete()
