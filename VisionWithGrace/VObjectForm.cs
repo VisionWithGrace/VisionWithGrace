@@ -25,7 +25,7 @@ namespace VisionWithGrace
 
         public void setVObject(VObject obj)
         {
-            this.pictureBox1.Image = obj.image;
+            this.pictureBox1.Image = obj.images[0];
             this.textBoxName.Text = obj.name;
             this.listBoxTags.Items.Clear();
             this.listBoxTags.Items.AddRange(obj.tags.ToArray());

@@ -21,7 +21,7 @@ namespace VisionWithGrace
         {
         }
 
-        public ~VObject()
+        ~VObject()
         {
             foreach (Bitmap image in images)
             {
