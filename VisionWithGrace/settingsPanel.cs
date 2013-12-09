@@ -15,6 +15,8 @@ namespace VisionWithGrace
         public settingsPanel()
         {
             InitializeComponent();
+            this.colorDropDown.SelectedItem = Properties.Settings.Default.boxColor.Name;
+            string blah = Properties.Settings.Default.boxColor.Name;
         }
 
         private void refreshTrackBar_Scroll(object sender, EventArgs e)
