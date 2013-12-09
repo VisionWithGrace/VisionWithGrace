@@ -487,6 +487,7 @@ namespace VisionWithGrace
             VObject bestMatch = null;
 
             this.debugWindow.recognitionOutput.Clear();
+            this.debugWindow.recognitionOutput.AppendText("Obj\tNumMat\tdbMat\tobjMat\tsim\tclrSim\r\n");
 
             foreach( VObject entry in entries)
             {
@@ -499,14 +500,46 @@ namespace VisionWithGrace
                 int numObservedKeys = 0;
                 try
                 {
+                    //Match features
                     Image<Bgr, byte> matches = DrawMatches.Draw(target, img, out matchTime, out numMatches, out numModelKeys, out numObservedKeys);
                     double similarity = ((double)numMatches / numModelKeys + (double) numMatches / numObservedKeys) / 2;
-                    string output = entry.name + "\t" + numMatches.ToString() + "\t" + numModelKeys.ToString() + "\t" + numObservedKeys.ToString() +"\t" + similarity.ToString() +"\n";
+                    //double similarity = (double)numMatches / Math.Max(numModelKeys, numObservedKeys);
+                    string output = entry.name + "\t" + numMatches.ToString() + "\t" + numModelKeys.ToString() + "\t" + numObservedKeys.ToString() +"\t" + similarity.ToString("e3") + "\r\n";
+                    
+                    /*
+                    //Match color
+                    Bgra targetAvg, entryAvg;
+                    MCvScalar targetSdv, entrySdv;
+                    this.subimages[index].AvgSdv(out targetAvg, out targetSdv);
+                    double targetNorm = targetAvg.Red + targetAvg.Blue + targetAvg.Green;
+                    targetAvg.Red /= targetNorm;
+                    targetAvg.Blue /= targetNorm;
+                    targetAvg.Green /= targetNorm;
+
+                   
+
+                    string coloroutput = "\t" + targetAvg.Red.ToString("e2") + "\t" + targetAvg.Blue.ToString("e2") + "\t" + targetAvg.Green.ToString("e2") + "\r\n";
+
+                    Image<Bgra, byte> entryColor = new Image<Bgra, byte>(entry.image as Bitmap);
+                    entryColor.AvgSdv(out entryAvg, out entrySdv);
+                    double entryNorm = entryAvg.Red + entryAvg.Blue + entryAvg.Green;
+                    entryAvg.Red /= entryNorm;
+                    entryAvg.Blue /= entryNorm;
+                    entryAvg.Green /= entryNorm;
+                    coloroutput += "\t" + entryAvg.Red.ToString("e2"+ "\t") + entryAvg.Blue.ToString("e2") + "\t" + entryAvg.Green.ToString("e2") + "\r\n\r\n";
+
+
+                    double difference = (Math.Abs(targetAvg.Red - entryAvg.Red) + Math.Abs(targetAvg.Blue - entryAvg.Blue) + Math.Abs(targetAvg.Green - entryAvg.Green));
+                    output += "\t" + difference.ToString("e3") + "\r\n";
+                    output += coloroutput;
+                    */
+
                     this.debugWindow.recognitionOutput.AppendText(output);
 
                     //Record best match
+                    double countSim = (double)Math.Min(numModelKeys,numObservedKeys)/(double)Math.Max(numModelKeys,numObservedKeys);
 
-                    if ((numMatches >= 10) && (similarity > 0.06) && (similarity > maxSimilarity))
+                    if ((numMatches >= 0) && (similarity > 0.00) && (similarity > maxSimilarity) )//&& countSim > 0.66)
                     {
                         this.matchResult = matches;
                         maxMatches = numMatches;
