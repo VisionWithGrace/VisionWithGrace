@@ -199,7 +199,7 @@ namespace VisionWithGrace
             else
             {
                 VObject vobj = new VObject();
-                vobj.images[0] = getImageInBox(rectangles[scanner.CurObject]);
+                vobj.images.Add(getImageInBox(rectangles[scanner.CurObject]));
                 showSelectedObject(vobj);
                 refreshTimer.Start();
             }
@@ -270,7 +270,7 @@ namespace VisionWithGrace
             else if (Mstep == 3)
             {
                 VObject vObject = new VObject();
-                vObject.images[0] = getImageInBox(new Rectangle(x0, y0, x1 - x0, y1 - y0));
+                vObject.images.Add(getImageInBox(new Rectangle(x0, y0, x1 - x0, y1 - y0)));
                 showSelectedObject(vObject);
                 y0 = 0;
                 y1 = plainView.Size.Height;

@@ -46,7 +46,7 @@ namespace VisionWithGrace
             }
 
             if (fromDictionary.Keys.Contains("image"))
-                images[0] = fromDictionary["image"] as Bitmap;
+                images.Add(fromDictionary["image"] as Bitmap);
         }
 
         public void save()
