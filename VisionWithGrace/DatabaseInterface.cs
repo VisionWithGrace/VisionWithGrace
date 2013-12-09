@@ -94,15 +94,14 @@ namespace DatabaseModule
             this.Insert(docToInsert);
         }
 
-        public void InsertImage(Image image, Dictionary<string, object> info)
+        public string InsertImage(Image image)
         {
             string filename = RandomString(10) + ".jpg";
-            InsertImage(image, filename, info);
+            InsertImage(image, filename);
+            return filename;
         }
 
-        //inserts an image with the given metadata into specified collection
-        //details should be a JSON-formatted string (dictionary of key-value pairs)
-        private void InsertImage(Image image, string filename, Dictionary<string, object> info)
+        private void InsertImage(Image image, string filename)
         {
 
             using (var fs = new System.IO.MemoryStream())
@@ -114,18 +113,7 @@ namespace DatabaseModule
                     var gridFsInfo = objectsDatabase.GridFS.Upload(fs, filename);
                     var fileId = gridFsInfo.Id;
                 }
-                BsonDocument bson;
-                try
-                {
-                    bson = new BsonDocument(info);
-                }
-                catch (Exception e)
-                {
-                    bson = BsonDocument.Parse("{}");
-                }
-
-                bson.Add(new BsonElement("filename", filename));
-                this.Insert(bson);
+               
             }
 
         }
@@ -136,20 +124,32 @@ namespace DatabaseModule
             var cursor = this.Get(key, value);
             foreach (BsonDocument document in cursor)
             {
-                Image image = GetImage(document);
-                if (image != null)
-                {
-                    toReturn.Add(image);
-                }
+                List<Image> images = GetImages(document);
+                toReturn.AddRange(images);
             }
             return toReturn;
 
         }
-        //get image associated with document
-        private Image GetImage(BsonDocument document)
+        
+        //get images associated with document
+        private List<Image> GetImages(BsonDocument document)
         {
-            var filename = document["filename"];
-            System.Console.Write(filename);
+            object[] filenameObjects = document.ToDictionary()["filenames"] as object[];
+            List<Image> images = new List<Image>();
+            foreach(var filenameObject in filenameObjects)
+            {
+                Image image = GetImage(filenameObject as string);
+                if(image!=null)
+                {
+                    images.Add(image);
+                }
+            }
+            return images;
+           
+            
+        }
+        private Image GetImage(string filename)
+        {
             var file = objectsDatabase.GridFS.FindOne(Query.EQ("filename", filename));
 
             if (file == null)
@@ -163,7 +163,6 @@ namespace DatabaseModule
                 return image;
 
             }
-            
         }
 
 
@@ -294,23 +293,44 @@ namespace DatabaseModule
             var query = new QueryBuilder<BsonDocument>();
             return this.Get(query.And(andList));
         }
+        private void makeNewDocument(Image image, Dictionary<string, object> info)
+        {
+
+                if(!info.ContainsKey("name"))
+                {
+                    info.Add("name", "");
+                }
+                info.Add("count", 1);
+                info.Add("timestamp", DateTime.Now);
+
+                List<string> filenames = new List<string>();
+                if(image!=null)
+                {
+                    string filename = InsertImage(image);
+                    filenames.Add(filename);
+                }
+               
+                info.Add("filenames", filenames);
+                this.Insert(new BsonDocument(info));
+        }
+
+
         /** Public interface functions for GUI/CV use **/
         //Saves object selected by gui
         //image = cropped image of object, info = key/value dict of identifying info about that object
         public void saveSelection(Image image, Dictionary<string, object> info)
         {
-            var filename = RandomString(10) + ".jpg";
-            bool hasName = info.ContainsKey("name");
-            if (hasName)
+            if(!info.ContainsKey("name") || (string)info["name"]=="")
             {
+                makeNewDocument(image, info);      
+            }
+            else{
                 MongoCursor priorSelections = Get(Query.EQ("name", (string)info["name"]));
-                if ((string)info["name"] == "" || priorSelections.Size() == 0) //First time seeing an object with this name
+                if (priorSelections.Size() == 0) //First time seeing an object with this name
                 {
-                    info.Add("count", 1);
-                    info.Add("timestamp", DateTime.Now);
-                    InsertImage(image, filename, info);
+                    makeNewDocument(image, info);
                 }
-                else //Seeing an object previously named
+                else
                 {
                     foreach (BsonDocument doc in priorSelections) //Should only be one.
                     {
@@ -329,18 +349,27 @@ namespace DatabaseModule
 
                             modifyObject("name", info["name"].ToString(), "tags", newTags);
                         }
+                        modifyObject("name", info["name"].ToString(), "timestamp", DateTime.Now);
+
+
+                        if (image != null)
+                        {
+                            string filename = InsertImage(image);
+                            object[] filenamesObjects = doc.ToDictionary()["filenames"] as object[];
+                            var newFilenames = new BsonArray();
+                            foreach (var filenameObject in filenamesObjects)
+                            {
+                                newFilenames.Add(filenameObject as string);
+                            }
+                            newFilenames.Add(filename);
+                            modifyObject("name", info["name"].ToString(), "filenames", newFilenames);
+                        }
+                                            
                     }
-                }
-            }
-            else
-            {
-                info.Add("name", "");
-                info.Add("count", 1);
-                info.Add("timestamp", DateTime.Now);
-                InsertImage(image, filename, info);
+                }        
             }
 
-
+            
 
 
         }
@@ -388,7 +417,7 @@ namespace DatabaseModule
             var dict = objectsCollection.FindOneAs<BsonDocument>(Query.EQ(key, value)).ToDictionary();
             return new VObject(dict);
         }
-
+        
         //return previous selections where key=value
         public List<VObject> getSelections(string key, string value)
         {
@@ -397,10 +426,15 @@ namespace DatabaseModule
             var matchedDocs = objectsCollection.FindAs<BsonDocument>(Query.EQ(key, value));
             foreach (BsonDocument doc in matchedDocs)
             {
-                Image image = GetImage(doc);
-                Dictionary<string, object> dict = doc.ToDictionary();
-                dict.Add("image", image);
-                vObjects.Add(new VObject(dict));
+                
+                List<Image> images = GetImages(doc);
+                foreach(var image in images)
+                {
+                    Dictionary<string, object> dict = doc.ToDictionary();
+                    dict.Add("image", image);
+                    vObjects.Add(new VObject(dict));
+                }
+                
             }
             return vObjects;
         }
@@ -413,10 +447,13 @@ namespace DatabaseModule
             MongoCursor cursor = Get(Query.EQ("name", ""));
             foreach (BsonDocument document in cursor)
             {
-                Image image = GetImage(document);
-                Dictionary<string, object> listItem = document.ToDictionary();
-                listItem.Add("image", image);
-                list.Add(new VObject(listItem));
+                 List<Image> images = GetImages(document);
+                 foreach (var image in images)
+                 {
+                     Dictionary<string, object> listItem = document.ToDictionary();
+                     listItem.Add("image", image);
+                     list.Add(new VObject(listItem));
+                 }
             }
             return list;
 
@@ -429,13 +466,17 @@ namespace DatabaseModule
 
             List<VObject> list = new List<VObject>();
             foreach (BsonDocument document in cursor)
-            {
-                Dictionary<string, object> listItem = document.ToDictionary();
-                Image image = GetImage(document);
-                listItem.Add("image", image);
-                list.Add(new VObject(listItem));
+            {               
+                List<Image> images = GetImages(document);
+                foreach (var image in images)
+                {
+                    Dictionary<string, object> listItem = document.ToDictionary();
+                    listItem.Add("image", image);
+                    list.Add(new VObject(listItem));
+                }
             }
             return list;
+
         }
 
        
@@ -464,7 +505,16 @@ namespace DatabaseModule
             List<VObject> vObjects = new List<VObject>();
             foreach(var dict in likelyObjects)
             {
-                vObjects.Add(new VObject(dict));
+                Dictionary<string, object> vObjDict = dict;
+                object[] filenameObjects = dict["filenames"] as object[];
+                Image image = null;
+                if(filenameObjects.Length>0)
+                {
+                    string filename = filenameObjects[0] as string;
+                    image = GetImage(filename);
+                }
+                vObjDict.Add("image", image);
+                vObjects.Add(new VObject(vObjDict));
             }
 
             return vObjects;
@@ -504,6 +554,13 @@ namespace DatabaseModule
                 }
             }
             objectsCollection.Remove(Query.EQ("_id", new ObjectId(_id)));
+        }
+        
+
+        public void clearCollection()
+        {
+            objectsCollection.RemoveAll();
+            
         }
     }
 
