@@ -426,11 +426,15 @@ namespace DatabaseModule
             var matchedDocs = objectsCollection.FindAs<BsonDocument>(Query.EQ(key, value));
             foreach (BsonDocument doc in matchedDocs)
             {
-                Image image = null;
-               // Image image = GetImage(doc);
-                Dictionary<string, object> dict = doc.ToDictionary();
-                dict.Add("image", image);
-                vObjects.Add(new VObject(dict));
+                
+                List<Image> images = GetImages(doc);
+                foreach(var image in images)
+                {
+                    Dictionary<string, object> dict = doc.ToDictionary();
+                    dict.Add("image", image);
+                    vObjects.Add(new VObject(dict));
+                }
+                
             }
             return vObjects;
         }
@@ -443,11 +447,13 @@ namespace DatabaseModule
             MongoCursor cursor = Get(Query.EQ("name", ""));
             foreach (BsonDocument document in cursor)
             {
-                Image image = null;
-                //Image image = GetImage(document);
-                Dictionary<string, object> listItem = document.ToDictionary();
-                listItem.Add("image", image);
-                list.Add(new VObject(listItem));
+                 List<Image> images = GetImages(document);
+                 foreach (var image in images)
+                 {
+                     Dictionary<string, object> listItem = document.ToDictionary();
+                     listItem.Add("image", image);
+                     list.Add(new VObject(listItem));
+                 }
             }
             return list;
 
@@ -460,14 +466,17 @@ namespace DatabaseModule
 
             List<VObject> list = new List<VObject>();
             foreach (BsonDocument document in cursor)
-            {
-                Dictionary<string, object> listItem = document.ToDictionary();
-                Image image = null;
-                //Image image = GetImage(document);
-                listItem.Add("image", image);
-                list.Add(new VObject(listItem));
+            {               
+                List<Image> images = GetImages(document);
+                foreach (var image in images)
+                {
+                    Dictionary<string, object> listItem = document.ToDictionary();
+                    listItem.Add("image", image);
+                    list.Add(new VObject(listItem));
+                }
             }
             return list;
+
         }
 
        
@@ -496,7 +505,16 @@ namespace DatabaseModule
             List<VObject> vObjects = new List<VObject>();
             foreach(var dict in likelyObjects)
             {
-                vObjects.Add(new VObject(dict));
+                Dictionary<string, object> vObjDict = dict;
+                object[] filenameObjects = dict["filenames"] as object[];
+                Image image = null;
+                if(filenameObjects.Length>0)
+                {
+                    string filename = filenameObjects[0] as string;
+                    image = GetImage(filename);
+                }
+                vObjDict.Add("image", image);
+                vObjects.Add(new VObject(vObjDict));
             }
 
             return vObjects;
