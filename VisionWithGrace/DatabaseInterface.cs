@@ -108,7 +108,8 @@ namespace DatabaseModule
             {
                 if (image != null)
                 {
-                    image.Save(fs, ImageFormat.Jpeg);
+                    Bitmap bitmapCopy = new Bitmap(image);
+                    bitmapCopy.Save(fs, ImageFormat.Jpeg);
                     fs.Position = 0;
                     var gridFsInfo = objectsDatabase.GridFS.Upload(fs, filename);
                     var fileId = gridFsInfo.Id;
