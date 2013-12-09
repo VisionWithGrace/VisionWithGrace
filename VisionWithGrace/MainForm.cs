@@ -69,8 +69,11 @@ namespace VisionWithGrace
             refreshTimer.Start();
 
             // Open help splash screen
-            helpForm = new HelpForm();
-            helpForm.Show();
+            if (Properties.Settings.Default.helpFlag)
+            {
+                helpForm = new HelpForm();
+                helpForm.Show();
+            }
         }
 
         private void refreshView(object sender, EventArgs e)
@@ -232,6 +235,8 @@ namespace VisionWithGrace
             }
             else
             {
+                if (adminPanel.IsDisposed)
+                    adminPanel = new AdminPanel();
                 adminPanel.Show();
             }
         }
