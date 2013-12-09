@@ -169,7 +169,11 @@ namespace VisionWithGrace
 
         private void startScanning(object sender, KeyEventArgs e)
         {
-             if (e.KeyCode != Keys.Space)
+            if (e.KeyCode != Keys.Space)
+                return;
+
+            // don't scan if there are no objects to scan through
+            if (rectangles.Count == 0 && scanningMode == ScanningMode.AUTO_DETECTION)
                 return;
 
             e.SuppressKeyPress = true;
@@ -181,6 +185,9 @@ namespace VisionWithGrace
             if (e.KeyCode != Keys.Space)
                 return;
             e.SuppressKeyPress = true;
+
+            if (!scanner.isRunning)
+                return;
 
             scanner.stop();
 
