@@ -25,6 +25,8 @@ namespace VisionWithGrace
 
     public partial class MainForm : Form
     {
+        AdminPanel adminPanel = new AdminPanel();
+
         Bitmap plainView;
         Bitmap boxesView;
         Bitmap dullView;
@@ -218,8 +220,14 @@ namespace VisionWithGrace
         // Opens the admin panel for editing tags
         private void adminPanelToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            AdminPanel adminPanel = new AdminPanel();
-            adminPanel.Show();
+            if (adminPanel.Visible)
+            {
+                adminPanel.BringToFront();
+            }
+            else
+            {
+                adminPanel.Show();
+            }
         }
 
         private void manualStep()
