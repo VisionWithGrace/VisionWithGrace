@@ -394,7 +394,7 @@ namespace DatabaseModule
         }
         //Updates a selection with the given id to have newInfo as it's info
         //Will completely overwrite old info for the selection
-        public void updateSelectionInfo(string id, Dictionary<string, object> newInfo)
+        private void updateSelectionInfo(string id, Dictionary<string, object> newInfo)
         {
             
             BsonDocument document = new BsonDocument(newInfo);
