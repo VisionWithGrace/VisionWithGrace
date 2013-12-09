@@ -54,6 +54,8 @@ namespace VisionWithGrace
         {
             objects = dbInterface.getAllObjects();
             refreshObjectsInView();
+            if (this.listBoxObjects.Items.Count > 0)
+                this.listBoxObjects.SelectedIndex = 0;
         }
 
         private void unnamedObjectsButton_Click(object sender, EventArgs e)
@@ -72,6 +74,10 @@ namespace VisionWithGrace
         {
             // get currently selected object
             int index = this.listBoxObjects.SelectedIndex;
+
+            if (index < 0)
+                return;
+
             VObject current = objects[index];
             current.name = this.vObjectForm1.VObjectName;
             current.tags = this.vObjectForm1.VObjectTags;
@@ -82,6 +88,10 @@ namespace VisionWithGrace
         {
             // get currently selected object
             int index = this.listBoxObjects.SelectedIndex;
+
+            if (index < 0)
+                return;
+
             VObject current = objects[index];
             objects.RemoveAt(index);
 
