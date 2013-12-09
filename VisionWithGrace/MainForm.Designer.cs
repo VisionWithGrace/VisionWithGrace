@@ -42,6 +42,7 @@
             this.objectDetectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainDisplay = new System.Windows.Forms.PictureBox();
             this.mainDisplayLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mainDisplay)).BeginInit();
@@ -66,7 +67,7 @@
             this.objectDetectedLabel.Font = new System.Drawing.Font("Segoe UI", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.objectDetectedLabel.Name = "objectDetectedLabel";
             this.objectDetectedLabel.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.objectDetectedLabel.Size = new System.Drawing.Size(261, 37);
+            this.objectDetectedLabel.Size = new System.Drawing.Size(262, 37);
             this.objectDetectedLabel.Text = "Waiting for picture";
             // 
             // labelTimeRemaining
@@ -81,8 +82,9 @@
             this.menuStrip1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.adminToolStripMenuItem,
-            this.manualToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.manualToolStripMenuItem,
+            this.helpToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 377);
             this.menuStrip1.MaximumSize = new System.Drawing.Size(0, 24);
             this.menuStrip1.MinimumSize = new System.Drawing.Size(0, 24);
             this.menuStrip1.Name = "menuStrip1";
@@ -151,11 +153,11 @@
             this.mainDisplay.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.mainDisplayLayout.SetColumnSpan(this.mainDisplay, 2);
             this.mainDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainDisplay.Location = new System.Drawing.Point(10, 34);
+            this.mainDisplay.Location = new System.Drawing.Point(10, 10);
             this.mainDisplay.Margin = new System.Windows.Forms.Padding(10);
             this.mainDisplay.Name = "mainDisplay";
             this.mainDisplayLayout.SetRowSpan(this.mainDisplay, 4);
-            this.mainDisplay.Size = new System.Drawing.Size(1042, 489);
+            this.mainDisplay.Size = new System.Drawing.Size(1042, 357);
             this.mainDisplay.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.mainDisplay.TabIndex = 0;
             this.mainDisplay.TabStop = false;
@@ -183,6 +185,13 @@
             this.mainDisplayLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.mainDisplayLayout.Size = new System.Drawing.Size(1062, 576);
             this.mainDisplayLayout.TabIndex = 0;
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -227,6 +236,7 @@
         private System.Windows.Forms.ToolStripMenuItem manualScanToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem objectDetectionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem computerVisionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
 
     }
 }
