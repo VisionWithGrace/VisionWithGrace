@@ -30,20 +30,18 @@ namespace VisionWithGrace
                 radioButtonDetectedObject.Visible = true;
                 radioButtonRecognizedObject.Visible = true;
                 radioButtonRecognizedObject.Checked = true;
+                this.labelTitle.Text = "Did you select a '" + recognizedObj.name + "'?";
                 showObject(recognizedObject);
             }
             else
             {
+                this.labelTitle.Text = "I don't recognize this object.";
                 showObject(detectedObject);
             }
         }
 
         private void showObject(VObject obj)
         {
-            if (obj.name != "")
-            {
-                this.Text = obj.name + " selected!";
-            }
             this.vObjectForm1.setVObject(obj);
         }
 
@@ -73,18 +71,14 @@ namespace VisionWithGrace
 
         private void radioButtonDetectedObject_CheckedChanged(object sender, EventArgs e)
         {
+            this.labelTitle.Text = "This is an object I haven't seen before.";
             showObject(detectedObject);
         }
 
         private void radioButtonRecognizedObject_CheckedChanged(object sender, EventArgs e)
         {
+            this.labelTitle.Text = "This is a '" + recognizedObject.name + "'.";
             showObject(recognizedObject);
         }
-
-
-
-
-
-
     }
 }
