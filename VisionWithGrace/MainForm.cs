@@ -39,6 +39,8 @@ namespace VisionWithGrace
         int x, x0, x1, y, y0, y1, Mstep, diff, scale;
         ScanningMode scanningMode = ScanningMode.AUTO_DETECTION;
 
+        HelpForm helpForm;
+
         public MainForm()
         {
             InitializeComponent();
@@ -65,6 +67,10 @@ namespace VisionWithGrace
             // refresh once at the beginning and then start the timer
             refreshView(sender, e);
             refreshTimer.Start();
+
+            // Open help splash screen
+            helpForm = new HelpForm();
+            helpForm.Show();
         }
 
         private void refreshView(object sender, EventArgs e)
@@ -395,6 +401,12 @@ namespace VisionWithGrace
         private void computerVisionToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.cv.OpenDebugWindow();
+        }
+
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            helpForm = new HelpForm();
+            helpForm.Show();
         }
     }
 }
