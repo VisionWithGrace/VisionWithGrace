@@ -127,7 +127,7 @@ namespace VisionWithGrace
             //*********************************************************//
 
             //******* Create grayscale image to represent depth *******//
-            this.emguOverlayedDepth = new Image<Bgra, byte>(this.sensor.ColorStream.FrameWidth, this.sensor.ColorStream.FrameHeight, new Bgra(0, 0, 0, 255));
+            this.emguOverlayedDepth = new Image<Bgra, byte>(this.sensor.DepthStream.FrameWidth, this.sensor.DepthStream.FrameHeight, new Bgra(0, 0, 0, 255));
             //*********************************************************//
 
             //**********  Loop through colorCoordinates  **************//
@@ -159,7 +159,7 @@ namespace VisionWithGrace
             //this.emguProcessedColor = this.emguProcessedColor.Resize(0.5, INTER.CV_INTER_NN);
 
 
-            this.debugWindow.emguDepthImageBox.Image = this.emguOverlayedDepth.Resize(this.emguWindowWidth, this.emguWindowHeight, INTER.CV_INTER_NN);
+            this.debugWindow.emguDepthImageBox.Image = this.emguOverlayedDepth.Resize(this.debugWindow.emguDepthImageBox.Width, this.debugWindow.emguDepthImageBox.Height, INTER.CV_INTER_NN);
             //*********************************************************//
 
             //****************** Draw Depth Lines *********************//
@@ -280,7 +280,7 @@ namespace VisionWithGrace
                 }
             }
 
-            this.debugWindow.emguDepthProcessedImageBox.Image = this.emguDepthWithBoxes.Resize(this.emguWindowWidth, this.emguWindowHeight, INTER.CV_INTER_NN);
+            this.debugWindow.emguDepthProcessedImageBox.Image = this.emguDepthWithBoxes.Resize(this.debugWindow.emguDepthProcessedImageBox.Width, this.debugWindow.emguDepthProcessedImageBox.Height, INTER.CV_INTER_NN);
             //***************************************************************//
 
             //Assign colored pixels
@@ -331,8 +331,8 @@ namespace VisionWithGrace
             }
 
             //Assign processed color
-            //this.debugWindow.emguColorImageBox.Image = this.emguRawColor;
-            this.debugWindow.emguColorProcessedImageBox.Image = this.emguProcessedColor.Resize(this.emguWindowWidth, this.emguWindowHeight, INTER.CV_INTER_NN);
+            this.debugWindow.emguColorImageBox.Image = this.emguRawColor.Resize(this.debugWindow.emguColorProcessedImageBox.Width, this.debugWindow.emguColorProcessedImageBox.Height, INTER.CV_INTER_NN);
+            this.debugWindow.emguColorProcessedImageBox.Image = this.emguProcessedColor.Resize(this.debugWindow.emguColorProcessedImageBox.Width, this.debugWindow.emguColorProcessedImageBox.Height, INTER.CV_INTER_NN);
         }
 
         public static byte CalculateIntensityFromDistance(short distance)
