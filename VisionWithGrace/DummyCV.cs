@@ -540,7 +540,7 @@ namespace VisionWithGrace
                     //Record best match
                     double countSim = (double)Math.Min(numModelKeys,numObservedKeys)/(double)Math.Max(numModelKeys,numObservedKeys);
 
-                    if ((numMatches >= 0) && (similarity > 0.00) && (similarity > maxSimilarity) )//&& countSim > 0.66)
+                    if ((numMatches >= 10) && (similarity > 0.07) && (similarity > maxSimilarity) )
                     {
                         this.matchResult = matches;
                         maxMatches = numMatches;
