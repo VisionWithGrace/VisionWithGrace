@@ -148,7 +148,7 @@ namespace VisionWithGrace
                         {
                             //Calculate intensity and populate Image object
                             var intensity = CalculateIntensityFromDistance(this.depthPixels[i].Depth);
-                            this.emguOverlayedDepth[colorInDepthY, colorInDepthX] = new Bgra(intensity, intensity, intensity, 255);
+                            this.emguOverlayedDepth[colorInDepthY, this.sensor.DepthStream.FrameWidth - colorInDepthX] = new Bgra(intensity, intensity, intensity, 255);
                         }
                     }
                 }
@@ -373,6 +373,7 @@ namespace VisionWithGrace
                     dFrame.Dispose();
 
                     Bitmap colorBitmap = this.ColorImageFrameToBitmap(cFrame);
+                    colorBitmap.RotateFlip(RotateFlipType.RotateNoneFlipX);
                     this.emguRawColor = new Image<Bgra, byte>(colorBitmap);
                     this.emguProcessedColor = new Image<Bgra, byte>(colorBitmap);
                     this.FramesReady = true;
@@ -470,7 +471,7 @@ namespace VisionWithGrace
             if (index >= this.subimages.Count || index < 0)
             {
                 //The index is out of range
-                throw new IndexOutOfRangeException();
+                return null;
             }
           
             //Convert selected subimage to larger grayscale
