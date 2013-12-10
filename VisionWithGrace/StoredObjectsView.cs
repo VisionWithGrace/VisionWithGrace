@@ -102,10 +102,13 @@ namespace VisionWithGrace
         }
         private void focusObject(object sender, EventArgs e)
         {
-            tableLayoutPanel1.ScrollControlIntoView(tables[scanner.CurObject]);
-            tables[scanner.CurObject].BackColor = Color.Red;
-            if (scanner.CurObject > 0) tables[scanner.CurObject - 1].BackColor = tableLayoutPanel1.BackColor;
-            else if (scanner.NumObjects > 1) tables[AllObjects.Count - 1].BackColor = tableLayoutPanel1.BackColor;
+            if (scanner.NumObjects > 0)
+            {
+                tableLayoutPanel1.ScrollControlIntoView(tables[scanner.CurObject]);
+                tables[scanner.CurObject].BackColor = Color.Red;
+                if (scanner.CurObject > 0) tables[scanner.CurObject - 1].BackColor = tableLayoutPanel1.BackColor;
+                else if (scanner.NumObjects > 1) tables[AllObjects.Count - 1].BackColor = tableLayoutPanel1.BackColor;
+            }
         }
         private void focusTag(object sender, EventArgs e)
         {
