@@ -31,11 +31,11 @@
             this.buttonRemoveTag = new System.Windows.Forms.Button();
             this.buttonAddTag = new System.Windows.Forms.Button();
             this.listBoxTags = new System.Windows.Forms.ListBox();
-            this.textBoxTag = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.labelName = new System.Windows.Forms.Label();
             this.textBoxName = new System.Windows.Forms.TextBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.comboBoxTag = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -68,17 +68,6 @@
             this.listBoxTags.Name = "listBoxTags";
             this.listBoxTags.Size = new System.Drawing.Size(202, 108);
             this.listBoxTags.TabIndex = 3;
-            // 
-            // textBoxTag
-            // 
-            this.textBoxTag.AcceptsTab = true;
-            this.textBoxTag.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
-            this.textBoxTag.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
-            this.textBoxTag.Location = new System.Drawing.Point(447, 26);
-            this.textBoxTag.Name = "textBoxTag";
-            this.textBoxTag.Size = new System.Drawing.Size(202, 20);
-            this.textBoxTag.TabIndex = 1;
-            this.textBoxTag.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxTag_KeyDown);
             // 
             // label2
             // 
@@ -114,14 +103,23 @@
             this.pictureBox1.TabIndex = 24;
             this.pictureBox1.TabStop = false;
             // 
+            // comboBoxTag
+            // 
+            this.comboBoxTag.FormattingEnabled = true;
+            this.comboBoxTag.Location = new System.Drawing.Point(447, 26);
+            this.comboBoxTag.Name = "comboBoxTag";
+            this.comboBoxTag.Size = new System.Drawing.Size(200, 21);
+            this.comboBoxTag.TabIndex = 25;
+            this.comboBoxTag.KeyDown += new System.Windows.Forms.KeyEventHandler(this.comboBoxTag_KeyDown);
+            // 
             // VObjectForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.comboBoxTag);
             this.Controls.Add(this.buttonRemoveTag);
             this.Controls.Add(this.buttonAddTag);
             this.Controls.Add(this.listBoxTags);
-            this.Controls.Add(this.textBoxTag);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.labelName);
             this.Controls.Add(this.textBoxName);
@@ -139,10 +137,10 @@
         private System.Windows.Forms.Button buttonRemoveTag;
         private System.Windows.Forms.Button buttonAddTag;
         private System.Windows.Forms.ListBox listBoxTags;
-        private System.Windows.Forms.TextBox textBoxTag;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label labelName;
         private System.Windows.Forms.TextBox textBoxName;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.ComboBox comboBoxTag;
     }
 }
