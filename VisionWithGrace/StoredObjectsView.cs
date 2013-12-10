@@ -92,28 +92,7 @@ namespace VisionWithGrace
                 tableLayoutPanel4.Controls.Add(tBox);
                 tagLabels.Add(tBox);
             }
-                for (int i = 0; i < AllObjects.Count; i++)
-                {
-                    TableLayoutPanel tPanel = new TableLayoutPanel();
-                    tPanel.Dock = DockStyle.Fill;
-                    tPanel.Size = new System.Drawing.Size(410, 500);
-                    tPanel.RowCount = 2;
-                    tPanel.ColumnCount = 1;
-                    PictureBox pBox = new PictureBox();
-                    pBox.Size = new System.Drawing.Size(400, 400);
-                    pBox.BorderStyle = BorderStyle.Fixed3D;
-                    pBox.BackColor = Color.Gray;
-                    pBox.SizeMode = PictureBoxSizeMode.Zoom;
-                    pBox.Image = AllObjects[i].image;
-                    tPanel.Controls.Add(pBox, 0, 0);
-                    Label tBox = new Label();
-                    tBox.Text = AllObjects[i].name;
-                    tBox.AutoSize = true;
-                    tBox.Font = new Font("Arial", 28);
-                    tPanel.Controls.Add(tBox, 0, 1);
-                    tableLayoutPanel1.Controls.Add(tPanel);
-                    tables.Add(tPanel);
-                }
+            tableLayoutPanel4.Controls.Add(new Label());
 
             scanner = new Scanner();
             scanner.NumObjects = AllTags.Count + 2;
@@ -161,6 +140,7 @@ namespace VisionWithGrace
                     tableLayoutPanel1.Controls.Add(tPanel);
                     tables.Add(tPanel);
                 }
+                tableLayoutPanel1.Controls.Add(new Label());
             }
             else if (currentTag > 1)
             {
@@ -186,6 +166,7 @@ namespace VisionWithGrace
                     tableLayoutPanel1.Controls.Add(tPanel);
                     tables.Add(tPanel);
                 }
+                tableLayoutPanel1.Controls.Add(new Label());
             }
         }
         private void startScanning(object sender, KeyEventArgs e)
@@ -260,6 +241,7 @@ namespace VisionWithGrace
                         tableLayoutPanel1.Controls.Add(tPanel);
                         tables.Add(tPanel);
                     }
+                    tableLayoutPanel1.Controls.Add(new Label());
                     scanner.NumObjects = AllObjects.Count;
                 }
                 else
@@ -286,6 +268,7 @@ namespace VisionWithGrace
                         tableLayoutPanel1.Controls.Add(tPanel);
                         tables.Add(tPanel);
                     }
+                    tableLayoutPanel1.Controls.Add(new Label());
                     scanner.NumObjects = TagObjectIndexes[currentTag - 2].Count;
                 }
             }
