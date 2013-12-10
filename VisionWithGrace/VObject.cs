@@ -54,6 +54,19 @@ namespace VisionWithGrace
 
             db.saveSelection(image, data);
         }
+        public void update()
+        {
+            // get a database interface
+            DatabaseModule.DatabaseInterface db = new DatabaseModule.DatabaseInterface();
+
+            // structure data for database
+            Dictionary<string, object> data = new Dictionary<string,object>();
+
+
+            db.updateSelectionInfo(this.id, "name", this.name);
+            db.updateSelectionInfo(this.id, "tags", this.tags);
+        }
+
 
         public void delete()
         {

@@ -109,7 +109,7 @@ namespace DatabaseModule
                 if (image != null)
                 {
                     Bitmap bitmapCopy = new Bitmap(image);
-                    bitmapCopy.Save(fs, ImageFormat.Jpeg);
+                    bitmapCopy.Save(fs, ImageFormat.Bmp);
                     fs.Position = 0;
                     var gridFsInfo = objectsDatabase.GridFS.Upload(fs, filename);
                     var fileId = gridFsInfo.Id;
@@ -171,12 +171,13 @@ namespace DatabaseModule
             edit object where identifyingKey= identifyingValue (i.e., “location” = “home”, or “id” = 7).
             Leaning towards some stack overflow-ish tagging system where Grace’s aid is able to add objects to some general tag (home, school, but in addition things like food, toys)
         */
-        private void modifyObject(string identifyingKey, string identifyingValue, string fieldName, BsonValue changedValue)
+        private void modifyObject(string identifyingKey, string identifyingValue, string fieldName, object changedValue)
         {
             MongoCursor objectsToEdit = Get(Query.EQ(identifyingKey, identifyingValue));
+            BsonValue bsonChangedValue = BsonValue.Create(changedValue);
             foreach (BsonDocument doc in objectsToEdit)
             {
-                doc.Set(fieldName, changedValue);
+                doc.Set(fieldName, bsonChangedValue);
                 objectsCollection.Save(doc); //Save document back into the collection
             }
         }
@@ -342,13 +343,9 @@ namespace DatabaseModule
                         {
 
                             List<string> tagObjects = info["tags"] as List<string>;
-                            var newTags = new BsonArray();
-                            for (int i= 0; i < tagObjects.Count; i++)
-                            {
-                                newTags.Add(tagObjects[i]);
-                            }
+                            
 
-                            modifyObject("name", info["name"].ToString(), "tags", newTags);
+                            modifyObject("name", info["name"].ToString(), "tags", tagObjects);
                         }
                         modifyObject("name", info["name"].ToString(), "timestamp", DateTime.Now);
 
@@ -389,7 +386,9 @@ namespace DatabaseModule
             {
                 return;
             }
-            matchedDoc.Set(key, (BsonValue)value);
+
+            BsonValue bsonValue = BsonValue.Create(value);
+            matchedDoc.Set(key, bsonValue);
             objectsCollection.Save(matchedDoc);
 
         }

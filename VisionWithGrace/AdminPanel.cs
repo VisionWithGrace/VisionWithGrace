@@ -81,7 +81,7 @@ namespace VisionWithGrace
             VObject current = objects[index];
             current.name = this.vObjectForm1.VObjectName;
             current.tags = this.vObjectForm1.VObjectTags;
-            current.save();
+            current.update();
         }
 
         private void buttonDelete_Click(object sender, EventArgs e)
