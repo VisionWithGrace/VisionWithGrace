@@ -89,11 +89,12 @@ namespace VisionWithGrace
             }
         }
 
-        public void start()
+        public void start(int index = 0)
         {
             if (timer.Enabled)
                 return;
-
+            if (index > numObjects) index = 0;
+            curObject = index;
             timer.Start();
             onChange(null, new EventArgs());
         }

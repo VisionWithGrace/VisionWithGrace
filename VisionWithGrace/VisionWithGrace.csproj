@@ -112,6 +112,12 @@
     <Compile Include="cvDebug.Designer.cs">
       <DependentUpon>cvDebug.cs</DependentUpon>
     </Compile>
+    <Compile Include="StoredObjectsView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="StoredObjectsView.Designer.cs">
+      <DependentUpon>StoredObjectsView.cs</DependentUpon>
+    </Compile>
     <Compile Include="HelpForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -152,6 +158,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="cvDebug.resx">
       <DependentUpon>cvDebug.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="StoredObjectsView.resx">
+      <DependentUpon>StoredObjectsView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HelpForm.resx">
       <DependentUpon>HelpForm.cs</DependentUpon>

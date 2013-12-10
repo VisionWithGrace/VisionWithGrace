@@ -453,6 +453,7 @@ namespace VisionWithGrace
 
         public VObject RecognizeObject(Rectangle subimage)
         {
+            if (!this.isUsingKinect) { return null; }
             this.subimages.Add(this.emguRawColor.GetSubRect(subimage));
             return this.RecognizeObject(this.subimages.Count - 1);
         }
