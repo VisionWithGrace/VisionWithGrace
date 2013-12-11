@@ -198,11 +198,14 @@ namespace VisionWithGrace
             scanner.stop();
             if (scanMode == ScannerMode.IMAGES)
             {
-                SelectedObjectForm selectedObjectForm;
-                if (currentTag == 1) selectedObjectForm = new SelectedObjectForm(AllObjects[scanner.CurObject], AllObjects[scanner.CurObject]);
-                else selectedObjectForm = new SelectedObjectForm(AllObjects[TagObjectIndexes[currentTag - 2][scanner.CurObject]], AllObjects[TagObjectIndexes[currentTag - 2][scanner.CurObject]]);
-                selectedObjectForm.ShowDialog();
-                tables[scanner.CurObject].BackColor = tableLayoutPanel1.BackColor;
+                if (scanner.NumObjects > 0)
+                {
+                    SelectedObjectForm selectedObjectForm;
+                    if (currentTag == 1) selectedObjectForm = new SelectedObjectForm(AllObjects[scanner.CurObject], AllObjects[scanner.CurObject]);
+                    else selectedObjectForm = new SelectedObjectForm(AllObjects[TagObjectIndexes[currentTag - 2][scanner.CurObject]], AllObjects[TagObjectIndexes[currentTag - 2][scanner.CurObject]]);
+                    selectedObjectForm.ShowDialog();
+                    tables[scanner.CurObject].BackColor = tableLayoutPanel1.BackColor;
+                }
                 currentObject[currentTag] = scanner.CurObject;
                 scanMode = ScannerMode.TAGS;
                 scanner.NumObjects = AllTags.Count + 2;
