@@ -127,7 +127,7 @@ namespace VisionWithGrace
             //*********************************************************//
 
             //******* Create grayscale image to represent depth *******//
-            this.emguOverlayedDepth = new Image<Bgra, byte>(this.sensor.ColorStream.FrameWidth, this.sensor.ColorStream.FrameHeight, new Bgra(0, 0, 0, 255));
+            this.emguOverlayedDepth = new Image<Bgra, byte>(this.sensor.DepthStream.FrameWidth, this.sensor.DepthStream.FrameHeight, new Bgra(0, 0, 0, 255));
             //*********************************************************//
 
             //**********  Loop through colorCoordinates  **************//
@@ -148,7 +148,7 @@ namespace VisionWithGrace
                         {
                             //Calculate intensity and populate Image object
                             var intensity = CalculateIntensityFromDistance(this.depthPixels[i].Depth);
-                            this.emguOverlayedDepth[colorInDepthY, colorInDepthX] = new Bgra(intensity, intensity, intensity, 255);
+                            this.emguOverlayedDepth[colorInDepthY, this.sensor.DepthStream.FrameWidth - colorInDepthX] = new Bgra(intensity, intensity, intensity, 255);
                         }
                     }
                 }
@@ -159,7 +159,7 @@ namespace VisionWithGrace
             //this.emguProcessedColor = this.emguProcessedColor.Resize(0.5, INTER.CV_INTER_NN);
 
 
-            this.debugWindow.emguDepthImageBox.Image = this.emguOverlayedDepth.Resize(this.emguWindowWidth, this.emguWindowHeight, INTER.CV_INTER_NN);
+            this.debugWindow.emguDepthImageBox.Image = this.emguOverlayedDepth.Resize(this.debugWindow.emguDepthImageBox.Width, this.debugWindow.emguDepthImageBox.Height, INTER.CV_INTER_NN);
             //*********************************************************//
 
             //****************** Draw Depth Lines *********************//
@@ -280,7 +280,7 @@ namespace VisionWithGrace
                 }
             }
 
-            this.debugWindow.emguDepthProcessedImageBox.Image = this.emguDepthWithBoxes.Resize(this.emguWindowWidth, this.emguWindowHeight, INTER.CV_INTER_NN);
+            this.debugWindow.emguDepthProcessedImageBox.Image = this.emguDepthWithBoxes.Resize(this.debugWindow.emguDepthProcessedImageBox.Width, this.debugWindow.emguDepthProcessedImageBox.Height, INTER.CV_INTER_NN);
             //***************************************************************//
 
             //Assign colored pixels
@@ -331,8 +331,8 @@ namespace VisionWithGrace
             }
 
             //Assign processed color
-            //this.debugWindow.emguColorImageBox.Image = this.emguRawColor;
-            this.debugWindow.emguColorProcessedImageBox.Image = this.emguProcessedColor.Resize(this.emguWindowWidth, this.emguWindowHeight, INTER.CV_INTER_NN);
+            this.debugWindow.emguColorImageBox.Image = this.emguRawColor.Resize(this.debugWindow.emguColorProcessedImageBox.Width, this.debugWindow.emguColorProcessedImageBox.Height, INTER.CV_INTER_NN);
+            this.debugWindow.emguColorProcessedImageBox.Image = this.emguProcessedColor.Resize(this.debugWindow.emguColorProcessedImageBox.Width, this.debugWindow.emguColorProcessedImageBox.Height, INTER.CV_INTER_NN);
         }
 
         public static byte CalculateIntensityFromDistance(short distance)
@@ -373,6 +373,7 @@ namespace VisionWithGrace
                     dFrame.Dispose();
 
                     Bitmap colorBitmap = this.ColorImageFrameToBitmap(cFrame);
+                    colorBitmap.RotateFlip(RotateFlipType.RotateNoneFlipX);
                     this.emguRawColor = new Image<Bgra, byte>(colorBitmap);
                     this.emguProcessedColor = new Image<Bgra, byte>(colorBitmap);
                     this.FramesReady = true;
@@ -452,6 +453,7 @@ namespace VisionWithGrace
 
         public VObject RecognizeObject(Rectangle subimage)
         {
+            if (!this.isUsingKinect) { return null; }
             this.subimages.Add(this.emguRawColor.GetSubRect(subimage));
             return this.RecognizeObject(this.subimages.Count - 1);
         }
@@ -470,7 +472,7 @@ namespace VisionWithGrace
             if (index >= this.subimages.Count || index < 0)
             {
                 //The index is out of range
-                throw new IndexOutOfRangeException();
+                return null;
             }
           
             //Convert selected subimage to larger grayscale
@@ -539,7 +541,7 @@ namespace VisionWithGrace
                     //Record best match
                     double countSim = (double)Math.Min(numModelKeys,numObservedKeys)/(double)Math.Max(numModelKeys,numObservedKeys);
 
-                    if ((numMatches >= 0) && (similarity > 0.00) && (similarity > maxSimilarity) )//&& countSim > 0.66)
+                    if ((numMatches >= 10) && (similarity > 0.07) && (similarity > maxSimilarity) )
                     {
                         this.matchResult = matches;
                         maxMatches = numMatches;

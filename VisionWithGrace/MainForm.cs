@@ -20,7 +20,9 @@ namespace VisionWithGrace
 {
     enum ScanningMode{
         FREE_FORM,
-        AUTO_DETECTION
+        AUTO_DETECTION,
+        MENU,
+        STORED,
     }
 
     public partial class MainForm : Form
@@ -37,13 +39,16 @@ namespace VisionWithGrace
         Timer refreshTimer = new Timer();
 
         int x, x0, x1, y, y0, y1, Mstep, diff, scale;
-        ScanningMode scanningMode = ScanningMode.AUTO_DETECTION;
+        ScanningMode scanningMode = ScanningMode.MENU;
 
         HelpForm helpForm;
+        Color buttonColor;
 
         public MainForm()
         {
             InitializeComponent();
+            buttonColor = buttonPanel.BackColor;
+
 
             // Initialize CV manager
             cv = new ComputerVision();
@@ -54,7 +59,7 @@ namespace VisionWithGrace
             refreshTimer.Tick += refreshView;
 
             // Set scanner defaults
-            scanner.OnChange = highlightNextBox;
+            scanner.OnChange = MenuScan;
 
         }
 
@@ -64,16 +69,26 @@ namespace VisionWithGrace
         {
             this.mainDisplay.Focus();
 
-            // refresh once at the beginning and then start the timer
-            refreshView(sender, e);
-            refreshTimer.Start();
-
+            plainView = cv.getFrame();
+            mainDisplay.Image = new Bitmap(plainView.Size.Width, plainView.Size.Height);
+            using (Graphics g = Graphics.FromImage(mainDisplay.Image))
+            {
+                // overlay the boxedView on the plainView
+                g.DrawImage(plainView, new Rectangle(0, 0, plainView.Width, plainView.Height));
+            }
             // Open help splash screen
             if (Properties.Settings.Default.helpFlag)
             {
                 helpForm = new HelpForm();
-                helpForm.Show();
+                helpForm.ShowDialog();
             }
+
+            // refresh once at the beginning and then start the timer
+            refreshView(sender, e);
+            buttonPanel.BackColor = Color.Yellow;
+            scanner.NumObjects = 3;
+
+
         }
 
         private void refreshView(object sender, EventArgs e)
@@ -81,7 +96,7 @@ namespace VisionWithGrace
             plainView = cv.getFrame();
             rectangles = cv.getBoxes();
 
-            scanner.NumObjects = rectangles.Count;
+            scanner.NumObjects = rectangles.Count + 1;
             this.objectDetectedLabel.Text = rectangles.Count.ToString() + " objects detected";
 
             drawBoxes();
@@ -100,6 +115,24 @@ namespace VisionWithGrace
             drawBoxes(nextHighlighted);
             drawViews();
         }
+        public void MenuScan(object sender, EventArgs e)
+        {
+            button1.BackColor = buttonColor;
+            button2.BackColor = buttonColor;
+            button3.BackColor = buttonColor;
+            if(scanner.CurObject == 0)
+            {
+                button1.BackColor = Color.LightBlue;
+            }
+            else if (scanner.CurObject == 1)
+            {
+                button2.BackColor = Color.LightBlue;
+            }
+            else if (scanner.CurObject == 2)
+            {
+                button3.BackColor = Color.LightBlue;
+            }
+        }
         
         // Display selected object in closeUpDisplay
         private void showSelectedObject(VObject detected)
@@ -110,11 +143,11 @@ namespace VisionWithGrace
             VObject recognized;
             if (scanningMode == ScanningMode.AUTO_DETECTION)
             {
-                recognized = cv.RecognizeObject(scanner.CurObject);
+                recognized = cv.RecognizeObject(scanner.CurObject - 1);
             }
             else
             {
-                recognized = null;
+                recognized = cv.RecognizeObject(new Rectangle(x0, y0, x1 - x0, y1 - y0));
             }
 
             SelectedObjectForm selectedObjectForm;
@@ -131,6 +164,8 @@ namespace VisionWithGrace
             Pen redPen = new Pen(Properties.Settings.Default.boxColor, 3);
             Pen yellowPen = new Pen(Color.Yellow, 5);
 
+            buttonPanel.BackColor = buttonColor;
+
             using (var graphics = Graphics.FromImage(boxesView))
             {
                 if(selected != -1)
@@ -144,10 +179,14 @@ namespace VisionWithGrace
                     //else
                         graphics.DrawRectangle(redPen, rectangles[i]);
                 }
-                if (selected != -1)
+                if (selected > 0)
                 {
-                    graphics.DrawImage(plainView, rectangles[selected], rectangles[selected], GraphicsUnit.Pixel);
-                    graphics.DrawRectangle(yellowPen, rectangles[selected]);
+                    graphics.DrawImage(plainView, rectangles[selected - 1], rectangles[selected - 1], GraphicsUnit.Pixel);
+                    graphics.DrawRectangle(yellowPen, rectangles[selected - 1]);
+                }
+                else if(selected == 0)
+                {
+                    buttonPanel.BackColor = Color.Yellow;
                 }
             }
         }
@@ -173,12 +212,13 @@ namespace VisionWithGrace
                 return;
 
             // don't scan if there are no objects to scan through
-            if (rectangles.Count == 0 && scanningMode == ScanningMode.AUTO_DETECTION)
-                return;
+            //if (rectangles.Count == 0 && scanningMode == ScanningMode.AUTO_DETECTION)
+            //    return;
 
             e.SuppressKeyPress = true;
             refreshTimer.Stop();
-            scanner.start();
+            if (scanningMode == ScanningMode.AUTO_DETECTION) scanner.start(1);
+            else scanner.start();
         }
         private void stopScanning(object sender, KeyEventArgs e)
         {
@@ -192,14 +232,31 @@ namespace VisionWithGrace
             scanner.stop();
 
             this.labelTimeRemaining.Text = "";
-            if (scanningMode == ScanningMode.FREE_FORM)
+            if (scanningMode == ScanningMode.MENU)
+            {
+                if (scanner.CurObject == 0) switchToAuto();
+                else if (scanner.CurObject == 1) switchToManual();
+                else if (scanner.CurObject == 2)
+                {
+                    StoredObjects View = new StoredObjects();
+                    View.ShowDialog();
+                }
+            }
+            else if (scanningMode == ScanningMode.FREE_FORM)
             {
                 manualStep();
+            }
+            else if (scanner.CurObject == 0)
+            {
+                scanningMode = ScanningMode.MENU;
+                scanner = new Scanner();
+                scanner.NumObjects = 3;
+                scanner.OnChange = MenuScan;
             }
             else
             {
                 VObject vobj = new VObject();
-                vobj.image = getImageInBox(rectangles[scanner.CurObject]);
+                vobj.image = getImageInBox(rectangles[scanner.CurObject - 1]);
                 showSelectedObject(vobj);
                 refreshTimer.Start();
             }
@@ -272,13 +329,24 @@ namespace VisionWithGrace
                 VObject vObject = new VObject();
                 vObject.image = getImageInBox(new Rectangle(x0, y0, x1 - x0, y1 - y0));
                 showSelectedObject(vObject);
-                y0 = 0;
-                y1 = plainView.Size.Height;
-                x0 = 0;
-                x1 = plainView.Size.Width;
-                x = x0;
-                diff = 2;
-                Mstep = -1;
+                scanningMode = ScanningMode.MENU;
+                scanner = new Scanner();
+                scanner.NumObjects = 3;
+                scanner.OnChange = MenuScan;
+                buttonPanel.BackColor = Color.Yellow;
+                mainDisplay.Image = new Bitmap(plainView.Size.Width, plainView.Size.Height);
+                using (Graphics g = Graphics.FromImage(mainDisplay.Image))
+                {
+                    // overlay the boxedView on the plainView
+                    g.DrawImage(plainView, new Rectangle(0, 0, plainView.Width, plainView.Height));
+                }
+                //y0 = 0;
+                //y1 = plainView.Size.Height;
+                //x0 = 0;
+                //x1 = plainView.Size.Width;
+                //x = x0;
+                //diff = 2;
+                //Mstep = -1;
             }
             Mstep++;
         }
@@ -367,7 +435,13 @@ namespace VisionWithGrace
 
         private void manualScanToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            switchToManual();
+        }
+
+        private void switchToManual()
+        {
             scanningMode = ScanningMode.FREE_FORM;
+            buttonPanel.BackColor = buttonColor;
             refreshTimer.Stop();
             if (boxesView != null)
                 boxesView.Dispose();
@@ -384,16 +458,22 @@ namespace VisionWithGrace
             x = x0;
             this.objectDetectedLabel.Text = "Free Form Scanning";
             scale = (plainView.Size.Width - 1) / 600 + 1;
-            scanner.NumObjects = 2;
+            scanner.NumObjects = 3;
             scanner.OnChange = manualScanNextBox;
         }
 
         private void objectDetectionToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            switchToAuto();
+            refreshView(sender, e);
+        }
+
+        private void switchToAuto()
+        {
             scanningMode = ScanningMode.AUTO_DETECTION;
             scanner = new Scanner();
             scanner.OnChange = highlightNextBox;
-            refreshView(sender, e);
+            scanner.NumObjects = rectangles.Count + 1;
             refreshTimer.Start();
         }
 
