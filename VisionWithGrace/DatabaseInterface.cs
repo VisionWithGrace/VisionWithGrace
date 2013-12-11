@@ -479,6 +479,23 @@ namespace DatabaseModule
 
         }
 
+        public List<VObject> getAllUniqueObjects()
+        {
+            MongoCursor cursor = objectsCollection.FindAllAs<BsonDocument>();
+
+            List<VObject> list = new List<VObject>();
+            foreach (BsonDocument document in cursor)
+            {
+                List<Image> images = GetImages(document);
+               
+                Dictionary<string, object> listItem = document.ToDictionary();
+                listItem.Add("image", images[0]);
+                list.Add(new VObject(listItem));
+                
+            }
+            return list;
+        }
+
        
         //given a list of tags describing a current context, return a list of objects that are tagged
         //with these tags

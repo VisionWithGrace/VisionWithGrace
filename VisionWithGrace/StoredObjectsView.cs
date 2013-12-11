@@ -35,7 +35,7 @@ namespace VisionWithGrace
         public StoredObjects()
         {
             InitializeComponent();
-            AllObjects = db.getAllObjects();
+            AllObjects = db.getAllUniqueObjects();
             AllTags = db.getAllTags();
             tables = new List<TableLayoutPanel>();
             tagLabels = new List<Label>();

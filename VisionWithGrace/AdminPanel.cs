@@ -52,7 +52,7 @@ namespace VisionWithGrace
 
         private void AdminPanel_Load(object sender, EventArgs e)
         {
-            objects = dbInterface.getAllObjects();
+            objects = dbInterface.getAllUniqueObjects();
             refreshObjectsInView();
             if (this.listBoxObjects.Items.Count > 0)
                 this.listBoxObjects.SelectedIndex = 0;
@@ -66,7 +66,7 @@ namespace VisionWithGrace
 
         private void allObjectsButton_Click(object sender, EventArgs e)
         {
-            objects = dbInterface.getAllObjects();
+            objects = dbInterface.getAllUniqueObjects();
             refreshObjectsInView();
         }
 
